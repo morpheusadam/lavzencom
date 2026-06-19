@@ -1,0 +1,75 @@
+# WordPress
+/wp-admin/
+/wp-includes/
+/wp-content/plugins/
+/wp-content/themes/*/
+!/wp-content/themes/lavtheme/
+/wp-*.php
+/index.php
+/license.txt
+/readme.html
+/xmlrpc.php
+/*.zip
+
+# WordPress configuration files
+wp-config.php
+wp-config-local.php
+wp-config-*.php
+.htaccess
+
+# WordPress database
+wp-db-backup/
+*.sql
+*.sql.gz
+
+# WordPress uploads and cache
+/wp-content/uploads/
+/wp-content/backup-*
+/wp-content/cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# Node / npm
+node_modules/
+package-lock.json
+yarn.lock
+
+# Composer
+vendor/
+composer.lock
+
+# Build / Distribution
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Project specific
+.claude/
+wordpress-*.zip

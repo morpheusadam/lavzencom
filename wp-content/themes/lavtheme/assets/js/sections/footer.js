@@ -1,0 +1,1 @@
+document.querySelectorAll(".f-col h3").forEach(function(e){e.addEventListener("click",function(){window.innerWidth>640||e.parentElement.classList.toggle("open")})}),window.addEventListener("resize",function(){window.innerWidth>640&&document.querySelectorAll(".f-col").forEach(function(e){e.classList.remove("open")})})
