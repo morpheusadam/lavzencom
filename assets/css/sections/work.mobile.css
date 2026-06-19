@@ -1,0 +1,10 @@
+.case-dash{top:8px;padding:20px}
+.cd-main{flex-direction:column;align-items:flex-start;gap:20px}
+.cd-ring{width:96px;height:96px}
+.cd-num{font-size:46px}
+.cd-side{width:100%}
+.cd-bars{height:78px}
+.cd-dots{top:18px;right:18px}
+.case-feed{gap:32px;margin-top:32px}
+.case-step{padding:20px}
+.case-title{font-size:18px}

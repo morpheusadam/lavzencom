@@ -1,0 +1,8 @@
+.blog-track{gap:14px;padding-left:12px;padding-right:12px;margin:0 -12px;scroll-padding-left:12px}
+.post{flex-basis:84%;max-width:320px}
+.post-thumb{aspect-ratio:16/9}
+.post-body{padding:14px 16px;gap:8px}
+.post-title{font-size:15px}
+.post-sub{font-size:12.5px}
+.post-pill{font-size:10px;padding:4px 9px;top:10px;left:10px}
+.blog-nav{display:none}
