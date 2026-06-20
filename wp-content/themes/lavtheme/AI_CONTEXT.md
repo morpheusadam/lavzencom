@@ -196,6 +196,16 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   there (CSS/JS/Schema/Page-Content still do).
 - **Never override a plugin's internal templates** (no `/edd/` overrides) — restyle
   via CSS / wrap with custom sections instead.
+- **Shop URL is dynamic — never hardcode `/downloads/`.** EDD has **no** shop-page
+  option (the listing is the `download` post-type archive; its slug comes from the
+  `EDD_SLUG` constant / rewrite, default `downloads`). Get the URL only via
+  `lavtheme_shop_url()` (single source: configured page → `get_post_type_archive_link('download')`;
+  filters `lavtheme_shop_page_id`, `lavtheme_shop_url`). Detection is
+  `lavtheme_is_shop()` = `is_post_type_archive('download') || is_tax(download_category|tag)`
+  (slug-agnostic, filter `lavtheme_is_shop`) — change the slug and the design,
+  filters and CSS/JS injection follow automatically. EDD's real page settings
+  (`purchase_page`/`purchase_history_page`/`success_page`/`failure_page`) live in
+  `edd_settings` via `edd_get_option()` — none is a product listing.
 - **EDD also emits its own Product JSON-LD** on download pages, so the theme's
   editable Product schema coexists with it (two Product blocks). Disable EDD's in
   its settings if a single schema block is required — the theme can't reliably
