@@ -198,9 +198,20 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   editable Product schema coexists with it (two Product blocks). Disable EDD's in
   its settings if a single schema block is required — the theme can't reliably
   switch it off in EDD 3.x.
-- **OPcache on the host** can serve stale PHP for a short while after an upload —
-  call `opcache_reset()` from a temp endpoint when verifying, or re-check after a
-  short delay.
+- **OPcache on the host runs with `validate_timestamps=0`** (confirmed Jun 2026):
+  it does **not** re-read changed files by mtime. After an FTP upload, edits to
+  **existing** files and any **new** files (templates, `inc/` includes, even a
+  throwaway `*.php` probe) are **invisible** to the running PHP until OPcache is
+  flushed — a new probe file just routes to WordPress and 404s, so the
+  "temp `opcache_reset()` endpoint" trick **cannot bootstrap itself** here.
+  Symptoms: a new `archive-*.php`/`single-*.php` won't be picked up; a query-based
+  `wp_enqueue_style` won't fire; a `functions.php` `require` of a new include is
+  skipped — all while the file is provably correct on disk (verify with an FTP
+  `get`/listing). Only a real flush helps: **hPanel → PHP Configuration → change
+  the PHP version (then back), or toggle/Save any PHP option** — this restarts
+  PHP-FPM and clears OPcache. (Natural worker recycling eventually applies it too,
+  but is unreliable under low traffic.) Plan deploys so the **last** step is a
+  flush, and verify only after it.
 - **Keep the front page pixel-perfect** — be careful with `main.css` and markup.
 
 ---
