@@ -196,16 +196,26 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   there (CSS/JS/Schema/Page-Content still do).
 - **Never override a plugin's internal templates** (no `/edd/` overrides) — restyle
   via CSS / wrap with custom sections instead.
-- **Shop URL is dynamic — never hardcode `/downloads/`.** EDD has **no** shop-page
-  option (the listing is the `download` post-type archive; its slug comes from the
-  `EDD_SLUG` constant / rewrite, default `downloads`). Get the URL only via
-  `lavtheme_shop_url()` (single source: configured page → `get_post_type_archive_link('download')`;
-  filters `lavtheme_shop_page_id`, `lavtheme_shop_url`). Detection is
-  `lavtheme_is_shop()` = `is_post_type_archive('download') || is_tax(download_category|tag)`
-  (slug-agnostic, filter `lavtheme_is_shop`) — change the slug and the design,
-  filters and CSS/JS injection follow automatically. EDD's real page settings
-  (`purchase_page`/`purchase_history_page`/`success_page`/`failure_page`) live in
-  `edd_settings` via `edd_get_option()` — none is a product listing.
+- **Shop URL/page is dynamic — never hardcode `/downloads/` or `/products/`.**
+  EDD 3.x **does** have a "Shop Page" setting (UI label) stored in `edd_settings`
+  under the key **`products_page`** (read via `edd_get_option('products_page')` —
+  on this site it's page id **41** = `/products/`, which holds the EDD Downloads
+  block). The theme reads it through **`lavtheme_shop_page_id()`** (→ `products_page`,
+  then `shop_page_id` option, then `lavtheme_shop_page_id` filter). The shop now
+  renders on **two** surfaces, both followed dynamically:
+  1. The configured **Shop Page** — `lavtheme_cs_shop_page_template()` (`template_include`)
+     routes ONLY that page to `template-parts/shop-page-template.php`, which swaps in
+     a secondary downloads query (`lavtheme_shop_page_query()` + `lavtheme_shop_filter_vars()`,
+     mirrors `pre_get_posts`) and renders the shared layout — **replacing the page's
+     [downloads] block (no double render)**. Pagination uses a canonical-safe `pg` arg.
+  2. The auto **`download` archive** (`archive-download.php`, any slug) still works.
+  All shop links use `lavtheme_shop_url()` (configured page → archive link; filterable).
+  `lavtheme_is_shop()` = `is_post_type_archive('download') || is_tax(...)` **or** the
+  configured page (global context only; query context stays archive-only so
+  `pre_get_posts` never touches the page query). Change the Shop Page in EDD settings
+  → everything follows with **zero code change**. (EDD's other pages —
+  `purchase_page`/`purchase_history_page`/`success_page`/`failure_page`/`confirmation_page`
+  — also live in `edd_settings`.)
 - **EDD also emits its own Product JSON-LD** on download pages, so the theme's
   editable Product schema coexists with it (two Product blocks). Disable EDD's in
   its settings if a single schema block is required — the theme can't reliably
