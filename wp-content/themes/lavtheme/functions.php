@@ -42,6 +42,10 @@ lavtheme_require( 'edd.php' );
 lavtheme_require( 'edd-shop.php' );
 lavtheme_require( 'edd-shop-ui.php' );
 lavtheme_require( 'edd-single-product-hooks.php' );
+
+// Blog archive (real posts + filters).
+lavtheme_require( 'blog.php' );
+lavtheme_require( 'blog-ui.php' );
 lavtheme_require( 'edd-product-meta.php' );
 
 // Theme Code Studio: per-section code editing panel (DB + file modes).

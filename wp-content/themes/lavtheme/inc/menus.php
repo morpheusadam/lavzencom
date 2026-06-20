@@ -62,11 +62,11 @@ function lavtheme_topnav_fallback() {
 	return $out;
 }
 
-/** A best-effort blog URL (posts page, else home). */
+/** The blog URL — the dynamic blog page (posts page or theme Blog page), else home. */
 function lavtheme_blog_url() {
-	$page_for_posts = (int) get_option( 'page_for_posts' );
-	if ( $page_for_posts ) {
-		return get_permalink( $page_for_posts );
+	$pid = function_exists( 'lavtheme_blog_page_id' ) ? lavtheme_blog_page_id() : (int) get_option( 'page_for_posts' );
+	if ( $pid ) {
+		return get_permalink( $pid );
 	}
 	return home_url( '/' );
 }
