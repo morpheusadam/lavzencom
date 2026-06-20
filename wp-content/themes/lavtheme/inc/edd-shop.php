@@ -37,8 +37,32 @@ function lavtheme_shop_bestseller_threshold() {
  * @return int
  */
 function lavtheme_shop_page_id() {
-	$id = (int) lavtheme_option( 'shop_page_id', 0 );
+	$id = 0;
+	// EDD → Settings → General → Pages → "Shop Page" (stored as `products_page`).
+	if ( function_exists( 'edd_get_option' ) ) {
+		$id = (int) edd_get_option( 'products_page', 0 );
+	}
+	if ( ! $id ) {
+		$id = (int) lavtheme_option( 'shop_page_id', 0 );
+	}
 	return (int) apply_filters( 'lavtheme_shop_page_id', $id );
+}
+
+/**
+ * Resolve the current shop page number: the archive's pretty `paged`, or — on
+ * the EDD Shop Page (a singular page) — a custom `pg` query arg (avoids WP's
+ * canonical redirect stripping `paged` from singular URLs).
+ */
+function lavtheme_shop_paged() {
+	$p = (int) get_query_var( 'paged' );
+	if ( ! $p ) {
+		$p = (int) get_query_var( 'page' );
+	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! $p && isset( $_GET['pg'] ) ) {
+		$p = (int) $_GET['pg'];
+	}
+	return max( 1, $p );
 }
 
 /**
@@ -71,9 +95,17 @@ function lavtheme_shop_url() {
  */
 function lavtheme_is_shop( $query = null ) {
 	if ( $query instanceof WP_Query ) {
+		// Query context (used by pre_get_posts) stays archive/tax only, so the page
+		// main query is never altered — the shop page renders via a secondary query.
 		$is = $query->is_post_type_archive( 'download' ) || $query->is_tax( array( 'download_category', 'download_tag' ) );
 	} else {
 		$is = is_post_type_archive( 'download' ) || is_tax( array( 'download_category', 'download_tag' ) );
+		if ( ! $is ) {
+			$pid = lavtheme_shop_page_id();
+			if ( $pid && is_page( $pid ) ) {
+				$is = true; // the configured EDD "Shop Page".
+			}
+		}
 	}
 	return (bool) apply_filters( 'lavtheme_is_shop', $is, $query );
 }
@@ -237,6 +269,132 @@ function lavtheme_shop_pre_get_posts( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'lavtheme_shop_pre_get_posts' );
+
+/**
+ * Build the shop filter/sort WP_Query vars from the request, for the SECONDARY
+ * query used on the configured EDD Shop Page (a normal page, where the archive
+ * query/pre_get_posts does not apply). Mirrors lavtheme_shop_pre_get_posts() —
+ * **keep the two in sync**. Returns only the vars that apply.
+ *
+ * @return array
+ */
+function lavtheme_shop_filter_vars() {
+	$vars = array();
+	$meta = array();
+	$tax  = array();
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$pq = isset( $_GET['pq'] ) ? sanitize_text_field( wp_unslash( $_GET['pq'] ) ) : '';
+	if ( '' !== $pq ) {
+		$vars['s'] = $pq;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$raw_cat = isset( $_GET['pcat'] ) ? wp_unslash( $_GET['pcat'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$slugs   = is_array( $raw_cat ) ? $raw_cat : explode( ',', (string) $raw_cat );
+	$slugs   = array_values( array_filter( array_map( 'sanitize_title', $slugs ) ) );
+	if ( $slugs && taxonomy_exists( 'download_category' ) ) {
+		$tax[] = array( 'taxonomy' => 'download_category', 'field' => 'slug', 'terms' => $slugs );
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$min = isset( $_GET['min'] ) && '' !== $_GET['min'] ? (float) $_GET['min'] : 0;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$max = isset( $_GET['max'] ) && '' !== $_GET['max'] ? (float) $_GET['max'] : 0;
+	if ( $min > 0 || $max > 0 ) {
+		if ( $min > 0 && $max > 0 ) {
+			$meta[] = array( 'key' => 'edd_price', 'value' => array( min( $min, $max ), max( $min, $max ) ), 'type' => 'NUMERIC', 'compare' => 'BETWEEN' );
+		} elseif ( $min > 0 ) {
+			$meta[] = array( 'key' => 'edd_price', 'value' => $min, 'type' => 'NUMERIC', 'compare' => '>=' );
+		} else {
+			$meta[] = array( 'key' => 'edd_price', 'value' => $max, 'type' => 'NUMERIC', 'compare' => '<=' );
+		}
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$flt = isset( $_GET['flt'] ) ? (array) wp_unslash( $_GET['flt'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$flt = array_map( 'sanitize_key', $flt );
+	if ( in_array( 'sale', $flt, true ) ) {
+		$meta[] = array( 'key' => '_lavtheme_compare_price', 'value' => 0, 'type' => 'NUMERIC', 'compare' => '>' );
+	}
+	if ( in_array( 'new', $flt, true ) ) {
+		$vars['date_query'] = array( array( 'after' => '14 days ago' ) );
+	}
+	if ( in_array( 'best', $flt, true ) ) {
+		$meta[] = array( 'key' => '_edd_download_sales', 'value' => lavtheme_shop_bestseller_threshold(), 'type' => 'NUMERIC', 'compare' => '>=' );
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$rating = isset( $_GET['rating'] ) ? (int) $_GET['rating'] : 0;
+	if ( $rating > 0 && lavtheme_shop_has_reviews() ) {
+		$meta[] = array( 'key' => lavtheme_shop_rating_meta_key(), 'value' => $rating / 10, 'type' => 'DECIMAL(3,1)', 'compare' => '>=' );
+	}
+
+	if ( $meta ) {
+		$vars['meta_query'] = $meta;
+	}
+	if ( $tax ) {
+		$vars['tax_query'] = $tax;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$orderby = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : '';
+	switch ( $orderby ) {
+		case 'sales':
+		case 'trending':
+			$vars['meta_key'] = '_edd_download_sales';
+			$vars['orderby']  = 'meta_value_num';
+			$vars['order']    = 'DESC';
+			break;
+		case 'rating':
+			$vars['meta_key'] = lavtheme_shop_has_reviews() ? lavtheme_shop_rating_meta_key() : '_edd_download_sales';
+			$vars['orderby']  = 'meta_value_num';
+			$vars['order']    = 'DESC';
+			break;
+		case 'price_asc':
+		case 'price-asc':
+			$vars['meta_key'] = 'edd_price';
+			$vars['orderby']  = 'meta_value_num';
+			$vars['order']    = 'ASC';
+			break;
+		case 'price_desc':
+		case 'price-desc':
+			$vars['meta_key'] = 'edd_price';
+			$vars['orderby']  = 'meta_value_num';
+			$vars['order']    = 'DESC';
+			break;
+		case 'date':
+			$vars['orderby'] = 'date';
+			$vars['order']   = 'DESC';
+			break;
+		case 'relevance':
+		default:
+			$vars['orderby'] = '' !== $pq ? 'relevance' : 'date';
+			$vars['order']   = 'DESC';
+			break;
+	}
+
+	return $vars;
+}
+
+/**
+ * The secondary WP_Query that powers the shop on the configured Shop Page.
+ *
+ * @return WP_Query
+ */
+function lavtheme_shop_page_query() {
+	$args = array_merge(
+		array(
+			'post_type'           => 'download',
+			'post_status'         => 'publish',
+			'posts_per_page'      => lavtheme_shop_per_page(),
+			'paged'               => lavtheme_shop_paged(),
+			'ignore_sticky_posts' => true,
+		),
+		lavtheme_shop_filter_vars()
+	);
+	return new WP_Query( $args );
+}
 
 /**
  * Min/max edd_price across the catalogue (cached) — slider bounds.

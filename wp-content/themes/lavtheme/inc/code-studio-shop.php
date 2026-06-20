@@ -23,7 +23,8 @@ defined( 'ABSPATH' ) || exit;
  * @return string Buffered output, or '' to fall back to the file.
  */
 function lavtheme_cs_shop_template_body() {
-	if ( ! function_exists( 'lavtheme_is_shop' ) || ! lavtheme_is_shop() || ! lavtheme_cs_php_allowed() ) {
+	$is = ( function_exists( 'lavtheme_is_shop' ) && lavtheme_is_shop() ) || lavtheme_is_shop_page_request();
+	if ( ! $is || ! lavtheme_cs_php_allowed() ) {
 		return '';
 	}
 	$override = (string) get_option( lavtheme_cs_dl_key( 'shop', 'design', 'php' ), '' );
@@ -115,3 +116,55 @@ function lavtheme_cs_shop_footer() {
 	}
 }
 add_action( 'wp_footer', 'lavtheme_cs_shop_footer', 101 );
+
+/* ===================== Shop on the configured EDD Shop Page ================ */
+
+/** True while the configured Shop Page is rendering (pagination context). */
+function lavtheme_is_shop_page_request() {
+	return ! empty( $GLOBALS['lavtheme_shop_page_active'] );
+}
+
+/**
+ * Render the shop on the configured EDD Shop Page (a normal page). Swaps in a
+ * downloads query so the shared layout (template-parts/shop.php, via the Code
+ * Studio Template override or the file) renders the grid + pagination, then
+ * restores the page query. The page's own content/[downloads] block is bypassed
+ * (no double render).
+ */
+function lavtheme_cs_shop_render_page() {
+	global $wp_query, $post;
+	$orig_query = $wp_query;
+	$orig_post  = $post;
+
+	$wp_query = lavtheme_shop_page_query(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	$GLOBALS['lavtheme_shop_page_active'] = true;
+
+	lavtheme_cs_shop_render();
+
+	$GLOBALS['lavtheme_shop_page_active'] = false;
+	wp_reset_postdata();
+	$wp_query = $orig_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	$post     = $orig_post;  // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+}
+
+/**
+ * Route ONLY the configured Shop Page through a thin template that renders the
+ * shop design. The auto `download` archive is unaffected; other pages untouched.
+ *
+ * @param string $template Resolved template path.
+ * @return string
+ */
+function lavtheme_cs_shop_page_template( $template ) {
+	if ( is_admin() || ! function_exists( 'lavtheme_shop_page_id' ) ) {
+		return $template;
+	}
+	$pid = lavtheme_shop_page_id();
+	if ( $pid && is_page( $pid ) ) {
+		$custom = get_theme_file_path( 'template-parts/shop-page-template.php' );
+		if ( is_readable( $custom ) ) {
+			return $custom;
+		}
+	}
+	return $template;
+}
+add_filter( 'template_include', 'lavtheme_cs_shop_page_template', 99 );

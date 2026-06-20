@@ -20,7 +20,7 @@ function lavtheme_shop_money( $n ) {
 
 /** Build a filter URL from an args map (handles pcat[]/flt[] arrays). */
 function lavtheme_shop_chip_url( $base, $args ) {
-	$base = remove_query_arg( array( 'pq', 'pcat', 'min', 'max', 'flt', 'rating', 'orderby', 'paged', 'view' ), $base );
+	$base = remove_query_arg( array( 'pq', 'pcat', 'min', 'max', 'flt', 'rating', 'orderby', 'paged', 'pg', 'view' ), $base );
 	return $args ? add_query_arg( $args, $base ) : $base;
 }
 
@@ -289,16 +289,24 @@ function lavtheme_shop_pagination_html() {
 	if ( $total < 2 ) {
 		return '';
 	}
-	$links = paginate_links(
-		array(
-			'type'      => 'array',
-			'mid_size'  => 1,
-			'prev_text' => '‹',
-			'next_text' => '›',
-			'current'   => max( 1, (int) get_query_var( 'paged' ) ),
-			'total'     => $total,
-		)
+	$on_page = function_exists( 'lavtheme_is_shop_page_request' ) && lavtheme_is_shop_page_request();
+	$current = function_exists( 'lavtheme_shop_paged' ) ? lavtheme_shop_paged() : max( 1, (int) get_query_var( 'paged' ) );
+	$pargs   = array(
+		'type'      => 'array',
+		'mid_size'  => 1,
+		'prev_text' => '‹',
+		'next_text' => '›',
+		'current'   => $current,
+		'total'     => $total,
 	);
+	if ( $on_page ) {
+		// The Shop Page is a real page → paginate via a ?paged query arg that keeps
+		// the active filters (the archive uses pretty /page/N/ via the defaults).
+		$big             = 999999999;
+		$pargs['base']   = str_replace( $big, '%#%', esc_url_raw( add_query_arg( 'pg', $big ) ) );
+		$pargs['format'] = '';
+	}
+	$links = paginate_links( $pargs );
 	if ( empty( $links ) ) {
 		return '';
 	}
