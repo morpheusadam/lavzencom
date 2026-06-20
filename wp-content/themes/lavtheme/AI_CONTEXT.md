@@ -198,20 +198,23 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   editable Product schema coexists with it (two Product blocks). Disable EDD's in
   its settings if a single schema block is required — the theme can't reliably
   switch it off in EDD 3.x.
-- **OPcache on the host runs with `validate_timestamps=0`** (confirmed Jun 2026):
-  it does **not** re-read changed files by mtime. After an FTP upload, edits to
-  **existing** files and any **new** files (templates, `inc/` includes, even a
-  throwaway `*.php` probe) are **invisible** to the running PHP until OPcache is
-  flushed — a new probe file just routes to WordPress and 404s, so the
-  "temp `opcache_reset()` endpoint" trick **cannot bootstrap itself** here.
-  Symptoms: a new `archive-*.php`/`single-*.php` won't be picked up; a query-based
-  `wp_enqueue_style` won't fire; a `functions.php` `require` of a new include is
-  skipped — all while the file is provably correct on disk (verify with an FTP
-  `get`/listing). Only a real flush helps: **hPanel → PHP Configuration → change
-  the PHP version (then back), or toggle/Save any PHP option** — this restarts
-  PHP-FPM and clears OPcache. (Natural worker recycling eventually applies it too,
-  but is unreliable under low traffic.) Plan deploys so the **last** step is a
-  flush, and verify only after it.
+- **FTP DEPLOY PATH (critical, confirmed Jun 2026):** the FTP account
+  (`u523965318.lavzen.com` @ `82.29.185.21:21`) **chroots to the domain web root**,
+  so the FTP login dir `/` **is** `/home/u523965318/domains/lavzen.com/public_html/`
+  (it contains `wp-admin`, `wp-config.php`, `wp-content`). Therefore the live theme
+  is **`/wp-content/themes/lavtheme/`** (relative to the FTP root). **Do NOT
+  `cd public_html/...`** — there is a stray nested `public_html/` inside the root
+  that is NOT served by the web server; uploading there silently changes nothing
+  (the live site never updates, and probes 404). The bundled `ftp-upload.txt` /
+  `sftp-*.txt` scripts had this bug (`cd public_html/wp-content/themes/lavtheme/`).
+  curl form that works: `curl -T <local> -u "$USER:$PASS"
+  "ftp://82.29.185.21/wp-content/themes/lavtheme/<relpath>"`. If "my change didn't
+  apply", **check the path before suspecting cache** — verify with an FTP listing
+  of `/wp-content/themes/lavtheme/` (full theme present) vs the empty nested dir.
+- **OPcache** picks up correct-path uploads fine (validate_timestamps is effectively
+  on); a parse-error file is uncached and recompiles every request, so a fix lands
+  immediately. The `hcdn` CDN, however, caches **static** assets (`.css`/`.js`/`.txt`)
+  and ignores `?cb=` for them — purge from hPanel or wait for TTL after changing one.
 - **Keep the front page pixel-perfect** — be careful with `main.css` and markup.
 
 ---
