@@ -34,6 +34,7 @@ function lavtheme_require( $relative ) {
 // Core: helpers, theme setup, asset loading.
 lavtheme_require( 'helpers.php' );
 lavtheme_require( 'setup.php' );
+lavtheme_require( 'menus.php' );
 lavtheme_require( 'enqueue.php' );
 
 // Front-end data: Easy Digital Downloads products.

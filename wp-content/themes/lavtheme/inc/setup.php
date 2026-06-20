@@ -36,6 +36,8 @@ function lavtheme_setup() {
 			'primary'        => __( 'Desktop Navbar (.topnav)', 'lavtheme' ),
 			'mobile'         => __( 'Mobile Navbar (bottom)', 'lavtheme' ),
 			'social_sidebar' => __( 'Social Sidebar (desktop rail)', 'lavtheme' ),
+			'account'        => __( 'Account (avatar popover)', 'lavtheme' ),
+			'shop_categories' => __( 'Shop Categories', 'lavtheme' ),
 		)
 	);
 
