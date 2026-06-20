@@ -29,6 +29,10 @@ function lavtheme_cs_dl_is_template( $ctx ) {
 
 /** Validate a dl context key. */
 function lavtheme_cs_dl_valid( $ctx ) {
+	if ( 'shop' === $ctx ) {
+		// The shop (download archive) reuses the dl context plumbing.
+		return post_type_exists( 'download' );
+	}
 	if ( 'dl-template' === $ctx ) {
 		return post_type_exists( 'download' );
 	}
@@ -70,6 +74,13 @@ function lavtheme_cs_dl_products() {
 /* ============================ registry & values =========================== */
 
 function lavtheme_cs_dl_builtin( $ctx ) {
+	if ( 'shop' === $ctx ) {
+		// Shop archive: Global (CSS/JS/Background) + the editable Template.
+		return array(
+			array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
+			array( 'slug' => 'design', 'label' => 'Template (PHP/HTML)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
+		);
+	}
 	$tpl  = lavtheme_cs_dl_is_template( $ctx );
 	$rows = array(
 		array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
@@ -163,6 +174,18 @@ function lavtheme_cs_dl_schema_default() {
  * @return string Relative theme path, or '' when no file backs this field.
  */
 function lavtheme_cs_dl_default_path( $ctx, $slug, $type ) {
+	if ( 'shop' === $ctx ) {
+		if ( 'global' === $slug && 'css' === $type ) {
+			return 'assets/css/shop.css';
+		}
+		if ( 'global' === $slug && 'js' === $type ) {
+			return 'assets/js/shop.js';
+		}
+		if ( 'design' === $slug && 'php' === $type ) {
+			return 'template-parts/shop.php';
+		}
+		return '';
+	}
 	if ( 'dl-template' !== $ctx ) {
 		return '';
 	}

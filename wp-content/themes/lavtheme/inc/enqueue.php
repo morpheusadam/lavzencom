@@ -51,29 +51,11 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
-	// Shop (EDD download archive + download taxonomy archives). Reuses the
-	// front-page card styles (products.css) and layers the shop layout on top.
-	if ( function_exists( 'lavtheme_is_shop' ) && lavtheme_is_shop() ) {
-		wp_enqueue_style(
-			'lavtheme-products',
-			LAVTHEME_URI . 'assets/css/products.css',
-			array( 'lavtheme-main' ),
-			lavtheme_asset_ver( 'assets/css/products.css' )
-		);
-		wp_enqueue_style(
-			'lavtheme-shop',
-			LAVTHEME_URI . 'assets/css/shop.css',
-			array( 'lavtheme-main', 'lavtheme-products' ),
-			lavtheme_asset_ver( 'assets/css/shop.css' )
-		);
-		wp_enqueue_script(
-			'lavtheme-shop',
-			LAVTHEME_URI . 'assets/js/shop.js',
-			array(),
-			lavtheme_asset_ver( 'assets/js/shop.js' ),
-			true
-		);
-	}
+	// Shop archive CSS/JS are NOT enqueued here anymore: the Code Studio "Shop
+	// (archive)" context injects them (override-or-file) via
+	// lavtheme_cs_shop_head() / lavtheme_cs_shop_footer(), so the editors are the
+	// single source and edits apply live. assets/css|js/shop.* stay on disk as the
+	// editor defaults + fallback.
 
 	// Single EDD product page CSS/JS are NOT enqueued here anymore: the Code
 	// Studio "Single Download (template)" context injects them (override-or-file)

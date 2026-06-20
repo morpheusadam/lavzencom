@@ -470,6 +470,9 @@ function lavtheme_cs_render_page() {
 					<optgroup label="<?php esc_attr_e( 'Downloads (EDD)', 'lavtheme' ); ?>">
 						<option value="dl-template" data-view="<?php echo esc_url( $lav_dl_view ); ?>"><?php esc_html_e( 'Single Download (template)', 'lavtheme' ); ?></option>
 					</optgroup>
+					<optgroup label="<?php esc_attr_e( 'Shop (EDD)', 'lavtheme' ); ?>">
+						<option value="shop" data-view="<?php echo esc_url( get_post_type_archive_link( 'download' ) ); ?>"><?php esc_html_e( 'Shop (archive)', 'lavtheme' ); ?></option>
+					</optgroup>
 				<?php endif; ?>
 			</select>
 			<?php if ( function_exists( 'lavtheme_cs_edd' ) && lavtheme_cs_edd() ) : ?>
