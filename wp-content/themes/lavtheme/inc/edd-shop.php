@@ -28,12 +28,54 @@ function lavtheme_shop_bestseller_threshold() {
 	return (int) apply_filters( 'lavtheme_shop_bestseller_threshold', 5 );
 }
 
-/** Is the given (or current) query the shop (download archive or a download taxonomy)? */
+/**
+ * Optional custom shop PAGE id (0 = use the download archive). Lets the shop be
+ * moved later with no code change — set the `lavtheme_shop_page_id` filter or a
+ * `shop_page_id` theme option. EDD core has no shop-page setting (the listing is
+ * the `download` archive), so this is the theme's single extension point.
+ *
+ * @return int
+ */
+function lavtheme_shop_page_id() {
+	$id = (int) lavtheme_option( 'shop_page_id', 0 );
+	return (int) apply_filters( 'lavtheme_shop_page_id', $id );
+}
+
+/**
+ * The shop URL — read DYNAMICALLY from EDD, never hardcoded. A configured shop
+ * page wins; otherwise the `download` post-type archive link, which follows
+ * EDD's slug (`EDD_SLUG`/rewrite) automatically. Filterable. This is the single
+ * source every shop link/redirect should use.
+ *
+ * @return string
+ */
+function lavtheme_shop_url() {
+	$pid = lavtheme_shop_page_id();
+	$url = ( $pid && get_post( $pid ) ) ? get_permalink( $pid ) : get_post_type_archive_link( 'download' );
+	if ( ! $url ) {
+		$url = home_url( '/' );
+	}
+	return apply_filters( 'lavtheme_shop_url', $url, $pid );
+}
+
+/**
+ * Is the given (or current) query the shop — the `download` post-type archive or
+ * a download taxonomy? **Slug-agnostic**: uses `is_post_type_archive`/`is_tax`,
+ * so it follows whatever archive slug EDD is configured with — change the slug
+ * and detection (and thus the design, filters and CSS/JS injection) follows with
+ * zero code change. Filterable (`lavtheme_is_shop`) for advanced custom-page
+ * setups; the default stays archive/tax only so `pre_get_posts` can rely on it.
+ *
+ * @param WP_Query|null $query Optional query; defaults to the main query.
+ * @return bool
+ */
 function lavtheme_is_shop( $query = null ) {
 	if ( $query instanceof WP_Query ) {
-		return $query->is_post_type_archive( 'download' ) || $query->is_tax( array( 'download_category', 'download_tag' ) );
+		$is = $query->is_post_type_archive( 'download' ) || $query->is_tax( array( 'download_category', 'download_tag' ) );
+	} else {
+		$is = is_post_type_archive( 'download' ) || is_tax( array( 'download_category', 'download_tag' ) );
 	}
-	return is_post_type_archive( 'download' ) || is_tax( array( 'download_category', 'download_tag' ) );
+	return (bool) apply_filters( 'lavtheme_is_shop', $is, $query );
 }
 
 /**
@@ -262,8 +304,7 @@ function lavtheme_shop_base_url() {
 			}
 		}
 	}
-	$u = get_post_type_archive_link( 'download' );
-	return $u ? $u : home_url( '/' );
+	return lavtheme_shop_url();
 }
 
 /** A cyclic category icon (inline SVG) by index. */

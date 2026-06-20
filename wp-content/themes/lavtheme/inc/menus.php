@@ -46,7 +46,7 @@ function lavtheme_topnav_fallback() {
 			array( 'Contact', '#contact', false ),
 		);
 	} else {
-		$shop  = get_post_type_archive_link( 'download' );
+		$shop  = function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : get_post_type_archive_link( 'download' );
 		$items = array(
 			array( 'Home', home_url( '/' ), false ),
 			array( 'Shop', $shop ? $shop : home_url( '/' ), lavtheme_is_shop() ),
@@ -278,7 +278,7 @@ function lavtheme_seed_menus() {
 		}
 	};
 
-	$shop = get_post_type_archive_link( 'download' );
+	$shop = function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : get_post_type_archive_link( 'download' );
 	$shop = $shop ? $shop : home_url( '/' );
 
 	$ensure(
