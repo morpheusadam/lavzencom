@@ -70,12 +70,17 @@ function lavtheme_cs_dl_products() {
 /* ============================ registry & values =========================== */
 
 function lavtheme_cs_dl_builtin( $ctx ) {
-	$tpl = lavtheme_cs_dl_is_template( $ctx );
-	return array(
+	$tpl  = lavtheme_cs_dl_is_template( $ctx );
+	$rows = array(
 		array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
 		array( 'slug' => 'schema', 'label' => 'Schema (Product)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
-		array( 'slug' => 'content', 'label' => $tpl ? 'Product Content (each product)' : 'Page Content', 'zone' => 'content', 'builtin' => true, 'deletable' => false, 'html' => ! $tpl, 'pagecontent' => true, 'placeholder' => $tpl, 'placement' => 'inline' ),
 	);
+	if ( $tpl ) {
+		// The whole product template body, editable as PHP/HTML (file default + override).
+		$rows[] = array( 'slug' => 'design', 'label' => 'Template (PHP/HTML)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false );
+	}
+	$rows[] = array( 'slug' => 'content', 'label' => $tpl ? 'Product Content (each product)' : 'Page Content', 'zone' => 'content', 'builtin' => true, 'deletable' => false, 'html' => ! $tpl, 'pagecontent' => true, 'placeholder' => $tpl, 'placement' => 'inline' );
+	return $rows;
 }
 
 function lavtheme_cs_dl_registry( $ctx ) {
@@ -84,7 +89,29 @@ function lavtheme_cs_dl_registry( $ctx ) {
 	if ( ! is_array( $reg ) || empty( $reg ) ) {
 		$reg = lavtheme_cs_dl_builtin( $ctx );
 		update_option( $opt, $reg );
+		return $reg;
 	}
+
+	// Migration: ensure the editable "design" (template body) section exists on
+	// the template level for registries created before it was introduced.
+	if ( lavtheme_cs_dl_is_template( $ctx ) && ! in_array( 'design', wp_list_pluck( $reg, 'slug' ), true ) ) {
+		$design   = array( 'slug' => 'design', 'label' => 'Template (PHP/HTML)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false );
+		$new      = array();
+		$inserted = false;
+		foreach ( $reg as $r ) {
+			$new[] = $r;
+			if ( ! $inserted && isset( $r['slug'] ) && 'schema' === $r['slug'] ) {
+				$new[]    = $design;
+				$inserted = true;
+			}
+		}
+		if ( ! $inserted ) {
+			array_unshift( $new, $design );
+		}
+		$reg = $new;
+		update_option( $opt, $reg );
+	}
+
 	return $reg;
 }
 
@@ -98,6 +125,9 @@ function lavtheme_cs_dl_fields( $rec, $ctx ) {
 	}
 	if ( 'schema' === $rec['slug'] ) {
 		return array( 'json' => 'JSON-LD Schema' );
+	}
+	if ( 'design' === $rec['slug'] ) {
+		return array( 'php' => 'Template (PHP/HTML)' );
 	}
 	if ( ! empty( $rec['pagecontent'] ) ) {
 		// Template content is a non-editable anchor; specific edits the product post_content.
@@ -126,20 +156,83 @@ function lavtheme_cs_dl_schema_default() {
 	return (string) wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 }
 
+/**
+ * Real theme file backing a dl-template editor (so editors are never empty and
+ * the page renders from a single source: override-or-file). Template level only.
+ *
+ * @return string Relative theme path, or '' when no file backs this field.
+ */
+function lavtheme_cs_dl_default_path( $ctx, $slug, $type ) {
+	if ( 'dl-template' !== $ctx ) {
+		return '';
+	}
+	if ( 'global' === $slug && 'css' === $type ) {
+		return 'assets/css/single-product.css';
+	}
+	if ( 'global' === $slug && 'js' === $type ) {
+		return 'assets/js/single-product.js';
+	}
+	if ( 'design' === $slug && 'php' === $type ) {
+		return 'template-parts/single-download-body.php';
+	}
+	return '';
+}
+
+/** File default contents for a dl-template editor. */
+function lavtheme_cs_dl_default_value( $ctx, $slug, $type ) {
+	$rel = lavtheme_cs_dl_default_path( $ctx, $slug, $type );
+	if ( '' === $rel ) {
+		return '';
+	}
+	$path = get_theme_file_path( $rel );
+	return is_readable( $path ) ? (string) file_get_contents( $path ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+}
+
 function lavtheme_cs_dl_get( $ctx, $slug, $type ) {
 	if ( 'content' === $slug && 'html' === $type ) {
 		$pid = lavtheme_cs_dl_post_id( $ctx );
 		$p   = $pid ? get_post( $pid ) : null;
 		return $p ? (string) $p->post_content : '';
 	}
-	$stored = get_option( lavtheme_cs_dl_key( $ctx, $slug, $type ), null );
+	$key    = lavtheme_cs_dl_key( $ctx, $slug, $type );
+	$stored = get_option( $key, null );
 	if ( null !== $stored && '' !== $stored ) {
 		return (string) $stored;
+	}
+	// Intentional clear (empty save) — honour it, don't fall back to the file.
+	if ( '' === $stored && '' !== get_option( $key . '_empty', '' ) ) {
+		return '';
+	}
+	$def = lavtheme_cs_dl_default_value( $ctx, $slug, $type );
+	if ( '' !== $def ) {
+		return $def;
 	}
 	if ( 'schema' === $slug && 'json' === $type ) {
 		return lavtheme_cs_dl_schema_default();
 	}
 	return '';
+}
+
+/**
+ * Run the editable Template (PHP/HTML) override for the current product, if any.
+ *
+ * Returns the buffered output when an override exists AND PHP sections are
+ * unlocked; otherwise '' so the loader includes the real body file. A runtime
+ * error is caught inside lavtheme_cs_run_php; if it yields no output we also
+ * fall back to the file (never blank the product page).
+ *
+ * @return string
+ */
+function lavtheme_cs_dl_template_body() {
+	if ( ! is_singular( 'download' ) || ! lavtheme_cs_php_allowed() ) {
+		return '';
+	}
+	$override = (string) get_option( lavtheme_cs_dl_key( 'dl-template', 'design', 'php' ), '' );
+	if ( '' === trim( $override ) ) {
+		return '';
+	}
+	$out = lavtheme_cs_run_php( $override );
+	return '' !== trim( $out ) ? $out : '';
 }
 
 /** Replace {{product_*}} tokens with the real product's data. */
@@ -276,12 +369,16 @@ function lavtheme_cs_dl_head() {
 			continue;
 		}
 		foreach ( $reg as $r ) {
-			if ( 'schema' === $r['slug'] ) {
+			if ( 'schema' === $r['slug'] || 'design' === $r['slug'] ) {
 				continue;
 			}
-			$c = (string) get_option( lavtheme_cs_dl_key( $ctx, $r['slug'], 'css' ), '' );
+			// Override-or-file (single source). Global CSS defaults to single-product.css.
+			$c = (string) lavtheme_cs_dl_get( $ctx, $r['slug'], 'css' );
 			if ( 'global' === $r['slug'] ) {
-				$c .= "\n" . (string) get_option( lavtheme_cs_dl_key( $ctx, 'global', 'bg' ), '' );
+				$bg = (string) lavtheme_cs_dl_get( $ctx, 'global', 'bg' );
+				if ( '' !== trim( $bg ) ) {
+					$c .= "\n" . $bg;
+				}
 			}
 			if ( '' !== trim( $c ) ) {
 				$css .= "\n" . lavtheme_cs_dl_fill_tokens( $c, $pid );
@@ -319,7 +416,11 @@ function lavtheme_cs_dl_footer() {
 			continue;
 		}
 		foreach ( $reg as $r ) {
-			$j = (string) get_option( lavtheme_cs_dl_key( $ctx, $r['slug'], 'js' ), '' );
+			if ( 'schema' === $r['slug'] || 'design' === $r['slug'] ) {
+				continue;
+			}
+			// Override-or-file (single source). Global JS defaults to single-product.js.
+			$j = (string) lavtheme_cs_dl_get( $ctx, $r['slug'], 'js' );
 			if ( '' !== trim( $j ) ) {
 				$js .= ';(function(){' . lavtheme_cs_dl_fill_tokens( $j, $pid ) . '})();';
 			}
@@ -330,6 +431,32 @@ function lavtheme_cs_dl_footer() {
 	}
 }
 add_action( 'wp_footer', 'lavtheme_cs_dl_footer', 101 );
+
+/**
+ * Syntax-check TEMPLATE-style PHP (mixed HTML + <?php islands, may start with
+ * <?php). Unlike lavtheme_cs_check_php() it does NOT prepend an opening tag, so
+ * code that already opens with <?php (the design body) validates correctly.
+ *
+ * @param string $code  Template code.
+ * @param string $error Filled with the parse error on failure.
+ * @return bool
+ */
+function lavtheme_cs_dl_check_template( $code, &$error ) {
+	$error = '';
+	if ( function_exists( 'token_get_all' ) && defined( 'TOKEN_PARSE' ) ) {
+		try {
+			token_get_all( (string) $code, TOKEN_PARSE );
+			return true;
+		} catch ( \ParseError $e ) {
+			$error = $e->getMessage() . ' (line ' . $e->getLine() . ')';
+			return false;
+		} catch ( \Throwable $e ) {
+			$error = $e->getMessage();
+			return false;
+		}
+	}
+	return true;
+}
 
 /* ================================= AJAX ================================== */
 
@@ -405,12 +532,24 @@ function lavtheme_cs_dl_ajax_save() {
 
 	if ( 'php' === $type ) {
 		$err = '';
-		if ( '' !== trim( $content ) && ! lavtheme_cs_check_php( $content, $err ) ) {
-			wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
+		if ( '' !== trim( $content ) ) {
+			// The "design" body is template-style (starts with <?php, has islands);
+			// other PHP tabs are pure PHP. Validate each with the right checker.
+			$ok = ( 'design' === $slug )
+				? lavtheme_cs_dl_check_template( $content, $err )
+				: lavtheme_cs_check_php( $content, $err );
+			if ( ! $ok ) {
+				wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
+			}
 		}
 		$key = lavtheme_cs_dl_key( $ctx, $slug, 'php' );
 		update_option( $key . '_bak', get_option( $key, '' ) );
 		update_option( $key, (string) $content );
+		if ( '' === trim( (string) $content ) ) {
+			update_option( $key . '_empty', '1' );
+		} else {
+			delete_option( $key . '_empty' );
+		}
 		wp_send_json_success( array( 'message' => lavtheme_cs_php_allowed() ? __( 'PHP saved and active.', 'lavtheme' ) : __( 'PHP saved, but NOT running — add define(\'LAVTHEME_ALLOW_PHP_SECTIONS\', true) to wp-config.php.', 'lavtheme' ) ) );
 	}
 
@@ -434,7 +573,17 @@ function lavtheme_cs_dl_ajax_save() {
 	} else {
 		$clean = (string) $content;
 	}
-	update_option( lavtheme_cs_dl_key( $ctx, $slug, $type ), $clean );
+	$key = lavtheme_cs_dl_key( $ctx, $slug, $type );
+	update_option( $key, $clean );
+	// Honour an intentional clear for css/js/bg (render injects nothing). HTML is
+	// exempt so an empty HTML save still falls back to the file.
+	if ( in_array( $type, array( 'css', 'bg', 'js' ), true ) ) {
+		if ( '' === trim( (string) $clean ) ) {
+			update_option( $key . '_empty', '1' );
+		} else {
+			delete_option( $key . '_empty' );
+		}
+	}
 	wp_send_json_success( array( 'message' => __( 'Saved.', 'lavtheme' ) ) );
 }
 add_action( 'wp_ajax_lavtheme_cs_dl_save', 'lavtheme_cs_dl_ajax_save' );

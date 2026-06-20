@@ -75,23 +75,11 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
-	// Single EDD product page styling.
-	if ( is_singular( 'download' ) ) {
-		wp_enqueue_style(
-			'lavtheme-single-product',
-			LAVTHEME_URI . 'assets/css/single-product.css',
-			array( 'lavtheme-main' ),
-			lavtheme_asset_ver( 'assets/css/single-product.css' )
-		);
-
-		wp_enqueue_script(
-			'lavtheme-single-product',
-			LAVTHEME_URI . 'assets/js/single-product.js',
-			array(),
-			lavtheme_asset_ver( 'assets/js/single-product.js' ),
-			true
-		);
-	}
+	// Single EDD product page CSS/JS are NOT enqueued here anymore: the Code
+	// Studio "Single Download (template)" context injects them (override-or-file)
+	// via lavtheme_cs_dl_head() / lavtheme_cs_dl_footer(), so the editors are the
+	// single source and edits apply live. The files in assets/css|js/single-product.*
+	// remain on disk as the editor defaults + fallback.
 
 	// NOTE: main.js is intentionally NOT enqueued here. The Theme Code Studio
 	// delivers it as the "Global JS" default via wp_footer (lavtheme_cs_footer_js),
