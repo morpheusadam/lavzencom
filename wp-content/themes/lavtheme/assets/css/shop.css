@@ -1,0 +1,377 @@
+/* lavtheme — Shop (EDD download archive + taxonomy archives).
+   Glassmorphism design built entirely on the theme :root tokens. Reuses the
+   front-page .lavp-card family (products.css is enqueued as a dependency) and
+   adds the filter sidebar, sort bar, badges and pagination. No hardcoded
+   colours/spacing — everything derives from Global tokens so it stays editable. */
+
+/* ---------- Layout ---------- */
+.lav-shop-wrap { gap: var(--s5); }
+
+.lav-shop-wrap .block-head { align-items: center; }
+
+.lav-shop__count { margin-top: var(--s3); }
+
+.lav-shop {
+	display: grid;
+	grid-template-columns: 280px minmax(0, 1fr);
+	gap: var(--s5);
+	align-items: start;
+}
+
+.lav-shop__main { min-width: 0; }
+
+/* ---------- Top bar (filters toggle + sort) ---------- */
+.lav-shop__bar {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	flex-wrap: wrap;
+}
+
+.lav-filters-toggle {
+	height: 44px;
+	padding: 0 var(--s4);
+	font-size: 14px;
+}
+
+.lav-sort {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s2);
+}
+
+.lav-sort__label {
+	font-size: 13px;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.lav-select {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 44px;
+	padding: 0 38px 0 var(--s4);
+	border-radius: var(--r-md);
+	border: 1px solid var(--stroke);
+	background: var(--glass-2);
+	color: var(--text);
+	font-family: var(--sans);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa3bd' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right var(--s4) center;
+	transition: border-color .18s var(--ease), background .18s var(--ease);
+}
+
+.lav-select:hover { border-color: rgba(124, 131, 255, .4); }
+.lav-select option { color: #111; }
+
+/* ---------- Filter sidebar ---------- */
+.lav-shop__filters {
+	position: sticky;
+	top: var(--s5);
+	padding: var(--s5);
+	align-self: start;
+}
+
+.lav-filters { display: flex; flex-direction: column; gap: var(--s5); }
+
+.lav-filters__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--s3);
+}
+
+.lav-filters__title {
+	font-family: var(--display);
+	font-weight: 700;
+	font-size: 20px;
+	letter-spacing: .5px;
+}
+
+.lav-filters__clear,
+.lav-fgroup__title { font-size: 13px; }
+
+.lav-filters__clear {
+	color: var(--accent);
+	font-weight: 600;
+	text-decoration: none;
+	transition: opacity .2s var(--ease);
+}
+.lav-filters__clear:hover { opacity: .7; }
+
+.lav-fgroup { display: flex; flex-direction: column; gap: var(--s3); }
+
+.lav-fgroup__title {
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+/* Search */
+.lav-search {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	height: 46px;
+	padding: 0 var(--s4);
+	border-radius: var(--r-md);
+	border: 1px solid var(--stroke);
+	background: var(--glass-1);
+	transition: border-color .18s var(--ease), background .18s var(--ease);
+}
+.lav-search:focus-within {
+	border-color: rgba(124, 131, 255, .5);
+	background: var(--glass-2);
+}
+.lav-search__icon { width: 17px; height: 17px; color: var(--muted); flex: 0 0 17px; }
+.lav-search input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	background: transparent;
+	color: var(--text);
+	font-family: var(--sans);
+	font-size: 14px;
+	outline: 0;
+}
+.lav-search input::placeholder { color: var(--muted); }
+
+/* Category checkboxes */
+.lav-checks { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+
+.lav-check {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: 9px 10px;
+	border-radius: var(--r-sm);
+	cursor: pointer;
+	transition: background .18s var(--ease);
+}
+.lav-check:hover { background: var(--glass-1); }
+.lav-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.lav-check__box {
+	flex: 0 0 18px;
+	width: 18px;
+	height: 18px;
+	border-radius: 6px;
+	border: 1px solid var(--stroke);
+	background: var(--glass-1);
+	display: grid;
+	place-items: center;
+	transition: .18s var(--ease);
+}
+.lav-check__box::after {
+	content: "";
+	width: 10px;
+	height: 10px;
+	border-radius: 3px;
+	transform: scale(0);
+	background: #fff;
+	transition: transform .18s var(--ease);
+}
+.lav-check input:checked + .lav-check__box {
+	background: linear-gradient(180deg, var(--accent), #8b5cf6);
+	border-color: transparent;
+}
+.lav-check input:checked + .lav-check__box::after { transform: scale(1); }
+.lav-check input:focus-visible + .lav-check__box { box-shadow: var(--focus); }
+
+.lav-check__label { flex: 1; font-size: 14px; color: var(--text-2); line-height: 1.3; }
+.lav-check__count {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--muted);
+	background: var(--glass-1);
+	border: 1px solid var(--stroke-soft);
+	border-radius: var(--r-pill);
+	padding: 2px 9px;
+}
+
+/* Price */
+.lav-price { display: flex; align-items: flex-end; gap: var(--s3); }
+.lav-price__field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.lav-price__field span { font-size: 12px; color: var(--muted); }
+.lav-price__field input {
+	height: 44px;
+	padding: 0 var(--s3);
+	border-radius: var(--r-sm);
+	border: 1px solid var(--stroke);
+	background: var(--glass-1);
+	color: var(--text);
+	font-family: var(--sans);
+	font-size: 14px;
+	outline: 0;
+	transition: border-color .18s var(--ease), background .18s var(--ease);
+}
+.lav-price__field input:focus {
+	border-color: rgba(124, 131, 255, .5);
+	background: var(--glass-2);
+}
+.lav-price__sep { padding-bottom: 12px; color: var(--muted); }
+
+.lav-filters__actions { display: flex; gap: var(--s3); }
+.lav-filters__actions .btn { flex: 1; height: 46px; padding: 0 var(--s4); }
+
+/* ---------- Product grid ---------- */
+.lav-shop__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: var(--s4);
+}
+
+/* The card itself reuses .lavp-card / .lavp-thumb / .lavp-body / .lavp-foot /
+   .lavp-price / .lavp-cat / .lavp-title from products.css. Shop-only bits: */
+.lav-shop__grid .lavp-card { position: relative; }
+.lav-shop__grid .lavp-thumb { display: block; }
+
+.lavp-title a {
+	color: inherit;
+	text-decoration: none;
+	transition: color .18s var(--ease);
+}
+.lavp-title a:hover { color: var(--accent); }
+
+.lavp-foot { padding-top: var(--s3); }
+
+/* Buy / view button inside a card */
+.lavp-buy {
+	height: 38px;
+	padding: 0 var(--s4);
+	font-size: 13px;
+	border-radius: var(--r-sm);
+	flex: 0 0 auto;
+	width: auto;
+}
+.lavp-buy.btn-primary:hover { transform: translateY(-2px); }
+
+/* Normalise EDD's purchase form so the button sits inline in the card foot. */
+.lavp-foot .edd_download_purchase_form,
+.lavp-foot .edd_purchase_submit_wrapper {
+	margin: 0;
+	padding: 0;
+	display: inline-flex;
+}
+.lavp-foot .edd_download_purchase_form { flex: 0 0 auto; }
+.lavp-foot .edd-cart-added-alert { display: none; }
+
+/* Badges */
+.lav-card__badge {
+	position: absolute;
+	top: var(--s3);
+	left: var(--s3);
+	z-index: 2;
+	padding: 5px 11px;
+	border-radius: var(--r-pill);
+	font-family: var(--sans);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .02em;
+	color: #fff;
+	box-shadow: var(--e1);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+.lav-card__badge.is-sale { background: linear-gradient(180deg, var(--accent), #8b5cf6); }
+.lav-card__badge.is-free { background: linear-gradient(180deg, var(--green), #65a30d); color: var(--ink); }
+.lav-card__badge.is-new  { background: linear-gradient(180deg, var(--accent-2), #0891b2); color: var(--ink); }
+
+/* ---------- Empty state ---------- */
+.lav-shop__empty {
+	padding: var(--s6);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--s3);
+}
+.lav-shop__empty svg { width: 44px; height: 44px; color: var(--muted); opacity: .6; }
+.lav-shop__empty h3 { font-family: var(--display); font-weight: 700; font-size: 22px; }
+.lav-shop__empty p { color: var(--muted); font-size: 14.5px; max-width: 360px; }
+.lav-shop__empty .btn { margin-top: var(--s2); }
+
+/* ---------- Pagination ---------- */
+.lav-shop__nav { margin-top: var(--s6); }
+.lav-shop__nav .nav-links {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: var(--s2);
+}
+.lav-shop__nav .page-numbers {
+	display: inline-grid;
+	place-items: center;
+	min-width: 44px;
+	height: 44px;
+	padding: 0 var(--s3);
+	border-radius: var(--r-sm);
+	border: 1px solid var(--stroke);
+	background: var(--glass-1);
+	color: var(--text-2);
+	font-weight: 600;
+	font-size: 14px;
+	text-decoration: none;
+	transition: .18s var(--ease);
+}
+.lav-shop__nav a.page-numbers:hover {
+	background: var(--glass-2);
+	border-color: rgba(124, 131, 255, .4);
+	transform: translateY(-2px);
+}
+.lav-shop__nav .page-numbers.current {
+	background: linear-gradient(180deg, var(--accent), #8b5cf6);
+	border-color: transparent;
+	color: #fff;
+}
+.lav-shop__nav .page-numbers.dots { background: transparent; border-color: transparent; }
+
+/* ---------- Mobile drawer for the filter sidebar ---------- */
+.lav-filters-toggle { display: none; }
+.lav-shop-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 199;
+	background: rgba(8, 6, 12, .6);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+@media (max-width: 1024px) {
+	.lav-shop { grid-template-columns: 1fr; }
+	.lav-filters-toggle { display: inline-flex; }
+
+	.lav-shop__filters {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: min(86vw, 360px);
+		max-height: 100dvh;
+		overflow-y: auto;
+		z-index: 200;
+		border-radius: 0 var(--r-xl) var(--r-xl) 0;
+		transform: translateX(-102%);
+		transition: transform .3s var(--ease);
+		-webkit-overflow-scrolling: touch;
+	}
+	.lav-shop__filters.is-open { transform: translateX(0); }
+}
+
+@media (min-width: 1025px) {
+	.lav-shop-overlay { display: none !important; }
+}
+
+@media (max-width: 560px) {
+	.lav-shop__grid { grid-template-columns: 1fr 1fr; }
+	.lav-shop__bar { width: 100%; justify-content: space-between; }
+}
+
+@media (max-width: 400px) {
+	.lav-shop__grid { grid-template-columns: 1fr; }
+}

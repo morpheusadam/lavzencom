@@ -1,0 +1,9 @@
+# FTP/SFTP credential scripts — contain plaintext passwords, never commit.
+ftp-upload.txt
+sftp-batch.txt
+sftp-commands.txt
+*.ftp.txt
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

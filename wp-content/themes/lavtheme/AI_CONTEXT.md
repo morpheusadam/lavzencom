@@ -79,6 +79,7 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
 | `inc/setup.php` | Theme supports, nav menus, image sizes. |
 | `inc/enqueue.php` | Built-in CSS: in inline mode (default) attaches `lavtheme_cs_builtin_base_css()` under a src-less `lavtheme-main` handle (composed from the split files); in rollback mode enqueues `assets/css/main.css`. `products.css` on front (depends on `lavtheme-main`). **`main.js` is delivered via JS injection, not enqueued.** |
 | `inc/edd.php` | EDD products grid + category bubbles (guarded). |
+| `inc/edd-shop.php` | **Shop** (download post-type archive + `download_category`/`download_tag` term archives). Filters the **real** main query via `pre_get_posts` (read-only GET params: `pq` keyword, `pcat[]` categories, `min`/`max` price, `orderby`), and builds the filter sidebar, sort control, product cards + badges. Templates: `archive-download.php`, `taxonomy-download_*.php`, shared layout in `template-parts/shop.php`. Theme-level only — **no `/edd/` template is overridden**. |
 | `inc/code-studio-registry.php` | Front-page section registry (`lavtheme_cs_registry`) + add/rename/delete/reorder/placement, Hello-World starter, icon presets. |
 | `inc/code-studio.php` | Admin menu, panel render, editor enqueue, helper accessors. |
 | `inc/code-studio-save.php` | Save / restore / backups / file-write + syntax check; most front AJAX. |
@@ -106,6 +107,17 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   namespaced registry (`lavtheme_cs_registry_page_<ID>`) with fixed Global, Schema,
   and **Page Content** (the real `post_content`, edited via `wp_update_post`) plus
   custom sections. Custom page sections render via a `the_content` filter.
+- **Shop archive** (`inc/edd-shop.php`). The download archive (`/products/` or the
+  download archive slug) and `download_category`/`download_tag` term archives render a
+  sidebar (search + category checkboxes + price range) beside a real EDD product grid.
+  Filters are plain GET params applied to the **main query** in `pre_get_posts` — they
+  work with JS off (it's a `<form method=get>`); JS only adds the mobile filter drawer.
+  Keyword search uses a custom `pq` param (not `s`) so WordPress keeps the archive
+  template instead of switching to `search.php`. The sort `<select>` in the top bar
+  references the sidebar form via the HTML5 `form` attribute, so one request carries
+  every filter + the sort. Cards reuse the front-page `.lavp-card` look (products.css
+  is enqueued as a dependency of `shop.css`); badges are data-driven (`-NN%` when a
+  `_lavtheme_compare_price` meta exceeds the price, else Free, else New ≤14 days).
 - **EDD download context** (`inc/code-studio-downloads.php`). The dropdown shows a
   single **"Single Download (template)"** option (`dl-template`, applies to **every**
   product via `is_singular('download')`). There is intentionally **no per-product

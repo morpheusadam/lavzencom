@@ -38,6 +38,8 @@ lavtheme_require( 'enqueue.php' );
 
 // Front-end data: Easy Digital Downloads products.
 lavtheme_require( 'edd.php' );
+lavtheme_require( 'edd-shop.php' );
+lavtheme_require( 'edd-single-product-hooks.php' );
 
 // Theme Code Studio: per-section code editing panel (DB + file modes).
 lavtheme_require( 'code-studio-registry.php' );

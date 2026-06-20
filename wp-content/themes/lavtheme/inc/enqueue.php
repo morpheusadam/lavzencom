@@ -51,6 +51,30 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
+	// Shop (EDD download archive + download taxonomy archives). Reuses the
+	// front-page card styles (products.css) and layers the shop layout on top.
+	if ( function_exists( 'lavtheme_is_shop' ) && lavtheme_is_shop() ) {
+		wp_enqueue_style(
+			'lavtheme-products',
+			LAVTHEME_URI . 'assets/css/products.css',
+			array( 'lavtheme-main' ),
+			lavtheme_asset_ver( 'assets/css/products.css' )
+		);
+		wp_enqueue_style(
+			'lavtheme-shop',
+			LAVTHEME_URI . 'assets/css/shop.css',
+			array( 'lavtheme-main', 'lavtheme-products' ),
+			lavtheme_asset_ver( 'assets/css/shop.css' )
+		);
+		wp_enqueue_script(
+			'lavtheme-shop',
+			LAVTHEME_URI . 'assets/js/shop.js',
+			array(),
+			lavtheme_asset_ver( 'assets/js/shop.js' ),
+			true
+		);
+	}
+
 	// Single EDD product page styling.
 	if ( is_singular( 'download' ) ) {
 		wp_enqueue_style(
