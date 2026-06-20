@@ -39,6 +39,7 @@ lavtheme_require( 'enqueue.php' );
 // Front-end data: Easy Digital Downloads products.
 lavtheme_require( 'edd.php' );
 lavtheme_require( 'edd-shop.php' );
+lavtheme_require( 'edd-shop-ui.php' );
 lavtheme_require( 'edd-single-product-hooks.php' );
 lavtheme_require( 'edd-product-meta.php' );
 
