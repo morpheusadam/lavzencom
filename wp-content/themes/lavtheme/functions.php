@@ -40,6 +40,7 @@ lavtheme_require( 'enqueue.php' );
 lavtheme_require( 'edd.php' );
 lavtheme_require( 'edd-shop.php' );
 lavtheme_require( 'edd-single-product-hooks.php' );
+lavtheme_require( 'edd-product-meta.php' );
 
 // Theme Code Studio: per-section code editing panel (DB + file modes).
 lavtheme_require( 'code-studio-registry.php' );
