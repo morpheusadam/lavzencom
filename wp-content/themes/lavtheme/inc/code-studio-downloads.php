@@ -29,6 +29,9 @@ function lavtheme_cs_dl_is_template( $ctx ) {
 
 /** Validate a dl context key. */
 function lavtheme_cs_dl_valid( $ctx ) {
+	if ( 'blog' === $ctx ) {
+		return true; // the blog always exists.
+	}
 	if ( 'shop' === $ctx ) {
 		// The shop (download archive) reuses the dl context plumbing.
 		return post_type_exists( 'download' );
@@ -74,8 +77,8 @@ function lavtheme_cs_dl_products() {
 /* ============================ registry & values =========================== */
 
 function lavtheme_cs_dl_builtin( $ctx ) {
-	if ( 'shop' === $ctx ) {
-		// Shop archive: Global (CSS/JS/Background) + the editable Template.
+	if ( 'shop' === $ctx || 'blog' === $ctx ) {
+		// Archive context: Global (CSS/JS/Background) + the editable Template.
 		return array(
 			array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
 			array( 'slug' => 'design', 'label' => 'Template (PHP/HTML)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
@@ -183,6 +186,18 @@ function lavtheme_cs_dl_default_path( $ctx, $slug, $type ) {
 		}
 		if ( 'design' === $slug && 'php' === $type ) {
 			return 'template-parts/shop.php';
+		}
+		return '';
+	}
+	if ( 'blog' === $ctx ) {
+		if ( 'global' === $slug && 'css' === $type ) {
+			return 'assets/css/blog.css';
+		}
+		if ( 'global' === $slug && 'js' === $type ) {
+			return 'assets/js/blog.js';
+		}
+		if ( 'design' === $slug && 'php' === $type ) {
+			return 'template-parts/blog.php';
 		}
 		return '';
 	}

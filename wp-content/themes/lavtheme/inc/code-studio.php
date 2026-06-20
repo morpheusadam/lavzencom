@@ -474,6 +474,9 @@ function lavtheme_cs_render_page() {
 						<option value="shop" data-view="<?php echo esc_url( function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : get_post_type_archive_link( 'download' ) ); ?>"><?php esc_html_e( 'Shop (archive)', 'lavtheme' ); ?></option>
 					</optgroup>
 				<?php endif; ?>
+				<optgroup label="<?php esc_attr_e( 'Blog', 'lavtheme' ); ?>">
+					<option value="blog" data-view="<?php echo esc_url( function_exists( 'lavtheme_blog_url' ) ? lavtheme_blog_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Blog (archive)', 'lavtheme' ); ?></option>
+				</optgroup>
 			</select>
 			<?php if ( function_exists( 'lavtheme_cs_edd' ) && lavtheme_cs_edd() ) : ?>
 				<span class="lavcs-badge edd"><?php esc_html_e( 'EDD detected', 'lavtheme' ); ?></span>

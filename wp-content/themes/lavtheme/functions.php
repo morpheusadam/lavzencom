@@ -57,6 +57,7 @@ lavtheme_require( 'code-studio-contexts.php' );
 lavtheme_require( 'code-studio-pages.php' );
 lavtheme_require( 'code-studio-downloads.php' );
 lavtheme_require( 'code-studio-shop.php' );
+lavtheme_require( 'code-studio-blog.php' );
 
 // Read-only: download a section's saved code (Global/Schema/section, all tabs).
 lavtheme_require( 'code-studio-export.php' );

@@ -197,8 +197,9 @@ function lavtheme_blog_pre_get_posts( $query ) {
 		$query->set( $k, $v );
 	}
 
-	// Exclude the featured post from the grid on the unfiltered index, page 1.
-	if ( $is_index && ! $query->get( 'paged' ) && ! lavtheme_blog_has_active_filters() ) {
+	// Exclude the featured post from the grid (all pages) when unfiltered, so it
+	// never repeats across the featured block + paginated grid.
+	if ( $is_index && ! lavtheme_blog_has_active_filters() ) {
 		$fid = lavtheme_blog_featured_id();
 		if ( $fid ) {
 			$query->set( 'post__not_in', array( $fid ) );
@@ -233,7 +234,7 @@ function lavtheme_blog_page_query() {
 		),
 		lavtheme_blog_filter_vars( true )
 	);
-	if ( $paged < 2 && ! lavtheme_blog_has_active_filters() ) {
+	if ( ! lavtheme_blog_has_active_filters() ) {
 		$fid = lavtheme_blog_featured_id();
 		if ( $fid ) {
 			$args['post__not_in'] = array( $fid );

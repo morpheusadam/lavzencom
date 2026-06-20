@@ -57,23 +57,9 @@ function lavtheme_enqueue_assets() {
 	// single source and edits apply live. assets/css|js/shop.* stay on disk as the
 	// editor defaults + fallback.
 
-	// Blog archive (posts index, category/tag/author/date archives, search, and
-	// the dedicated Blog page).
-	if ( function_exists( 'lavtheme_is_blog' ) && lavtheme_is_blog() ) {
-		wp_enqueue_style(
-			'lavtheme-blog',
-			LAVTHEME_URI . 'assets/css/blog.css',
-			array( 'lavtheme-main' ),
-			lavtheme_asset_ver( 'assets/css/blog.css' )
-		);
-		wp_enqueue_script(
-			'lavtheme-blog',
-			LAVTHEME_URI . 'assets/js/blog.js',
-			array(),
-			lavtheme_asset_ver( 'assets/js/blog.js' ),
-			true
-		);
-	}
+	// Blog archive CSS/JS are NOT enqueued here: the Code Studio "Blog (archive)"
+	// context injects them (override-or-file) via lavtheme_cs_blog_head/_footer
+	// (single source). assets/css|js/blog.* stay on disk as editor defaults.
 
 	// Single EDD product page CSS/JS are NOT enqueued here anymore: the Code
 	// Studio "Single Download (template)" context injects them (override-or-file)
