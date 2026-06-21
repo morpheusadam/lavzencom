@@ -1,0 +1,10 @@
+open 82.29.185.21
+u523965318.lavzen.com
+Aa183713&
+cd wp-content/themes/lavtheme/
+put "C:\Users\Morpheus\Documents\lavzencom\public_html\wp-content\themes\lavtheme\single-download.php" single-download.php
+put "C:\Users\Morpheus\Documents\lavzencom\public_html\wp-content\themes\lavtheme\inc\enqueue.php" inc/enqueue.php
+put "C:\Users\Morpheus\Documents\lavzencom\public_html\wp-content\themes\lavtheme\assets\css\single-product.css" assets/css/single-product.css
+put "C:\Users\Morpheus\Documents\lavzencom\public_html\wp-content\themes\lavtheme\assets\js\single-product.js" assets/js/single-product.js
+put "C:\Users\Morpheus\Documents\lavzencom\public_html\wp-content\themes\lavtheme\SINGLE-PRODUCT-GUIDE.md" SINGLE-PRODUCT-GUIDE.md
+bye

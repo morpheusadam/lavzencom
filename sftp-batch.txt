@@ -1,0 +1,11 @@
+open 82.29.185.21 22
+u523965318.lavzen.com
+Aa183713&
+cd public_html/wp-content/themes/lavtheme/
+put single-download.php
+put inc\enqueue.php inc/enqueue.php
+put assets\css\single-product.css assets/css/single-product.css
+put assets\js\single-product.js assets/js/single-product.js
+put SINGLE-PRODUCT-GUIDE.md
+ls -la
+bye

@@ -1,0 +1,7 @@
+open 82.29.185.21
+u523965318.lavzen.com
+Aa183713&
+cd public_html/wp-content/themes/lavtheme/
+put single-download.php
+put SINGLE-PRODUCT-GUIDE.md
+bye
