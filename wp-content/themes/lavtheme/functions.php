@@ -61,3 +61,6 @@ lavtheme_require( 'code-studio-blog.php' );
 
 // Read-only: download a section's saved code (Global/Schema/section, all tabs).
 lavtheme_require( 'code-studio-export.php' );
+
+// Standalone admin tool: Backlink Spam Checker (SSE + polling fallback).
+lavtheme_require( 'backlink-checker.php' );
