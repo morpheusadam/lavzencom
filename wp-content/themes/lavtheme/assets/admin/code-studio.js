@@ -571,6 +571,18 @@
 			loadCtx();
 		} );
 
+		// Deep-link: ?cs_context=<ctx> auto-selects that editing context on load
+		// (used by the WP Dash menu to jump straight into the dashboard code).
+		( function () {
+			var m = /[?&]cs_context=([^&]+)/.exec( window.location.search );
+			if ( ! m ) { return; }
+			var ctx = decodeURIComponent( m[ 1 ] );
+			var $sel = $( '#lavcs-context' );
+			if ( $sel.find( 'option[value="' + ctx + '"]' ).length ) {
+				$sel.val( ctx ).trigger( 'change' );
+			}
+		}() );
+
 		// Page nav switching.
 		$( document ).on( 'click', '.lavcs-pnavitem', function () {
 			var slug = $( this ).data( 'slug' );

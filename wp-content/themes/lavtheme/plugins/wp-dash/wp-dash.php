@@ -10,13 +10,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
-lavtheme_plugins_register_menu(
-	array(
-		'slug'     => 'lavtheme-wp-dash',
-		'title'    => __( 'WP Dash', 'lavtheme' ),
-		'callback' => 'lavtheme_wp_dash_render',
-		'position' => 22,
-	)
+// WP Dash menu → open the Code Studio code editor focused on the "wp-dash"
+// context (HTML/CSS/JS/PHP for the dashboard), instead of rendering a page.
+add_action(
+	'admin_menu',
+	function () {
+		add_submenu_page(
+			lavtheme_plugins_parent_slug(),
+			__( 'WP Dash', 'lavtheme' ),
+			__( 'WP Dash', 'lavtheme' ),
+			lavtheme_plugins_cap(),
+			'admin.php?page=' . lavtheme_plugins_parent_slug() . '&cs_context=wp-dash'
+		);
+	},
+	22
 );
 
 /** True on the WP Dash admin screen. */

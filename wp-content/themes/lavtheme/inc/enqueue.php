@@ -72,14 +72,23 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
-	// Front-page EDD products grid styling (kept out of main.css).
+	// Front-page EDD products grid styling. It is tiny (~1.3 KB), so inline it
+	// onto the main handle instead of shipping a separate render-blocking request
+	// — removes one hop from the homepage critical request chain. Falls back to a
+	// normal enqueue if the file can't be read.
 	if ( is_front_page() ) {
-		wp_enqueue_style(
-			'lavtheme-products',
-			LAVTHEME_URI . 'assets/css/products.css',
-			array( 'lavtheme-main' ),
-			lavtheme_asset_ver( 'assets/css/products.css' )
-		);
+		$lavtheme_products_file = LAVTHEME_DIR . 'assets/css/products.css';
+		$lavtheme_products_css  = is_readable( $lavtheme_products_file ) ? file_get_contents( $lavtheme_products_file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( '' !== $lavtheme_products_css ) {
+			wp_add_inline_style( 'lavtheme-main', $lavtheme_products_css );
+		} else {
+			wp_enqueue_style(
+				'lavtheme-products',
+				LAVTHEME_URI . 'assets/css/products.css',
+				array( 'lavtheme-main' ),
+				lavtheme_asset_ver( 'assets/css/products.css' )
+			);
+		}
 	}
 
 	// EDD purchase-flow styling (checkout, cart, receipt, purchase history,

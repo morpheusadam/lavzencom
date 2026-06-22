@@ -199,6 +199,29 @@ function lavtheme_perf_trim_edd_css_frontpage() {
 }
 add_action( 'wp_enqueue_scripts', 'lavtheme_perf_trim_edd_css_frontpage', 100 );
 
+/**
+ * Drop jQuery + jQuery Migrate + EDD's scripts from the FRONT PAGE only. The
+ * homepage's own JS (assets/js/main.js) is vanilla and there is no EDD cart UI
+ * on it, so these ~34 KiB are pure critical-path weight here. Cart, checkout and
+ * single-download pages are untouched, so EDD keeps working everywhere it counts.
+ * Scoped to is_front_page() and only when EDD did not actually output a cart.
+ */
+function lavtheme_perf_trim_frontpage_js() {
+	if ( ! is_front_page() || is_admin() ) {
+		return;
+	}
+	/** Escape hatch in case a future homepage feature needs jQuery. */
+	if ( ! apply_filters( 'lavtheme_perf_strip_frontpage_jquery', true ) ) {
+		return;
+	}
+	$handles = array( 'jquery', 'jquery-core', 'jquery-migrate', 'edd-ajax', 'edd-checkout-global', 'edd-ajax-cart' );
+	foreach ( $handles as $handle ) {
+		wp_dequeue_script( $handle );
+		wp_deregister_script( $handle );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'lavtheme_perf_trim_frontpage_js', 100 );
+
 /* -------------------------------------------------------------------------
  * Automatic, LCP-safe lazy-loading for EVERY front-end image.
  *
