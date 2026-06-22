@@ -26,6 +26,26 @@ add_action(
 	22
 );
 
+/**
+ * Keep the "WP Dash" submenu highlighted while its editor is open — without it,
+ * WordPress falls back to highlighting the parent's first item (Code Studio),
+ * which looks like the menu "jumped". Highlight only; no behaviour change.
+ *
+ * @param string $submenu_file Current highlighted submenu slug.
+ * @return string
+ */
+function lavtheme_wp_dash_highlight_menu( $submenu_file ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_GET['page'], $_GET['cs_context'] )
+		&& lavtheme_plugins_parent_slug() === $_GET['page']
+		&& 'wp-dash' === $_GET['cs_context'] ) {
+		return 'admin.php?page=' . lavtheme_plugins_parent_slug() . '&cs_context=wp-dash';
+	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
+	return $submenu_file;
+}
+add_filter( 'submenu_file', 'lavtheme_wp_dash_highlight_menu' );
+
 /** True on the WP Dash admin screen. */
 function lavtheme_wp_dash_is_screen() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
