@@ -1,6 +1,9 @@
 # AI_CONTEXT.md — lavtheme
 
 A compact orientation guide. Read this first, then open the relevant `inc/` file.
+Part of the **[Ai-Help](README.md)** doc set; deep Code Studio internals live in
+**[AI_CONTEXT2.md](AI_CONTEXT2.md)**, the "request → file" router in
+**[AI_MAP.md](AI_MAP.md)**, deployment in **[DEPLOY.md](DEPLOY.md)**.
 
 ## Contents
 1. [Overview](#1-overview)
@@ -93,6 +96,10 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
 | `inc/code-studio-contexts.php` | Deprecated; now only `lavtheme_cs_edd()/woo()` detection badges. |
 | `inc/code-studio-export.php` | **Export/Import (JSON).** AJAX `lavtheme_cs_export` (GET) streams a front section's **saved** content as a versioned JSON file (`lavtheme-front-page-<slug>-<date>.json`): `{lavtheme_export, format_version, theme, theme_version, exported_at, context, section:{slug,label}, tabs:{<key>:<code>}}`. **Dynamic by design** — the `tabs` map is built by iterating `lavtheme_cs_fields()` (the same source the UI builds tabs from), so any future tab is included with no code change; keys are the internal keys (`html` markup ≠ `php` custom, kept separate). **Import** is client-side in `code-studio.js`: validates `lavtheme_export`/`format_version`, maps file tabs onto the destination's real tabs (read from the panel DOM), skips unknown tabs with a warning, previews into the editors, confirms, then persists each tab via the existing `lavtheme_cs_save` endpoint — so the PHP-syntax check, `LAVTHEME_ALLOW_PHP_SECTIONS` lock, sanitisation and `_prev` backup all still apply (never bypassed). Export warns on unsaved edits. Constant `LAVTHEME_CS_EXPORT_FORMAT` = format version. |
 | `inc/backlink-checker.php` | **Standalone admin tool** (Tools → *Backlink Spam Checker*) — fully self-contained, **no front-end hooks**, unique `lavtheme_blc_` prefix, CSS/JS inlined in the page (no cacheable static asset). Live line-by-line results via **SSE** (`admin-ajax` `text/event-stream`, buffering/gzip disabled + `X-Accel-Buffering:no` + 2KB padding) with an **auto AJAX-polling fallback** when the host (hcdn/LiteSpeed) buffers the stream — the client watches for events ≤6s and switches mid-run. 3 endpoints: `lavtheme_blc_start` (POST: sanitise+dedupe list → transient job token), `lavtheme_blc_stream` (GET EventSource: one `result` event/domain + `done` summary), `lavtheme_blc_batch` (POST: one slice → JSON). Checker = TLD/keyword/hyphen/digit/long-label/anchor heuristics + `wp_remote_head`→`get` reachability (5s timeout, `set_time_limit` reset per item so the job never locks). Labels Clean/Suspicious/Spam; client-side Google **disavow** export (`domain:host`). |
+| `inc/code-studio-single.php` | **Single Post Code Studio context** — injects single.css/single.js + the `single-article.php` template (override-or-file), like Shop. |
+| `inc/code-studio-404.php` | **404 Code Studio context** — the error page as an editable dl-style context. |
+| `inc/code-studio-account.php` | **My Account context** — seeds the "My Account" page, routes it via `template_include`, renders `template-parts/account.php` (override-or-file), injects account.css/js. The dashboard (Dashboard/Orders/Downloads/Profile) is wired to EDD's own shortcodes for reliable data. Popover links in `inc/menus.php` point here. |
+| `assets/css/checkout.css` | **EDD purchase-flow styling** (checkout/cart/receipt/purchase-history/confirmation/failed). Enqueued only on EDD pages via `lavtheme_is_edd_flow()` in `inc/enqueue.php`. |
 | `front-page.php` | Loops front content sections (placement-aware, pixel-safe). |
 | `header.php` / `footer.php` | Open/close the `.app`/`.main` shell; render sidebar/header/footer sections. |
 | `assets/admin/code-studio.{js,css}` | Panel logic (CodeMirror, tabs, sortable, AJAX) + styling. |
@@ -184,8 +191,9 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   wp-config.php re-enqueues `main.css` exactly as before (file is still on disk).
 - **Hostinger `hcdn` cache.** After any change, purge the cache (or hard-refresh /
   cache-bust with `?cb=…`) — otherwise changes look like they didn't apply.
-- **Lint with `token_get_all( $code, TOKEN_PARSE )`**, not `php -l` — `shell_exec`
-  is disabled on this host. (Brace-balance is NOT a syntax check.)
+- **Lint every PHP change.** `php -l` now works **locally** (PHP 8.3 CLI is
+  installed). On the **host** `shell_exec` is disabled, so Code Studio lints with
+  `token_get_all( $code, TOKEN_PARSE )`. (Brace-balance is NOT a syntax check.)
 - **Per-page schema/CSS/JS are namespaced** (`lavtheme_cs_page_<ID>_…`); injection
   reads the current page's keys and only falls back to the site default when a
   page key is empty. If "my edit shows the default", the page key wasn't saved —
@@ -193,8 +201,15 @@ CSS in `wp_head`, JS in `wp_footer`, and section markup into the page.
   initialised before reading, so its value can't be read as empty.)
 - **Page sections render in registry order** (not placement buckets); Page Content
   is a draggable list item that anchors before/after.
-- **Real testing is host-only.** No PHP/MySQL CLI locally; verify via a temporary
-  token-protected endpoint, then delete it.
+- **Full runtime testing is host-only.** `php -l` lints locally, but there is no
+  local DB/WP runtime; verify behaviour via a temporary token-protected endpoint on
+  the host, then delete it.
+- **Design tokens / CTA colour.** Brand yellow `--cta:#f5c518` (+ `--cta-ink`) is
+  the **primary-CTA colour only** (buy/checkout/subscribe); indigo `--accent`
+  `#7c83ff` is secondary/selected; `--gold` `#e8c547` is stars/PRO; `--accent-3`
+  `#8b5cf6` is the violet gradient partner; `--danger`/`--success`/`--menu-bg` are
+  semantic. Don't hardcode hex in components — use the tokens defined in
+  `assets/css/sections/global.root.css`.
 - **Elementor canvas pages bypass `the_content`** — custom page sections won't show
   there (CSS/JS/Schema/Page-Content still do).
 - **Never override a plugin's internal templates** (no `/edd/` overrides) — restyle

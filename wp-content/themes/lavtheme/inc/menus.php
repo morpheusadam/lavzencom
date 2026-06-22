@@ -166,7 +166,7 @@ function lavtheme_account_popover() {
 		<?php
 	} else {
 		$login = lavtheme_edd_page_url( 'login' );
-		$login = $login ? $login : wp_login_url();
+		$login = ( function_exists( 'lavtheme_login_url' ) && lavtheme_auth_page_id() ) ? lavtheme_login_url() : ( $login ? $login : wp_login_url() );
 		?>
 		<div class="acct-head">
 			<span class="acct-av"><?php echo $icons['user']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
@@ -178,7 +178,7 @@ function lavtheme_account_popover() {
 		<div class="acct-sep"></div>
 		<a class="acct-item" href="<?php echo esc_url( $login ); ?>" role="menuitem"><?php echo $icons['in']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Log in', 'lavtheme' ); ?></a>
 		<?php if ( get_option( 'users_can_register' ) ) : ?>
-			<a class="acct-item" href="<?php echo esc_url( wp_registration_url() ); ?>" role="menuitem"><?php echo $icons['user']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Create account', 'lavtheme' ); ?></a>
+			<a class="acct-item" href="<?php echo esc_url( ( function_exists( 'lavtheme_login_url' ) && lavtheme_auth_page_id() ) ? lavtheme_login_url( 'register' ) : wp_registration_url() ); ?>" role="menuitem"><?php echo $icons['user']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Create account', 'lavtheme' ); ?></a>
 		<?php endif; ?>
 		<?php if ( $history ) : ?>
 			<a class="acct-item" href="<?php echo esc_url( $history ); ?>" role="menuitem"><?php echo $icons['orders']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Order history', 'lavtheme' ); ?></a>

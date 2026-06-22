@@ -1,5 +1,29 @@
 # Single EDD Product Page — Professional Implementation
 
+> Part of the **[Ai-Help](README.md)** doc set. **[AI_MAP.md](AI_MAP.md)** ·
+> **[AI_CONTEXT.md](AI_CONTEXT.md)** · **[AI_CONTEXT2.md](AI_CONTEXT2.md)**
+
+> ### ✅ Current implementation (read this first)
+> The single product page is the **`dl-template` Code Studio context** — editable
+> in **Code Studio → Single Download (template)** (HTML/PHP · CSS · JS · Mobile ·
+> Schema). The real files behind it:
+> - **Body / layout:** `template-parts/single-download-body.php`
+> - **Loader:** `single-download.php` (runs the Code Studio Template override if
+>   present, else includes the body file)
+> - **Style / script:** `assets/css/single-product.css` · `assets/js/single-product.js`
+> - **Supplementary hooks & meta:** `inc/edd-single-product-hooks.php` ·
+>   `inc/edd-product-meta.php`
+>
+> Recent design pass (2026): the **Buy button is brand-yellow `--cta`** (was indigo,
+> which failed contrast); the **tabs are full WAI-ARIA** (roles + roving arrow-key
+> nav); the gallery has real `alt` text. See [AI_CONTEXT.md](AI_CONTEXT.md)
+> §"Design tokens".
+>
+> The hook/filter reference below is the **extensibility layer** — accurate for
+> customising via a child theme or filters. (Note: `inc/edd-single-product-hooks.php`
+> contains an older unused `.related-card` block; the live related list is the
+> `.hot-card` markup in the body template.)
+
 A professional, advanced single product page template for Easy Digital Downloads with modern WordPress patterns, security best practices, and premium features.
 
 ## 🎯 Overview
@@ -358,7 +382,8 @@ apply_filters( 'lavtheme_product_data', $data, $id );
 
 ---
 
-**Version**: 2.0.0 (Advanced WordPress Hooks Edition)  
-**Last Updated**: 2026-06-19  
+**Version**: 2.1.0 (reconciled with the `dl-template` Code Studio context + 2026 design pass)  
+**Last Updated**: 2026-06-22  
 **Theme**: lavtheme  
-**Dependencies**: Easy Digital Downloads (optional)
+**Dependencies**: Easy Digital Downloads (optional)  
+**See also**: [README.md](README.md) · [AI_MAP.md](AI_MAP.md) · [DEPLOY.md](DEPLOY.md)

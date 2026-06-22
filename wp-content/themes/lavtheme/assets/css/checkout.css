@@ -14,9 +14,57 @@
 .edd-blocks-cart,
 .wp-block-edd-checkout { color-scheme: dark; }
 
-/* ---------- layout ---------- */
-#edd_checkout_wrap { display: flex; flex-direction: column; gap: var(--s5); }
+/* ---------- layout (centred, focused single column) ---------- */
+#edd_checkout_wrap { display: flex; flex-direction: column; gap: var(--s5); max-width: 860px; margin: 0 auto; }
 #edd_checkout_cart_wrap, #edd_checkout_form_wrap { min-width: 0; }
+#edd_checkout_form_wrap { display: flex; flex-direction: column; gap: var(--s5); }
+
+/* ---------- checkout header + steps (lavtheme) ---------- */
+.lav-co-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 6px; }
+.lav-co-titles { display: flex; flex-direction: column; gap: 6px; }
+.lav-co-h1 { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 3vw, 34px); letter-spacing: .3px; color: #fff; margin: 0; padding: 0; }
+.lav-co-secure { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--green, #a3e635); }
+.lav-co-lock { width: 14px; height: 14px; background-color: var(--green, #a3e635); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center/contain no-repeat; }
+.lav-co-steps { display: flex; align-items: center; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.lav-co-steps li { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.lav-co-steps li + li::before { content: ""; width: 22px; height: 1px; background: var(--stroke-soft); margin-right: 2px; }
+.lav-co-steps li span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; background: var(--glass-1); border: 1px solid var(--stroke-soft); color: var(--muted); }
+.lav-co-steps li.active { color: #fff; }
+.lav-co-steps li.active span { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; box-shadow: 0 6px 16px rgba(124,131,255,.4); }
+.lav-co-steps li.done span { background: rgba(163,230,53,.16); border-color: rgba(163,230,53,.5); color: var(--green, #a3e635); }
+
+/* ---------- trust badges (lavtheme) ---------- */
+.lav-co-trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: var(--s4); }
+.lav-co-badge { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--r-md); background: var(--glass-1); border: 1px solid var(--stroke-soft); }
+.lav-co-bico { flex: 0 0 22px; width: 22px; height: 22px; background-color: var(--accent); }
+.lav-co-bico.bolt { background-color: var(--gold, #e8c547); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M13 2 3 14h7l-1 8 10-12h-7z'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M13 2 3 14h7l-1 8 10-12h-7z'/%3E%3C/svg%3E") center/contain no-repeat; }
+.lav-co-bico.shield { background-color: var(--accent-2, #22d3ee); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E") center/contain no-repeat; }
+.lav-co-bico.refund { background-color: var(--green, #a3e635); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E") center/contain no-repeat; }
+.lav-co-btext { display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+.lav-co-btext b { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.lav-co-btext i { font-size: 11.5px; font-style: normal; color: var(--muted); }
+
+/* ---------- empty cart state (lavtheme) ---------- */
+.lav-empty-cart { text-align: center; max-width: 680px; margin: 10px auto; padding: clamp(32px, 5vw, 56px) 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; border-radius: var(--r-lg); background: var(--glass-1); border: 1px solid var(--stroke-soft); }
+.lav-ec-ico { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 35%, rgba(124,131,255,.28), rgba(124,131,255,.06)); border: 1px solid rgba(124,131,255,.35); position: relative; }
+.lav-ec-ico::after { content: ""; position: absolute; width: 40px; height: 40px; background-color: var(--accent); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6'/%3E%3C/svg%3E") center/contain no-repeat; }
+.lav-ec-title { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3vw, 30px); color: #fff; margin: 0; padding: 0; }
+.lav-ec-text { color: var(--text-3); font-size: 15px; line-height: 1.6; max-width: 46ch; margin: 0; }
+.lav-ec-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 6px; }
+.lav-ec-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border-radius: var(--r-md); font-weight: 700; font-size: 14.5px; text-decoration: none; transition: transform .16s var(--ease), box-shadow .16s var(--ease), background .16s var(--ease); }
+.lav-ec-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 12px 28px rgba(124,131,255,.35); }
+.lav-ec-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 18px 36px rgba(124,131,255,.45); }
+.lav-ec-btn.ghost { background: var(--glass-1); border: 1px solid var(--stroke); color: var(--text-2); }
+.lav-ec-btn.ghost:hover { background: var(--glass-2); color: #fff; transform: translateY(-2px); }
+.lav-ec-pop { width: 100%; margin-top: 18px; padding-top: 22px; border-top: 1px solid var(--stroke-soft); }
+.lav-ec-pop-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.lav-ec-pop-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.lav-ec-prod { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--r-md); background: var(--glass-1); border: 1px solid var(--stroke-soft); text-decoration: none; transition: transform .16s var(--ease), border-color .16s var(--ease); }
+.lav-ec-prod:hover { transform: translateY(-3px); border-color: rgba(124,131,255,.45); }
+.lav-ec-prod-thumb { aspect-ratio: 16/10; border-radius: var(--r-sm); overflow: hidden; background: var(--glass-2); }
+.lav-ec-prod-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.lav-ec-prod-name { font-size: 13px; font-weight: 600; color: var(--text-2); line-height: 1.35; }
+.lav-ec-prod-price { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--accent); }
 
 /* ---------- cart / order summary tables ---------- */
 #edd_checkout_cart,
@@ -224,4 +272,10 @@ input[type="submit"].edd-submit,
 	#edd_checkout_form_wrap select,
 	#edd_checkout_form_wrap textarea { font-size: 16px; } /* avoid iOS zoom */
 	#edd_purchase_button, .edd-submit { width: 100%; }
+	.lav-co-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+	.lav-co-steps { width: 100%; justify-content: space-between; }
+	.lav-co-trust { grid-template-columns: 1fr; }
+	.lav-ec-pop-row { grid-template-columns: 1fr; }
+	.lav-ec-actions { flex-direction: column; width: 100%; }
+	.lav-ec-btn { width: 100%; }
 }

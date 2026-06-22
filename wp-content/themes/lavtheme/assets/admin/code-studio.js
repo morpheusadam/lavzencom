@@ -432,7 +432,7 @@
 		}
 		// Dispatch page vs download AJAX based on the current context. The shop
 		// (download archive) reuses the download (dl) AJAX handlers + context param.
-		function ctxIsDl() { return currentCtx.indexOf( 'dl-' ) === 0 || currentCtx === 'shop' || currentCtx === 'blog' || currentCtx === '404' || currentCtx === 'single' || currentCtx === 'account'; }
+		function ctxIsDl() { return currentCtx.indexOf( 'dl-' ) === 0 || currentCtx === 'shop' || currentCtx === 'blog' || currentCtx === '404' || currentCtx === 'single' || currentCtx === 'account' || currentCtx === 'auth' || currentCtx === 'wp-dash'; }
 		function ctxPost( name, extra ) {
 			var d = { action: ( ctxIsDl() ? 'lavtheme_cs_dl_' : 'lavtheme_cs_page_' ) + name, nonce: LavthemeCS.nonce };
 			if ( ctxIsDl() ) { d.context = currentCtx; } else { d.page_id = currentPage; }

@@ -76,6 +76,12 @@ class Lav_CS_Source_Reader {
 		if ( 'account' === $ctx ) {
 			return 'template-parts/account.php';
 		}
+		if ( 'auth' === $ctx ) {
+			return 'template-parts/auth.php';
+		}
+		if ( 'wp-dash' === $ctx ) {
+			return 'plugins/wp-dash/template.php';
+		}
 		if ( 'dl-template' === $ctx || 0 === strpos( (string) $ctx, 'dl-' ) ) {
 			return 'template-parts/single-download-body.php';
 		}
@@ -138,6 +144,8 @@ class Lav_CS_Source_Reader {
 			'404'         => array( 'css' => 'assets/css/404.css', 'js' => 'assets/js/404.js' ),
 			'dl-template' => array( 'css' => 'assets/css/single-product.css', 'js' => 'assets/js/single-product.js' ),
 			'account'     => array( 'css' => 'assets/css/account.css', 'js' => 'assets/js/account.js' ),
+			'auth'        => array( 'css' => 'assets/css/auth.css', 'js' => 'assets/js/auth.js' ),
+			'wp-dash'     => array( 'css' => 'plugins/wp-dash/assets/dash-skin.css', 'js' => 'plugins/wp-dash/assets/dash-skin.js' ),
 		);
 
 		if ( 'html' === $tab ) {

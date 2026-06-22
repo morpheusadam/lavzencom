@@ -475,6 +475,7 @@ function lavtheme_cs_render_page() {
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'Account', 'lavtheme' ); ?>">
 						<option value="account" data-view="<?php echo esc_url( function_exists( 'lavtheme_account_url' ) ? lavtheme_account_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'My Account (dashboard)', 'lavtheme' ); ?></option>
+						<option value="auth" data-view="<?php echo esc_url( function_exists( 'lavtheme_login_url' ) ? lavtheme_login_url() : wp_login_url() ); ?>"><?php esc_html_e( 'Login / Register', 'lavtheme' ); ?></option>
 					</optgroup>
 				<?php endif; ?>
 				<optgroup label="<?php esc_attr_e( 'Blog', 'lavtheme' ); ?>">
@@ -491,6 +492,9 @@ function lavtheme_cs_render_page() {
 				<optgroup label="<?php esc_attr_e( 'Error pages', 'lavtheme' ); ?>">
 					<option value="404" data-view="<?php echo esc_url( home_url( '/404-page-not-found-preview/' ) ); ?>"><?php esc_html_e( '404 / Error page', 'lavtheme' ); ?></option>
 				</optgroup>
+					<optgroup label="<?php esc_attr_e( 'Admin', 'lavtheme' ); ?>">
+						<option value="wp-dash" data-view="<?php echo esc_url( admin_url( 'index.php' ) ); ?>"><?php esc_html_e( 'WP Dash (dashboard)', 'lavtheme' ); ?></option>
+					</optgroup>
 			</select>
 			<?php if ( function_exists( 'lavtheme_cs_edd' ) && lavtheme_cs_edd() ) : ?>
 				<span class="lavcs-badge edd"><?php esc_html_e( 'EDD detected', 'lavtheme' ); ?></span>

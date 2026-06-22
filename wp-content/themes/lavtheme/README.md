@@ -32,7 +32,6 @@ folder in and it loads (no `functions.php` edit). Each registers a submenu under
 | `wp-dash` | **WP Dash** | ✅ Animated analytics dashboard (live counts + SVG charts + pixel heatmap) |
 | `caching` | **Caching** | 🚧 stub |
 | `security` | **Security** | 🚧 stub |
-| `user-dashboard` | **User Dashboard** | 🚧 stub |
 | `shorts` | **Shorts** | 🚧 stub |
 
 **WP Dash** renders professional, library-free charts (pure SVG + CSS): count-up

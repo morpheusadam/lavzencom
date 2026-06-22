@@ -44,6 +44,7 @@ lavtheme_require( 'edd.php' );
 lavtheme_require( 'edd-shop.php' );
 lavtheme_require( 'edd-shop-ui.php' );
 lavtheme_require( 'edd-single-product-hooks.php' );
+lavtheme_require( 'edd-checkout.php' );
 
 // Blog archive (real posts + filters).
 lavtheme_require( 'blog.php' );
@@ -65,6 +66,7 @@ lavtheme_require( 'code-studio-blog.php' );
 lavtheme_require( 'code-studio-single.php' );
 lavtheme_require( 'code-studio-404.php' );
 lavtheme_require( 'code-studio-account.php' );
+lavtheme_require( 'code-studio-auth.php' );
 
 // Read-only: download a section's saved code (Global/Schema/section, all tabs).
 lavtheme_require( 'code-studio-export.php' );

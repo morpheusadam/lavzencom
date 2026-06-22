@@ -138,3 +138,139 @@ function lavtheme_perf_security_headers() {
 	}
 }
 add_action( 'send_headers', 'lavtheme_perf_security_headers' );
+
+/* -------------------------------------------------------------------------
+ * Critical-path trimming — the theme's own JS (assets/js/main.js) is vanilla
+ * and has ZERO jQuery dependency, so jQuery only ships for Easy Digital
+ * Downloads. Pushing jQuery + EDD's progressive scripts to the footer removes
+ * them from the render-blocking head, improving FCP/LCP. WordPress preserves
+ * dependency order, so EDD (which depends on jquery) still loads correctly.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Move jQuery (and EDD's frontend scripts) out of the render-blocking head.
+ */
+function lavtheme_perf_scripts_to_footer() {
+	if ( is_admin() ) {
+		return;
+	}
+	$scripts = wp_scripts();
+	$to_foot = (array) apply_filters(
+		'lavtheme_perf_footer_handles',
+		array( 'jquery', 'jquery-core', 'jquery-migrate', 'edd-ajax', 'edd-checkout-global' )
+	);
+	foreach ( $to_foot as $handle ) {
+		if ( isset( $scripts->registered[ $handle ] ) ) {
+			$scripts->add_data( $handle, 'group', 1 ); // group 1 = footer.
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'lavtheme_perf_scripts_to_footer', 100 );
+
+/**
+ * Defer EDD's footer scripts so they never block interactivity. Composes with
+ * the existing lavtheme_perf_defer_scripts() filter list.
+ *
+ * @param array $handles Handles to defer.
+ * @return array
+ */
+function lavtheme_perf_defer_edd( $handles ) {
+	return array_merge( (array) $handles, array( 'edd-ajax', 'edd-checkout-global' ) );
+}
+add_filter( 'lavtheme_perf_defer_handles', 'lavtheme_perf_defer_edd' );
+
+/**
+ * Drop Easy Digital Downloads' render-blocking CSS on the front page. The
+ * homepage product cards are styled by the theme (lavc and lavp classes via
+ * products.css), not by EDD's stylesheet, so its CSS is dead render-blocking
+ * weight here. EDD pages (cart, checkout, single download) keep their styles.
+ */
+function lavtheme_perf_trim_edd_css_frontpage() {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$styles = wp_styles();
+	foreach ( (array) $styles->queue as $handle ) {
+		$src = isset( $styles->registered[ $handle ] ) ? (string) $styles->registered[ $handle ]->src : '';
+		if ( '' !== $src && ( false !== strpos( $src, 'easy-digital-downloads' ) || false !== strpos( $src, '/edd' ) ) ) {
+			wp_dequeue_style( $handle );
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'lavtheme_perf_trim_edd_css_frontpage', 100 );
+
+/* -------------------------------------------------------------------------
+ * Automatic, LCP-safe lazy-loading for EVERY front-end image.
+ *
+ * A permanent catch-all: any <img> rendered anywhere — theme templates, the
+ * editor, plugins, future code — gets loading="lazy" + decoding="async" without
+ * having to remember to add it. It is deliberately LCP-safe (no negative perf
+ * effect): the FIRST real (non data-URI) image on the page is left eager because
+ * that is the likely Largest Contentful Paint element, and lazy-loading it would
+ * delay LCP. Anything already opting in/out — an existing loading= attribute,
+ * fetchpriority="high", or a data-no-lazy marker — is respected, never overridden.
+ * Runs on front-end HTML only and only at page-generation time (the result is
+ * stored by the page cache), so there is no per-request cost on cache hits.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Open an output buffer over the rendered page so every <img> can be processed.
+ */
+function lavtheme_lazy_buffer() {
+	if ( is_admin() || is_feed() || is_embed() || is_robots()
+		|| ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+		|| ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+		|| ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) ) {
+		return;
+	}
+	ob_start( 'lavtheme_lazy_filter' );
+}
+add_action( 'template_redirect', 'lavtheme_lazy_buffer', 1 );
+
+/**
+ * Add loading="lazy" + decoding="async" to images that should have them.
+ *
+ * @param string $html Buffered page HTML.
+ * @return string
+ */
+function lavtheme_lazy_filter( $html ) {
+	if ( ! is_string( $html ) || '' === $html || false === stripos( $html, '<img' ) ) {
+		return $html;
+	}
+
+	/** Allow disabling the catch-all entirely. */
+	if ( ! apply_filters( 'lavtheme_auto_lazyload', true ) ) {
+		return $html;
+	}
+
+	$lcp_done = false;
+
+	return (string) preg_replace_callback(
+		'#<img\b[^>]*>#i',
+		function ( $m ) use ( &$lcp_done ) {
+			$tag = $m[0];
+
+			// Always ensure asynchronous decoding (no downside, frees the main thread).
+			if ( ! preg_match( '/\sdecoding\s*=/i', $tag ) ) {
+				$tag = preg_replace( '/<img\b/i', '<img decoding="async"', $tag, 1 );
+			}
+
+			// Respect explicit intent — never override an author/plugin decision.
+			if ( preg_match( '/\sloading\s*=/i', $tag )
+				|| preg_match( '/fetchpriority\s*=\s*["\']?\s*high/i', $tag )
+				|| false !== stripos( $tag, 'data-no-lazy' ) ) {
+				return $tag;
+			}
+
+			// LCP protection: keep the first real (non data-URI) image eager.
+			$is_data = (bool) preg_match( '/\ssrc\s*=\s*["\']\s*data:/i', $tag );
+			if ( ! $is_data && ! $lcp_done ) {
+				$lcp_done = true;
+				return $tag;
+			}
+
+			return preg_replace( '/<img\b/i', '<img loading="lazy"', $tag, 1 );
+		},
+		$html
+	);
+}
