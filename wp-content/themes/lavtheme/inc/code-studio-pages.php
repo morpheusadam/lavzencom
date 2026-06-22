@@ -123,6 +123,7 @@ function lavtheme_cs_page_builtin() {
 	return array(
 		array( 'slug' => 'global', 'label' => 'Global (this page)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
 		array( 'slug' => 'schema', 'label' => 'Schema (this page)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
+		array( 'slug' => 'design', 'label' => 'Template (this page)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
 		array( 'slug' => 'content', 'label' => 'Page Content', 'zone' => 'content', 'builtin' => true, 'deletable' => false, 'html' => true, 'pagecontent' => true ),
 	);
 }
@@ -574,6 +575,7 @@ function lavtheme_cs_page_ajax_save() {
 		}
 		$key = lavtheme_cs_page_key( $id, $slug, 'php' );
 		update_option( $key . '_bak', get_option( $key, '' ) );
+			update_option( $key . '_prev', get_option( $key, '' ) );
 		update_option( $key, (string) $content );
 		$msg = lavtheme_cs_php_allowed()
 			? __( 'PHP saved and active.', 'lavtheme' )
@@ -590,7 +592,9 @@ function lavtheme_cs_page_ajax_save() {
 				wp_send_json_error( array( 'message' => __( 'Invalid JSON: ', 'lavtheme' ) . json_last_error_msg() ) );
 			}
 		}
-		update_option( lavtheme_cs_page_key( $id, 'schema', 'json' ), $trim );
+		$pskey = lavtheme_cs_page_key( $id, 'schema', 'json' );
+		update_option( $pskey . '_prev', get_option( $pskey, '' ) );
+		update_option( $pskey, $trim );
 		wp_send_json_success( array( 'message' => __( 'Schema saved.', 'lavtheme' ) ) );
 	}
 
@@ -602,7 +606,9 @@ function lavtheme_cs_page_ajax_save() {
 	} else {
 		$clean = (string) $content;
 	}
-	update_option( lavtheme_cs_page_key( $id, $slug, $type ), $clean );
+	$pfkey = lavtheme_cs_page_key( $id, $slug, $type );
+		update_option( $pfkey . '_prev', get_option( $pfkey, '' ) );
+		update_option( $pfkey, $clean );
 	wp_send_json_success( array( 'message' => __( 'Saved.', 'lavtheme' ) ) );
 }
 add_action( 'wp_ajax_lavtheme_cs_page_save', 'lavtheme_cs_page_ajax_save' );
@@ -751,3 +757,72 @@ function lavtheme_cs_page_ajax_delsection() {
 	wp_send_json_success( array( 'message' => __( 'Section deleted.', 'lavtheme' ) ) );
 }
 add_action( 'wp_ajax_lavtheme_cs_page_delsection', 'lavtheme_cs_page_ajax_delsection' );
+
+/**
+ * AJAX: reset a page section field to its default (clears the override).
+ */
+function lavtheme_cs_page_ajax_reset() {
+	lavtheme_cs_guard();
+	$id   = isset( $_POST['page_id'] ) ? absint( wp_unslash( $_POST['page_id'] ) ) : 0;
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	if ( ! lavtheme_cs_page_exists( $id ) ) {
+		wp_send_json_error( array( 'message' => __( 'Page not found.', 'lavtheme' ) ), 404 );
+	}
+	// Page Content is the real post; it has no file default to reset to.
+	if ( 'content' === $slug && 'html' === $type ) {
+		wp_send_json_error( array( 'message' => __( 'Page Content has no file default. Use Restore… to undo.', 'lavtheme' ) ) );
+	}
+	$key = lavtheme_cs_page_key( $id, $slug, $type );
+	update_option( $key . '_prev', (string) get_option( $key, '' ) );
+	delete_option( $key );
+	$def = lavtheme_cs_page_get( $id, $slug, $type );
+	if ( 'schema' === $slug && 'json' === $type && '' === $def && function_exists( 'lavtheme_cs_get_schema' ) ) {
+		$def = lavtheme_cs_get_schema();
+	}
+	wp_send_json_success( array( 'content' => $def, 'message' => __( 'Reset to default.', 'lavtheme' ) ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_page_reset', 'lavtheme_cs_page_ajax_reset' );
+
+/**
+ * AJAX: list available backups (the previous saved version) for a page field.
+ */
+function lavtheme_cs_page_ajax_backups() {
+	lavtheme_cs_guard();
+	$id   = isset( $_POST['page_id'] ) ? absint( wp_unslash( $_POST['page_id'] ) ) : 0;
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	if ( ! lavtheme_cs_page_exists( $id ) ) {
+		wp_send_json_error( array( 'message' => __( 'Page not found.', 'lavtheme' ) ), 404 );
+	}
+	$items = array();
+	$prev  = get_option( lavtheme_cs_page_key( $id, $slug, $type ) . '_prev', null );
+	if ( null !== $prev ) {
+		$items[] = array( 'stamp' => 'prev', 'label' => __( 'Previous saved version', 'lavtheme' ) );
+	}
+	wp_send_json_success( array( 'items' => $items ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_page_backups', 'lavtheme_cs_page_ajax_backups' );
+
+/**
+ * AJAX: restore a page field's previous saved version (reversible swap).
+ */
+function lavtheme_cs_page_ajax_restore() {
+	lavtheme_cs_guard();
+	$id   = isset( $_POST['page_id'] ) ? absint( wp_unslash( $_POST['page_id'] ) ) : 0;
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	if ( ! lavtheme_cs_page_exists( $id ) ) {
+		wp_send_json_error( array( 'message' => __( 'Page not found.', 'lavtheme' ) ), 404 );
+	}
+	$key  = lavtheme_cs_page_key( $id, $slug, $type );
+	$prev = get_option( $key . '_prev', null );
+	if ( null === $prev ) {
+		wp_send_json_error( array( 'message' => __( 'Nothing to restore.', 'lavtheme' ) ) );
+	}
+	$cur = (string) get_option( $key, '' );
+	update_option( $key, (string) $prev );
+	update_option( $key . '_prev', $cur ); // swap so Restore is reversible.
+	wp_send_json_success( array( 'content' => (string) $prev, 'message' => __( 'Restored.', 'lavtheme' ) ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_page_restore', 'lavtheme_cs_page_ajax_restore' );

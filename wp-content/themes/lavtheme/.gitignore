@@ -1,41 +1,9 @@
-# ─────────────────────────────  lavtheme  ─────────────────────────────
-# Secrets & deploy credentials — NEVER commit (plaintext passwords inside).
+# FTP/SFTP credential scripts — contain plaintext passwords, never commit.
 ftp-upload.txt
 sftp-batch.txt
 sftp-commands.txt
 *.ftp.txt
-.vscode/
-.env
-.env.*
-*.pem
-*.key
 
-# Theme Code Studio "File mode" backups (local snapshots, not source).
-.backups/
-
-# Local agent / tooling — not part of the theme product.
-.agents/
-test.html
-*.scratch.*
-
-# Dependencies & build artifacts.
-node_modules/
-vendor/
-dist/
-build/
-*.map
-
-# Logs & caches.
-*.log
-.cache/
-.tmp/
-npm-debug.log*
-
-# OS / editor cruft.
+# OS / editor cruft
 .DS_Store
 Thumbs.db
-desktop.ini
-*.swp
-*.swo
-*~
-.idea/

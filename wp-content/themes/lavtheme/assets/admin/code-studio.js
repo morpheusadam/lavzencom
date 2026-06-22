@@ -208,15 +208,22 @@
 		function applyImport( sec, $panel, tabs, types ) {
 			var pending = types.length;
 			var failed = [];
+			// Page / download / shop / blog contexts dispatch through ctxPost so the
+			// per-context save endpoint (with its own validation + _prev backup) runs.
+			var isCtx = $panel.closest( '.lavcs-page-area' ).length > 0;
+			var slug = $panel.data( 'slug' );
 			status( $panel, LavthemeCS.i18n.saving, true );
 			types.forEach( function ( type ) {
-				$.post( LavthemeCS.ajaxUrl, {
-					action: 'lavtheme_cs_save',
-					nonce: LavthemeCS.nonce,
-					section: sec,
-					type: type,
-					content: tabs[ type ]
-				} ).done( function ( res ) {
+				var req = isCtx
+					? ctxPost( 'save', { slug: slug, type: type, content: tabs[ type ] } )
+					: $.post( LavthemeCS.ajaxUrl, {
+						action: 'lavtheme_cs_save',
+						nonce: LavthemeCS.nonce,
+						section: sec,
+						type: type,
+						content: tabs[ type ]
+					} );
+				req.done( function ( res ) {
 					if ( res && res.success ) {
 						if ( ! LavthemeCS.content[ sec ] ) { LavthemeCS.content[ sec ] = {}; }
 						LavthemeCS.content[ sec ][ type ] = tabs[ type ];
@@ -490,8 +497,14 @@
 				var $act = $( '<div class="lavcs-actions"></div>' );
 				$act.append( '<button type="button" class="button button-primary lavcs-psave" data-slug="' + escAttr( sec.slug ) + '">Save</button>' );
 				if ( sec.pagecontent ) {
+					// Page Content has its own post_content backup/restore; no file default to reset / export.
 					$act.append( '<button type="button" class="button lavcs-pcrestore">Restore…</button>' );
 					if ( p.shortcode ) { $act.append( '<span class="lavcs-pc-warn">⚠ ' + escHtml( 'contains plugin shortcodes' ) + '</span>' ); }
+				} else {
+					$act.append( '<button type="button" class="button lavcs-prestore" data-slug="' + escAttr( sec.slug ) + '">Restore…</button>' );
+					$act.append( '<button type="button" class="button lavcs-preset" data-slug="' + escAttr( sec.slug ) + '" title="Reset the ACTIVE tab to its default">Reset to default</button>' );
+					$act.append( '<button type="button" class="button lavcs-pexport" data-slug="' + escAttr( sec.slug ) + '" title="Download every tab of this section as one JSON file">Export</button>' );
+					$act.append( '<button type="button" class="button lavcs-pimport" data-slug="' + escAttr( sec.slug ) + '" title="Import tabs from a lavtheme JSON export into this section">Import</button>' );
 				}
 				if ( sec.placeable && p.placements ) {
 					var opts = '';
@@ -581,8 +594,12 @@
 			status( $panel, LavthemeCS.i18n.saving, true );
 			ctxPost( 'save', { slug: slug, type: type, content: getVal( k ) } )
 				.done( function ( res ) {
-					if ( res && res.success ) { status( $panel, LavthemeCS.i18n.saved, true ); }
-					else { status( $panel, ( res && res.data && res.data.message ) || LavthemeCS.i18n.error, false ); }
+					if ( res && res.success ) {
+						// Sync the saved snapshot so Export / unsaved-change checks are accurate.
+						if ( ! LavthemeCS.content[ sid ] ) { LavthemeCS.content[ sid ] = {}; }
+						LavthemeCS.content[ sid ][ type ] = getVal( k );
+						status( $panel, LavthemeCS.i18n.saved, true );
+					} else { status( $panel, ( res && res.data && res.data.message ) || LavthemeCS.i18n.error, false ); }
 				} )
 				.fail( function () { status( $panel, LavthemeCS.i18n.error, false ); } );
 		} );
@@ -623,6 +640,115 @@
 		} );
 
 		// Section placement (front-page, page, or download context).
+		// Reset the ACTIVE tab to its default (page / dl / shop / blog contexts).
+		$( document ).on( 'click', '.lavcs-preset', function () {
+			var $panel = $( this ).closest( '.lavcs-panel' );
+			var sid = $panel.data( 'section' );
+			var slug = $panel.data( 'slug' );
+			var ta = activeEditorEl( $panel );
+			if ( ! ta ) { return; }
+			var type = ta.getAttribute( 'data-type' );
+			if ( ! window.confirm( LavthemeCS.i18n.confirmReset ) ) { return; }
+			ctxPost( 'reset', { slug: slug, type: type } )
+				.done( function ( res ) {
+					if ( res && res.success ) {
+						initEditor( ta );
+						setVal( key( sid, type ), ( res.data && typeof res.data.content !== 'undefined' ) ? res.data.content : '' );
+						status( $panel, ( res.data && res.data.message ) || LavthemeCS.i18n.restored, true );
+					} else {
+						status( $panel, ( res && res.data && res.data.message ) || LavthemeCS.i18n.error, false );
+					}
+				} )
+				.fail( function () { status( $panel, LavthemeCS.i18n.error, false ); } );
+		} );
+
+		// Restore… → modal listing the previous saved version (page / dl contexts).
+		$( document ).on( 'click', '.lavcs-prestore', function () {
+			var $panel = $( this ).closest( '.lavcs-panel' );
+			var sid = $panel.data( 'section' );
+			var slug = $panel.data( 'slug' );
+			var ta = activeEditorEl( $panel );
+			var type = ta ? ta.getAttribute( 'data-type' ) : 'css';
+			ctxPost( 'backups', { slug: slug, type: type } )
+				.done( function ( res ) {
+					var $list = $( '.lavcs-backups' ).empty();
+					$( '.lavcs-modal h2' ).text( 'Backups' );
+					if ( ! res || ! res.success || ! res.data.items.length ) {
+						$list.append( '<li>' + LavthemeCS.i18n.noBackups + '</li>' );
+					} else {
+						res.data.items.forEach( function ( it ) {
+							$( '<li><button type="button" class="button">' + escHtml( it.label ) + '</button></li>' )
+								.find( 'button' )
+								.on( 'click', function () {
+									if ( ! window.confirm( LavthemeCS.i18n.confirmRestore ) ) { return; }
+									ctxPost( 'restore', { slug: slug, type: type, stamp: it.stamp } )
+										.done( function ( r ) {
+											if ( r && r.success ) {
+												if ( ta ) { initEditor( ta ); }
+												if ( typeof r.data.content !== 'undefined' ) { setVal( key( sid, type ), r.data.content ); }
+												status( $panel, LavthemeCS.i18n.restored, true );
+												$( '.lavcs-modal' ).attr( 'hidden', true );
+											} else {
+												status( $panel, ( r && r.data && r.data.message ) || LavthemeCS.i18n.error, false );
+											}
+										} );
+								} )
+								.end()
+								.appendTo( $list );
+						} );
+					}
+					$( '.lavcs-modal' ).removeAttr( 'hidden' );
+				} );
+		} );
+
+		// Export → download every tab of this section's SAVED content (client-side).
+		$( document ).on( 'click', '.lavcs-pexport', function () {
+			var $panel = $( this ).closest( '.lavcs-panel' );
+			var sid = $panel.data( 'section' );
+			var slug = $panel.data( 'slug' );
+			var saved = LavthemeCS.content[ sid ] || {};
+			var dirty = false;
+			$panel.find( '.lavcs-editor' ).each( function () {
+				var t = this.getAttribute( 'data-type' );
+				var k = key( sid, t );
+				if ( ! editors[ k ] ) { return; }
+				var s = ( typeof saved[ t ] !== 'undefined' ) ? saved[ t ] : '';
+				if ( getVal( k ) !== s ) { dirty = true; }
+			} );
+			if ( dirty && ! window.confirm( LavthemeCS.i18n.unsavedExport ) ) { return; }
+			var tabs = {};
+			$panel.find( '.lavcs-editor' ).each( function () {
+				var t = this.getAttribute( 'data-type' );
+				tabs[ t ] = ( typeof saved[ t ] !== 'undefined' ) ? String( saved[ t ] ) : '';
+			} );
+			var label = $.trim( $( '.lavcs-page-nav .lavcs-navli[data-slug="' + slug + '"] .lavcs-navlabel' ).text() ) || slug;
+			var payload = {
+				lavtheme_export: true,
+				format_version: LavthemeCS.exportFormat || 1,
+				theme: 'lavtheme',
+				context: currentCtx,
+				section: { slug: slug, label: label },
+				tabs: tabs
+			};
+			var blob = new Blob( [ JSON.stringify( payload, null, 2 ) ], { type: 'application/json' } );
+			var url = URL.createObjectURL( blob );
+			var a = document.createElement( 'a' );
+			a.href = url;
+			a.download = 'lavtheme-' + currentCtx + '-' + slug + '.json';
+			a.style.display = 'none';
+			document.body.appendChild( a );
+			a.click();
+			setTimeout( function () { document.body.removeChild( a ); URL.revokeObjectURL( url ); }, 0 );
+		} );
+
+		// Import → reuse the shared import flow, applying via ctxPost('save').
+		$( document ).on( 'click', '.lavcs-pimport', function () {
+			var $panel = $( this ).closest( '.lavcs-panel' );
+			importTarget = { sec: $panel.data( 'section' ), $panel: $panel };
+			var fi = $( '.lavcs-import-file' ).get( 0 );
+			if ( fi ) { fi.value = ''; fi.click(); }
+		} );
+
 		$( document ).on( 'change', '.lavcs-placement-sel', function () {
 			var slug = $( this ).data( 'slug' );
 			var pl = $( this ).val();

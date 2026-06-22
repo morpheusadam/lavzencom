@@ -24,15 +24,10 @@ defined( 'ABSPATH' ) || exit;
  */
 function lavtheme_cs_shop_template_body() {
 	$is = ( function_exists( 'lavtheme_is_shop' ) && lavtheme_is_shop() ) || lavtheme_is_shop_page_request();
-	if ( ! $is || ! lavtheme_cs_php_allowed() ) {
+	if ( ! $is ) {
 		return '';
 	}
-	$override = (string) get_option( lavtheme_cs_dl_key( 'shop', 'design', 'php' ), '' );
-	if ( '' === trim( $override ) ) {
-		return '';
-	}
-	$out = lavtheme_cs_run_php( $override );
-	return '' !== trim( $out ) ? $out : '';
+	return lavtheme_cs_dl_compose_body( 'shop', 'template-parts/shop.php' );
 }
 
 /**
@@ -65,10 +60,16 @@ function lavtheme_cs_shop_head() {
 	$reg = get_option( lavtheme_cs_dl_regopt( 'shop' ), null );
 	if ( is_array( $reg ) ) {
 		foreach ( $reg as $r ) {
-			if ( ! isset( $r['slug'] ) || 'design' === $r['slug'] ) {
+			if ( ! isset( $r['slug'] ) || 'schema' === $r['slug'] ) {
 				continue;
 			}
 			$c = (string) lavtheme_cs_dl_get( 'shop', $r['slug'], 'css' );
+			if ( 'design' === $r['slug'] ) {
+				$m = (string) lavtheme_cs_dl_get( 'shop', 'design', 'mcss' );
+				if ( '' !== trim( $m ) ) {
+					$c .= "\n" . $m;
+				}
+			}
 			if ( 'global' === $r['slug'] ) {
 				$bg = (string) lavtheme_cs_dl_get( 'shop', 'global', 'bg' );
 				if ( '' !== trim( $bg ) ) {
@@ -80,8 +81,8 @@ function lavtheme_cs_shop_head() {
 			}
 		}
 	} else {
-		// Registry not built yet (no admin visit) — just the file default CSS.
-		$css = (string) lavtheme_cs_dl_get( 'shop', 'global', 'css' );
+		// Registry not built yet (no admin visit) — the real stylesheet + mobile layer.
+		$css = (string) lavtheme_cs_dl_get( 'shop', 'design', 'css' ) . "\n" . (string) lavtheme_cs_dl_get( 'shop', 'design', 'mcss' );
 	}
 	if ( '' !== trim( $css ) ) {
 		echo '<style id="lavtheme-shop-css">' . $css . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS sanitised on save; file is trusted.
@@ -100,7 +101,7 @@ function lavtheme_cs_shop_footer() {
 	$reg = get_option( lavtheme_cs_dl_regopt( 'shop' ), null );
 	if ( is_array( $reg ) ) {
 		foreach ( $reg as $r ) {
-			if ( ! isset( $r['slug'] ) || 'design' === $r['slug'] ) {
+			if ( ! isset( $r['slug'] ) || 'schema' === $r['slug'] ) {
 				continue;
 			}
 			$j = (string) lavtheme_cs_dl_get( 'shop', $r['slug'], 'js' );
@@ -109,7 +110,7 @@ function lavtheme_cs_shop_footer() {
 			}
 		}
 	} else {
-		$js = (string) lavtheme_cs_dl_get( 'shop', 'global', 'js' );
+		$js = (string) lavtheme_cs_dl_get( 'shop', 'design', 'js' );
 	}
 	if ( '' !== trim( $js ) ) {
 		echo '<script id="lavtheme-shop-js">(function(){' . $js . '})();</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- admin-authored, closing-tag neutralised on save.

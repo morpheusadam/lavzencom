@@ -141,7 +141,9 @@ function lavtheme_cs_dl_fields( $rec, $ctx ) {
 		return array( 'json' => 'JSON-LD Schema' );
 	}
 	if ( 'design' === $rec['slug'] ) {
-		return array( 'php' => 'Template (PHP/HTML)' );
+		// Unified five tabs (HTML/PHP, CSS, JS, Mobile CSS, PHP), pre-filled from
+		// the real render chain by Lav_CS_Source_Reader.
+		return Lav_CS_Source_Reader::tabs();
 	}
 	if ( ! empty( $rec['pagecontent'] ) ) {
 		// Template content is a non-editable anchor; specific edits the product post_content.
@@ -171,59 +173,43 @@ function lavtheme_cs_dl_schema_default() {
 }
 
 /**
- * Real theme file backing a dl-template editor (so editors are never empty and
- * the page renders from a single source: override-or-file). Template level only.
+ * Default (real-file) value for a dl/shop/blog editor.
  *
- * @return string Relative theme path, or '' when no file backs this field.
+ * The real render chain now lives in the unified "design" (Template) section:
+ * HTML/PHP ← the template body file, CSS/JS ← the context stylesheet/script,
+ * Mobile CSS ← the @media(max-width:640px) layer (Lav_CS_Source_Reader). The
+ * Global section is an extra override layer (no file default) so the real files
+ * are never injected twice.
+ *
+ * @param string $ctx  Context id.
+ * @param string $slug Section slug.
+ * @param string $type Field type.
+ * @return string
  */
-function lavtheme_cs_dl_default_path( $ctx, $slug, $type ) {
-	if ( 'shop' === $ctx ) {
-		if ( 'global' === $slug && 'css' === $type ) {
-			return 'assets/css/shop.css';
-		}
-		if ( 'global' === $slug && 'js' === $type ) {
-			return 'assets/js/shop.js';
-		}
-		if ( 'design' === $slug && 'php' === $type ) {
-			return 'template-parts/shop.php';
-		}
-		return '';
-	}
-	if ( 'blog' === $ctx ) {
-		if ( 'global' === $slug && 'css' === $type ) {
-			return 'assets/css/blog.css';
-		}
-		if ( 'global' === $slug && 'js' === $type ) {
-			return 'assets/js/blog.js';
-		}
-		if ( 'design' === $slug && 'php' === $type ) {
-			return 'template-parts/blog.php';
-		}
-		return '';
-	}
-	if ( 'dl-template' !== $ctx ) {
-		return '';
-	}
-	if ( 'global' === $slug && 'css' === $type ) {
-		return 'assets/css/single-product.css';
-	}
-	if ( 'global' === $slug && 'js' === $type ) {
-		return 'assets/js/single-product.js';
-	}
-	if ( 'design' === $slug && 'php' === $type ) {
-		return 'template-parts/single-download-body.php';
+function lavtheme_cs_dl_default_value( $ctx, $slug, $type ) {
+	if ( 'design' === $slug && in_array( $type, array( 'html', 'css', 'js', 'mcss' ), true ) ) {
+		return Lav_CS_Source_Reader::default_value( $ctx, $type );
 	}
 	return '';
 }
 
-/** File default contents for a dl-template editor. */
-function lavtheme_cs_dl_default_value( $ctx, $slug, $type ) {
-	$rel = lavtheme_cs_dl_default_path( $ctx, $slug, $type );
-	if ( '' === $rel ) {
-		return '';
+/**
+ * One-time migration: the template body used to be stored under the design/php
+ * key; the unified tabs put it under design/html (php is now the extra-logic
+ * tab). Idempotent and cheap.
+ *
+ * @param string $ctx Context id.
+ */
+function lavtheme_cs_dl_migrate_body( $ctx ) {
+	$html_key = lavtheme_cs_dl_key( $ctx, 'design', 'html' );
+	$php_key  = lavtheme_cs_dl_key( $ctx, 'design', 'php' );
+	$html     = get_option( $html_key, null );
+	$php      = get_option( $php_key, null );
+	if ( ( null === $html || '' === $html ) && null !== $php && '' !== trim( (string) $php ) ) {
+		update_option( $html_key, (string) $php );
+		delete_option( $php_key );
+		delete_option( $php_key . '_empty' );
 	}
-	$path = get_theme_file_path( $rel );
-	return is_readable( $path ) ? (string) file_get_contents( $path ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 }
 
 function lavtheme_cs_dl_get( $ctx, $slug, $type ) {
@@ -237,9 +223,22 @@ function lavtheme_cs_dl_get( $ctx, $slug, $type ) {
 	if ( null !== $stored && '' !== $stored ) {
 		return (string) $stored;
 	}
-	// Intentional clear (empty save) — honour it, don't fall back to the file.
+
+	// The template body (design/html) was historically stored under design/php.
+	// Show that legacy override in the HTML/PHP tab until migration moves it.
+	if ( 'design' === $slug && 'html' === $type && ( null === $stored || '' === $stored ) ) {
+		$legacy = get_option( lavtheme_cs_dl_key( $ctx, 'design', 'php' ), null );
+		if ( null !== $legacy && '' !== trim( (string) $legacy ) ) {
+			return (string) $legacy;
+		}
+	}
+
+	// Intentional clear (empty save) — honour it for css/js/mcss; the body
+	// (design/html) always shows the real template file so the page never blanks.
 	if ( '' === $stored && '' !== get_option( $key . '_empty', '' ) ) {
-		return '';
+		if ( ! ( 'design' === $slug && 'html' === $type ) ) {
+			return '';
+		}
 	}
 	$def = lavtheme_cs_dl_default_value( $ctx, $slug, $type );
 	if ( '' !== $def ) {
@@ -262,15 +261,55 @@ function lavtheme_cs_dl_get( $ctx, $slug, $type ) {
  * @return string
  */
 function lavtheme_cs_dl_template_body() {
-	if ( ! is_singular( 'download' ) || ! lavtheme_cs_php_allowed() ) {
+	if ( ! is_singular( 'download' ) ) {
 		return '';
 	}
-	$override = (string) get_option( lavtheme_cs_dl_key( 'dl-template', 'design', 'php' ), '' );
-	if ( '' === trim( $override ) ) {
+	return lavtheme_cs_dl_compose_body( 'dl-template', 'template-parts/single-download-body.php' );
+}
+
+/**
+ * Assemble the editable Template body for any design context (dl/shop/blog):
+ * optional extra-PHP output (design/php) + the HTML/PHP override (design/html),
+ * with a guaranteed fall-through to the real template file.
+ *
+ * Returns '' to let the caller include the file directly (the fast, unchanged
+ * path — also when PHP sections are locked). When PHP is locked, overrides
+ * cannot run, so the real file always renders exactly as before.
+ *
+ * @param string $ctx      Context id (dl-template|shop|blog).
+ * @param string $file_rel Theme-relative real template file (fallback).
+ * @return string
+ */
+function lavtheme_cs_dl_compose_body( $ctx, $file_rel ) {
+	if ( ! lavtheme_cs_php_allowed() ) {
 		return '';
 	}
-	$out = lavtheme_cs_run_php( $override );
-	return '' !== trim( $out ) ? $out : '';
+	$body_override = (string) get_option( lavtheme_cs_dl_key( $ctx, 'design', 'html' ), '' );
+	$php_extra     = (string) get_option( lavtheme_cs_dl_key( $ctx, 'design', 'php' ), '' );
+
+	// Legacy sites kept the body under design/php. If html is empty but php holds
+	// the body, treat php as the body (not extra logic) so it isn't run twice.
+	if ( '' === trim( $body_override ) && '' !== trim( $php_extra ) ) {
+		$body_override = $php_extra;
+		$php_extra     = '';
+	}
+
+	if ( '' === trim( $body_override ) && '' === trim( $php_extra ) ) {
+		return ''; // nothing custom → caller includes the real file (fast path).
+	}
+
+	$pre  = '' !== trim( $php_extra ) ? lavtheme_cs_run_php( $php_extra ) : '';
+	$body = '' !== trim( $body_override ) ? lavtheme_cs_run_php( $body_override ) : '';
+	if ( '' === trim( $body ) ) {
+		// No usable override output → buffer the real file so $pre is not lost.
+		ob_start();
+		$path = get_theme_file_path( $file_rel );
+		if ( is_readable( $path ) ) {
+			include $path;
+		}
+		$body = (string) ob_get_clean();
+	}
+	return $pre . $body;
 }
 
 /** Replace {{product_*}} tokens with the real product's data. */
@@ -407,11 +446,19 @@ function lavtheme_cs_dl_head() {
 			continue;
 		}
 		foreach ( $reg as $r ) {
-			if ( 'schema' === $r['slug'] || 'design' === $r['slug'] ) {
+			if ( 'schema' === $r['slug'] ) {
 				continue;
 			}
-			// Override-or-file (single source). Global CSS defaults to single-product.css.
+			// Override-or-file (single source). The design layer carries the real
+			// stylesheet (single-product.css) + its mobile @640 layer; Global is an
+			// extra override layer on top.
 			$c = (string) lavtheme_cs_dl_get( $ctx, $r['slug'], 'css' );
+			if ( 'design' === $r['slug'] ) {
+				$m = (string) lavtheme_cs_dl_get( $ctx, 'design', 'mcss' );
+				if ( '' !== trim( $m ) ) {
+					$c .= "\n" . $m;
+				}
+			}
 			if ( 'global' === $r['slug'] ) {
 				$bg = (string) lavtheme_cs_dl_get( $ctx, 'global', 'bg' );
 				if ( '' !== trim( $bg ) ) {
@@ -454,10 +501,11 @@ function lavtheme_cs_dl_footer() {
 			continue;
 		}
 		foreach ( $reg as $r ) {
-			if ( 'schema' === $r['slug'] || 'design' === $r['slug'] ) {
+			if ( 'schema' === $r['slug'] ) {
 				continue;
 			}
-			// Override-or-file (single source). Global JS defaults to single-product.js.
+			// Override-or-file (single source). The design layer carries the real
+			// script (single-product.js); Global is an extra override layer.
 			$j = (string) lavtheme_cs_dl_get( $ctx, $r['slug'], 'js' );
 			if ( '' !== trim( $j ) ) {
 				$js .= ';(function(){' . lavtheme_cs_dl_fill_tokens( $j, $pid ) . '})();';
@@ -511,6 +559,7 @@ function lavtheme_cs_dl_ajax_load() {
 	$ctx = lavtheme_cs_dl_ctx();
 	$pid = lavtheme_cs_dl_post_id( $ctx );
 	$reg = lavtheme_cs_dl_registry( $ctx );
+	lavtheme_cs_dl_migrate_body( $ctx ); // move any legacy design/php body to design/html.
 
 	$sections = array();
 	$data     = array();
@@ -568,20 +617,32 @@ function lavtheme_cs_dl_ajax_save() {
 		wp_send_json_success( array( 'message' => __( 'Product content updated.', 'lavtheme' ) ) );
 	}
 
+	// The Template body (design/html) is executable template PHP (may open with
+	// <?php and contain islands) — syntax-check it as a template, store raw.
+	if ( 'design' === $slug && 'html' === $type ) {
+		$err = '';
+		if ( '' !== trim( $content ) && ! lavtheme_cs_dl_check_template( $content, $err ) ) {
+			wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
+		}
+		$hkey = lavtheme_cs_dl_key( $ctx, 'design', 'html' );
+		update_option( $hkey . '_prev', get_option( $hkey, '' ) );
+		update_option( $hkey, (string) $content );
+		if ( '' === trim( (string) $content ) ) {
+			update_option( $hkey . '_empty', '1' );
+		} else {
+			delete_option( $hkey . '_empty' );
+		}
+		wp_send_json_success( array( 'message' => lavtheme_cs_php_allowed() ? __( 'Template saved and active.', 'lavtheme' ) : __( 'Template saved, but NOT running — add define(\'LAVTHEME_ALLOW_PHP_SECTIONS\', true) to wp-config.php.', 'lavtheme' ) ) );
+	}
+
 	if ( 'php' === $type ) {
 		$err = '';
-		if ( '' !== trim( $content ) ) {
-			// The "design" body is template-style (starts with <?php, has islands);
-			// other PHP tabs are pure PHP. Validate each with the right checker.
-			$ok = ( 'design' === $slug )
-				? lavtheme_cs_dl_check_template( $content, $err )
-				: lavtheme_cs_check_php( $content, $err );
-			if ( ! $ok ) {
-				wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
-			}
+		if ( '' !== trim( $content ) && ! lavtheme_cs_check_php( $content, $err ) ) {
+			wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
 		}
 		$key = lavtheme_cs_dl_key( $ctx, $slug, 'php' );
 		update_option( $key . '_bak', get_option( $key, '' ) );
+		update_option( $key . '_prev', get_option( $key, '' ) );
 		update_option( $key, (string) $content );
 		if ( '' === trim( (string) $content ) ) {
 			update_option( $key . '_empty', '1' );
@@ -600,7 +661,9 @@ function lavtheme_cs_dl_ajax_save() {
 				wp_send_json_error( array( 'message' => __( 'Invalid JSON: ', 'lavtheme' ) . json_last_error_msg() ) );
 			}
 		}
-		update_option( lavtheme_cs_dl_key( $ctx, 'schema', 'json' ), $trim );
+		$dskey = lavtheme_cs_dl_key( $ctx, 'schema', 'json' );
+		update_option( $dskey . '_prev', get_option( $dskey, '' ) );
+		update_option( $dskey, $trim );
 		wp_send_json_success( array( 'message' => __( 'Schema saved.', 'lavtheme' ) ) );
 	}
 
@@ -612,7 +675,8 @@ function lavtheme_cs_dl_ajax_save() {
 		$clean = (string) $content;
 	}
 	$key = lavtheme_cs_dl_key( $ctx, $slug, $type );
-	update_option( $key, $clean );
+	update_option( $key . '_prev', get_option( $key, '' ) );
+		update_option( $key, $clean );
 	// Honour an intentional clear for css/js/bg (render injects nothing). HTML is
 	// exempt so an empty HTML save still falls back to the file.
 	if ( in_array( $type, array( 'css', 'bg', 'js' ), true ) ) {
@@ -625,6 +689,71 @@ function lavtheme_cs_dl_ajax_save() {
 	wp_send_json_success( array( 'message' => __( 'Saved.', 'lavtheme' ) ) );
 }
 add_action( 'wp_ajax_lavtheme_cs_dl_save', 'lavtheme_cs_dl_ajax_save' );
+
+/**
+ * AJAX: reset a dl-context field to its default (clears the override + file fallback).
+ */
+function lavtheme_cs_dl_ajax_reset() {
+	lavtheme_cs_guard();
+	$ctx  = lavtheme_cs_dl_ctx();
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	// Product/Page Content is the real post; it has no file default to reset to.
+	if ( 'content' === $slug ) {
+		wp_send_json_error( array( 'message' => __( 'Content has no file default. Use Restore… to undo.', 'lavtheme' ) ) );
+	}
+	$key = lavtheme_cs_dl_key( $ctx, $slug, $type );
+	update_option( $key . '_prev', (string) get_option( $key, '' ) );
+	delete_option( $key );
+	delete_option( $key . '_empty' ); // let the file/default show again.
+	wp_send_json_success( array( 'content' => (string) lavtheme_cs_dl_get( $ctx, $slug, $type ), 'message' => __( 'Reset to default.', 'lavtheme' ) ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_dl_reset', 'lavtheme_cs_dl_ajax_reset' );
+
+/**
+ * AJAX: list available backups (the previous saved version) for a dl-context field.
+ */
+function lavtheme_cs_dl_ajax_backups() {
+	lavtheme_cs_guard();
+	$ctx  = lavtheme_cs_dl_ctx();
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	$items = array();
+	$prev  = get_option( lavtheme_cs_dl_key( $ctx, $slug, $type ) . '_prev', null );
+	if ( null !== $prev ) {
+		$items[] = array( 'stamp' => 'prev', 'label' => __( 'Previous saved version', 'lavtheme' ) );
+	}
+	wp_send_json_success( array( 'items' => $items ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_dl_backups', 'lavtheme_cs_dl_ajax_backups' );
+
+/**
+ * AJAX: restore a dl-context field's previous saved version (reversible swap).
+ */
+function lavtheme_cs_dl_ajax_restore() {
+	lavtheme_cs_guard();
+	$ctx  = lavtheme_cs_dl_ctx();
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	$key  = lavtheme_cs_dl_key( $ctx, $slug, $type );
+	$prev = get_option( $key . '_prev', null );
+	if ( null === $prev ) {
+		wp_send_json_error( array( 'message' => __( 'Nothing to restore.', 'lavtheme' ) ) );
+	}
+	$cur = (string) get_option( $key, '' );
+	update_option( $key, (string) $prev );
+	update_option( $key . '_prev', $cur ); // swap so Restore is reversible.
+	// Mirror save semantics for the _empty clear-marker on css/bg/js.
+	if ( in_array( $type, array( 'css', 'bg', 'js' ), true ) ) {
+		if ( '' === trim( (string) $prev ) ) {
+			update_option( $key . '_empty', '1' );
+		} else {
+			delete_option( $key . '_empty' );
+		}
+	}
+	wp_send_json_success( array( 'content' => (string) $prev, 'message' => __( 'Restored.', 'lavtheme' ) ) );
+}
+add_action( 'wp_ajax_lavtheme_cs_dl_restore', 'lavtheme_cs_dl_ajax_restore' );
 
 function lavtheme_cs_dl_ajax_addsection() {
 	lavtheme_cs_guard();

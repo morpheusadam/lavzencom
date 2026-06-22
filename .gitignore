@@ -73,3 +73,6 @@ ehthumbs.db
 # Project specific
 .claude/
 wordpress-*.zip
+
+# Code Studio auto-backups (machine-generated, not for VCS)
+wp-content/themes/lavtheme/.backups/

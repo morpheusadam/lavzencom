@@ -49,6 +49,7 @@ lavtheme_require( 'blog-ui.php' );
 lavtheme_require( 'edd-product-meta.php' );
 
 // Theme Code Studio: per-section code editing panel (DB + file modes).
+lavtheme_require( 'code-studio-source-reader.php' );
 lavtheme_require( 'code-studio-registry.php' );
 lavtheme_require( 'code-studio.php' );
 lavtheme_require( 'code-studio-save.php' );

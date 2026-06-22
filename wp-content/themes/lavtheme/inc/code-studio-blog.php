@@ -24,15 +24,10 @@ defined( 'ABSPATH' ) || exit;
 function lavtheme_cs_blog_template_body() {
 	$is = ( function_exists( 'lavtheme_is_blog' ) && lavtheme_is_blog() )
 		|| ( function_exists( 'lavtheme_is_blog_page_request' ) && lavtheme_is_blog_page_request() );
-	if ( ! $is || ! lavtheme_cs_php_allowed() ) {
+	if ( ! $is ) {
 		return '';
 	}
-	$override = (string) get_option( lavtheme_cs_dl_key( 'blog', 'design', 'php' ), '' );
-	if ( '' === trim( $override ) ) {
-		return '';
-	}
-	$out = lavtheme_cs_run_php( $override );
-	return '' !== trim( $out ) ? $out : '';
+	return lavtheme_cs_dl_compose_body( 'blog', 'template-parts/blog.php' );
 }
 
 /**
@@ -61,10 +56,16 @@ function lavtheme_cs_blog_head() {
 	$reg = get_option( lavtheme_cs_dl_regopt( 'blog' ), null );
 	if ( is_array( $reg ) ) {
 		foreach ( $reg as $r ) {
-			if ( ! isset( $r['slug'] ) || 'design' === $r['slug'] ) {
+			if ( ! isset( $r['slug'] ) || 'schema' === $r['slug'] ) {
 				continue;
 			}
 			$c = (string) lavtheme_cs_dl_get( 'blog', $r['slug'], 'css' );
+			if ( 'design' === $r['slug'] ) {
+				$m = (string) lavtheme_cs_dl_get( 'blog', 'design', 'mcss' );
+				if ( '' !== trim( $m ) ) {
+					$c .= "\n" . $m;
+				}
+			}
 			if ( 'global' === $r['slug'] ) {
 				$bg = (string) lavtheme_cs_dl_get( 'blog', 'global', 'bg' );
 				if ( '' !== trim( $bg ) ) {
@@ -76,7 +77,7 @@ function lavtheme_cs_blog_head() {
 			}
 		}
 	} else {
-		$css = (string) lavtheme_cs_dl_get( 'blog', 'global', 'css' );
+		$css = (string) lavtheme_cs_dl_get( 'blog', 'design', 'css' ) . "\n" . (string) lavtheme_cs_dl_get( 'blog', 'design', 'mcss' );
 	}
 	if ( '' !== trim( $css ) ) {
 		echo '<style id="lavtheme-blog-css">' . $css . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS sanitised on save; file is trusted.
@@ -93,7 +94,7 @@ function lavtheme_cs_blog_footer() {
 	$reg = get_option( lavtheme_cs_dl_regopt( 'blog' ), null );
 	if ( is_array( $reg ) ) {
 		foreach ( $reg as $r ) {
-			if ( ! isset( $r['slug'] ) || 'design' === $r['slug'] ) {
+			if ( ! isset( $r['slug'] ) || 'schema' === $r['slug'] ) {
 				continue;
 			}
 			$j = (string) lavtheme_cs_dl_get( 'blog', $r['slug'], 'js' );
@@ -102,7 +103,7 @@ function lavtheme_cs_blog_footer() {
 			}
 		}
 	} else {
-		$js = (string) lavtheme_cs_dl_get( 'blog', 'global', 'js' );
+		$js = (string) lavtheme_cs_dl_get( 'blog', 'design', 'js' );
 	}
 	if ( '' !== trim( $js ) ) {
 		echo '<script id="lavtheme-blog-js">(function(){' . $js . '})();</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- admin-authored, closing-tag neutralised on save.
