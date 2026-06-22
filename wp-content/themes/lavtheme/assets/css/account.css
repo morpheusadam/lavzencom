@@ -117,17 +117,79 @@
 .lav-account .la-guest p { color: var(--text-3); font-size: 14.5px; line-height: 1.6; }
 .lav-account .la-guest-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: var(--s3); }
 
+/* ---------- dashboard widgets ---------- */
+.lav-account .la-block { display: flex; flex-direction: column; }
+.lav-account .la-section-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: var(--s4); }
+.lav-account .la-section-h h2 { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--text); }
+.lav-account .la-section-h a { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.lav-account .la-section-h a:hover { text-decoration: underline; }
+
+.lav-account .la-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+.lav-account .la-action { display: flex; flex-direction: column; gap: 10px; padding: var(--s4); text-decoration: none; transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease); }
+.lav-account .la-action:hover { transform: translateY(-3px); box-shadow: var(--edge), var(--e2); border-color: rgba(124, 131, 255, .4); }
+.lav-account .la-aico { width: 40px; height: 40px; border-radius: var(--r-sm); display: grid; place-items: center; background: rgba(124, 131, 255, .14); border: 1px solid rgba(124, 131, 255, .28); color: var(--accent); }
+.lav-account .la-aico svg { width: 20px; height: 20px; }
+.lav-account .la-action b { font-size: 14px; font-weight: 600; color: var(--text); }
+.lav-account .la-action > span:last-child { font-size: 12px; color: var(--muted); }
+
+.lav-account .la-reco { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+.lav-account .la-prod { display: flex; flex-direction: column; text-decoration: none; overflow: hidden; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
+.lav-account .la-prod:hover { transform: translateY(-4px); box-shadow: var(--edge), var(--e2); }
+.lav-account .la-prod-thumb { aspect-ratio: 16/10; background: var(--glass-1); overflow: hidden; display: block; }
+.lav-account .la-prod-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lav-account .la-prod-b { padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.lav-account .la-prod-t { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.lav-account .la-prod-p { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--cta); }
+
+.lav-account .la-support { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+.lav-account .la-support-t b { display: block; font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--text); }
+.lav-account .la-support-t span { font-size: 13px; color: var(--muted); }
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
-	.lav-account { grid-template-columns: 1fr; }
+	.lav-account { grid-template-columns: 1fr; gap: var(--s4); }
 	.lav-account .la-side { position: static; }
-	.lav-account .la-nav { flex-direction: row; overflow-x: auto; gap: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+	.lav-account .la-nav { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 	.lav-account .la-nav::-webkit-scrollbar { display: none; }
 	.lav-account .la-navitem { flex: 0 0 auto; }
 	.lav-account .la-logout { margin-top: 0; }
+	.lav-account .la-actions { grid-template-columns: repeat(2, 1fr); }
+	.lav-account .la-reco { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 560px) {
-	.lav-account .la-stats { grid-template-columns: 1fr; }
-	.lav-account .edd_purchase_history, .lav-account .edd_download_history, .lav-account table.edd-table { display: block; overflow-x: auto; }
-	.lav-account #edd_profile_editor_form input, .lav-account #edd_profile_editor_form select { font-size: 16px; } /* avoid iOS zoom */
+@media (max-width: 620px) {
+	.lav-account .la-panel { padding: var(--s5); }
+	.lav-account .la-stats { grid-template-columns: repeat(2, 1fr); }
+	.lav-account .la-stats > :nth-child(3) { grid-column: 1 / -1; }
+	.lav-account #edd_profile_editor_form input,
+	.lav-account #edd_profile_editor_form select { font-size: 16px; } /* avoid iOS zoom */
+
+	/* EDD data tables → labelled, stacked cards (cells stamped with data-th by account.js) */
+	.lav-account .la-edd table.la-rtable,
+	.lav-account .la-edd table.la-rtable tbody,
+	.lav-account .la-edd table.la-rtable tr,
+	.lav-account .la-edd table.la-rtable td { display: block; width: 100%; }
+	.lav-account .la-edd table.la-rtable thead { position: absolute; left: -9999px; top: -9999px; }
+	.lav-account .la-edd table.la-rtable tr {
+		background: var(--glass-1); border: 1px solid var(--stroke-soft); border-radius: var(--r-md);
+		margin-bottom: var(--s3); overflow: hidden;
+	}
+	.lav-account .la-edd table.la-rtable td {
+		position: relative; padding: 12px 14px 12px 42%; min-height: 46px;
+		border-bottom: 1px solid var(--stroke-soft); text-align: right; word-break: break-word;
+	}
+	.lav-account .la-edd table.la-rtable tr td:last-child { border-bottom: none; }
+	.lav-account .la-edd table.la-rtable td::before {
+		content: attr(data-th); position: absolute; left: 14px; top: 12px; width: 36%;
+		text-align: left; font-family: var(--display); font-weight: 600; font-size: 11px;
+		letter-spacing: .03em; text-transform: uppercase; color: var(--muted);
+		white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+	}
+	/* horizontal-scroll fallback for any table JS didn't label */
+	.lav-account .la-edd table:not(.la-rtable) { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 420px) {
+	.lav-account .la-actions, .lav-account .la-reco, .lav-account .la-stats { grid-template-columns: 1fr; }
+	.lav-account .la-stats > :nth-child(3) { grid-column: auto; }
+	.lav-account .la-support { flex-direction: column; align-items: stretch; }
+	.lav-account .la-support .btn { width: 100%; }
 }

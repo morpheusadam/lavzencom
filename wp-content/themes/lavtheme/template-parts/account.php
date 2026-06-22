@@ -133,6 +133,51 @@ $lav_nav = array(
 				</div>
 			</div>
 
+			<?php
+			$lav_shop_u = function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : home_url( '/' );
+			$lav_qa     = array(
+				array( $lav_shop_u, __( 'Browse shop', 'lavtheme' ), __( 'Discover products', 'lavtheme' ), '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>' ),
+				array( $lav_acc ? lavtheme_account_url( 'downloads' ) : '#', __( 'My downloads', 'lavtheme' ), __( 'Your files', 'lavtheme' ), '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>' ),
+				array( $lav_acc ? lavtheme_account_url( 'orders' ) : '#', __( 'My orders', 'lavtheme' ), __( 'Purchase history', 'lavtheme' ), '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h12M3 12h18M3 17h8"/><circle cx="18" cy="7" r="2"/><circle cx="14" cy="17" r="2"/></svg>' ),
+				array( $lav_acc ? lavtheme_account_url( 'profile' ) : '#', __( 'Edit profile', 'lavtheme' ), __( 'Name, email, password', 'lavtheme' ), '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>' ),
+			);
+			?>
+			<section class="la-block">
+				<div class="la-section-h"><h2><?php esc_html_e( 'Quick actions', 'lavtheme' ); ?></h2></div>
+				<div class="la-actions">
+					<?php foreach ( $lav_qa as $lav_a ) : ?>
+						<a class="glass la-action" href="<?php echo esc_url( $lav_a[0] ); ?>">
+							<span class="la-aico" aria-hidden="true"><?php echo $lav_a[3]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+							<b><?php echo esc_html( $lav_a[1] ); ?></b>
+							<span><?php echo esc_html( $lav_a[2] ); ?></span>
+						</a>
+					<?php endforeach; ?>
+				</div>
+			</section>
+
+			<?php
+			$lav_pop = function_exists( 'edd_get_download' ) ? get_posts( array( 'post_type' => 'download', 'post_status' => 'publish', 'posts_per_page' => 3, 'orderby' => 'meta_value_num', 'meta_key' => '_edd_download_sales', 'order' => 'DESC', 'fields' => 'ids', 'no_found_rows' => true ) ) : array();
+			if ( $lav_pop ) :
+				?>
+				<section class="la-block">
+					<div class="la-section-h"><h2><?php esc_html_e( 'Picked for you', 'lavtheme' ); ?></h2><a href="<?php echo esc_url( $lav_shop_u ); ?>"><?php esc_html_e( 'See all', 'lavtheme' ); ?> &rarr;</a></div>
+					<div class="la-reco">
+						<?php
+						foreach ( $lav_pop as $lav_pid ) :
+							$lav_price = function_exists( 'edd_price' ) ? wp_strip_all_tags( edd_price( $lav_pid, false ) ) : '';
+							?>
+							<a class="glass la-prod" href="<?php echo esc_url( get_permalink( $lav_pid ) ); ?>">
+								<span class="la-prod-thumb"><?php if ( has_post_thumbnail( $lav_pid ) ) : ?><img src="<?php echo esc_url( get_the_post_thumbnail_url( $lav_pid, 'medium' ) ); ?>" alt="<?php echo esc_attr( get_the_title( $lav_pid ) ); ?>" loading="lazy"><?php endif; ?></span>
+								<span class="la-prod-b">
+									<span class="la-prod-t"><?php echo esc_html( get_the_title( $lav_pid ) ); ?></span>
+									<?php if ( '' !== $lav_price ) : ?><span class="la-prod-p"><?php echo esc_html( $lav_price ); ?></span><?php endif; ?>
+								</span>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</section>
+			<?php endif; ?>
+
 		<?php elseif ( 'orders' === $lav_view ) : ?>
 			<header class="la-head"><h1><?php esc_html_e( 'My Orders', 'lavtheme' ); ?></h1></header>
 			<div class="glass la-panel la-edd">
@@ -169,6 +214,14 @@ $lav_nav = array(
 				?>
 			</div>
 		<?php endif; ?>
+
+		<aside class="glass la-panel la-support">
+			<div class="la-support-t">
+				<b><?php esc_html_e( 'Need a hand?', 'lavtheme' ); ?></b>
+				<span><?php esc_html_e( 'Questions about an order or a download? We are here to help.', 'lavtheme' ); ?></span>
+			</div>
+			<a class="btn btn-ghost" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>"><?php esc_html_e( 'Contact support', 'lavtheme' ); ?></a>
+		</aside>
 
 	</div>
 

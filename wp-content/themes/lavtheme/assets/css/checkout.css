@@ -266,8 +266,18 @@ input[type="submit"].edd-submit,
 
 /* ---------- mobile ---------- */
 @media (max-width: 640px) {
-	#edd_checkout_cart, .edd_cart,
+	/* purchase-history & receipt tables: horizontal scroll fallback */
 	.edd_purchase_history, #edd_purchase_receipt table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+	/* checkout cart → stacked cards (legacy table; the EDD block cart is already flex) */
+	#edd_checkout_cart, .edd_cart { display: block; }
+	#edd_checkout_cart thead { position: absolute; left: -9999px; top: -9999px; }
+	#edd_checkout_cart tbody, #edd_checkout_cart tr, #edd_checkout_cart td { display: block; width: 100%; }
+	#edd_checkout_cart tr.edd_cart_item { background: var(--glass-1); border: 1px solid var(--stroke-soft); border-radius: var(--r-md); margin-bottom: var(--s3); overflow: hidden; }
+	#edd_checkout_cart tr.edd_cart_item td { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-bottom: 1px solid var(--stroke-soft); text-align: right; }
+	#edd_checkout_cart tr.edd_cart_item td:last-child { border-bottom: none; }
+	#edd_checkout_cart td.edd_cart_item_price::before { content: "Price"; font-family: var(--display); font-weight: 600; font-size: 11px; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); }
+	#edd_checkout_cart td.edd_cart_actions::before { content: "Actions"; font-family: var(--display); font-weight: 600; font-size: 11px; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); }
+	#edd_checkout_cart tr.edd_cart_footer_row td { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; }
 	#edd_checkout_form_wrap input,
 	#edd_checkout_form_wrap select,
 	#edd_checkout_form_wrap textarea { font-size: 16px; } /* avoid iOS zoom */

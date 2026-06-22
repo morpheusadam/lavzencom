@@ -1,113 +1,296 @@
-/* WP Dash — glassmorphism / liquid-glass skin for the native WordPress
-   Dashboard (Dashboard → Home). Scoped to body.index-php ONLY, so no other
-   admin screen is touched. Edit this in Code Studio → WP Dash (CSS tab).
-   Purely cosmetic; never hides controls. prefers-reduced-motion safe. */
+/* ============================================================================
+   WP Dash — iOS-style Liquid-Glass skin for the native WordPress Dashboard.
+   Every surface on the Dashboard (admin bar, side menu, widgets, hero, notices,
+   buttons, inputs, screen-meta tabs, footer) is the SAME frosted glass — one
+   shared token set, so nothing looks half-skinned.
+
+   Scoped strictly to `body.index-php` (the Dashboard home only). Cosmetic only —
+   no control is hidden. Optimised: one fixed gradient + transform-drift orbs
+   (compositor-only), a single blur strength reused everywhere. Reduced-motion
+   safe. Edit this in Code Studio → WP Dash.
+   ========================================================================== */
 
 body.index-php {
-	--lg-accent: #7c83ff; --lg-accent2: #22d3ee; --lg-ink: #f3f5fc; --lg-mut: #aeb4c8;
-	--lg-glass: rgba(22, 28, 48, .55); --lg-stroke: rgba(255, 255, 255, .12);
-	--lg-blur: 18px;
+	--g-ink:    #eef1fb;   /* primary text          */
+	--g-mut:    #aab1c9;   /* muted text            */
+	--g-faint:  #8089a3;   /* faintest text         */
+	--g-accent: #7c83ff;   /* indigo                */
+	--g-accent2:#22d3ee;   /* cyan                  */
+	--g-line:   rgba(255,255,255,.12);
+	--g-line-2: rgba(255,255,255,.18);
+	--g-fill:   rgba(255,255,255,.06);
+	--g-fill-2: rgba(255,255,255,.10);
+	/* the glass: a dark translucent base + top-edge highlight (light-from-above) */
+	--glass:    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03) 38%, rgba(8,11,22,.20)), rgba(18,24,44,.55);
+	--glass-hi: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05) 40%, rgba(8,11,22,.18)), rgba(28,34,58,.6);
+	--blur:     22px;
+	--r:        20px;
+	--r-sm:     13px;
+	--shadow:   0 18px 50px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.18);
+	--ease:     cubic-bezier(.4,.8,.2,1);
 }
 
-/* ---- animated liquid background behind the whole dashboard ---- */
-body.index-php #wpcontent,
-body.index-php #wpbody-content { position: relative; }
-body.index-php.wp-admin { background: #0a0e1c; }
-body.index-php #wpbody::before {
-	content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+/* ---- 1. liquid background (fixed, behind everything) -------------------- */
+body.index-php { background: #070a16 !important; }
+body.index-php::before {
+	content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
 	background:
-		radial-gradient(820px 520px at 12% 0%, rgba(124,131,255,.35), transparent 60%),
-		radial-gradient(720px 520px at 92% 4%, rgba(34,211,238,.22), transparent 58%),
-		radial-gradient(900px 700px at 78% 100%, rgba(139,92,246,.3), transparent 62%),
-		#0a0e1c;
-	animation: lavwp-bg 22s ease-in-out infinite alternate;
+		radial-gradient(60% 50% at 18% 8%, rgba(124,131,255,.40), transparent 60%),
+		radial-gradient(55% 45% at 92% 6%, rgba(34,211,238,.28), transparent 58%),
+		radial-gradient(60% 60% at 80% 100%, rgba(167,92,255,.34), transparent 62%),
+		radial-gradient(50% 50% at 4% 92%, rgba(56,189,248,.26), transparent 60%),
+		#070a16;
 }
-@keyframes lavwp-bg { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(24deg); } }
+/* drifting "liquid" orbs — transform-only animation (GPU-cheap) */
+body.index-php::after {
+	content: ""; position: fixed; z-index: -1; inset: -20% -10% auto auto;
+	width: 60vw; height: 60vw; max-width: 760px; max-height: 760px; border-radius: 50%;
+	background: radial-gradient(circle, rgba(124,131,255,.30), transparent 68%);
+	filter: blur(36px); pointer-events: none;
+	animation: lavwp-drift 26s var(--ease) infinite alternate;
+}
+@keyframes lavwp-drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-12vw,16vh,0) scale(1.18); } }
+
+/* let the gradient show through the chrome */
+body.index-php #wpwrap,
+body.index-php #wpcontent,
+body.index-php #wpbody,
+body.index-php #adminmenuback,
+body.index-php #adminmenuwrap { background: transparent !important; }
 body.index-php #wpbody-content { position: relative; z-index: 1; }
-body.index-php #wpbody-content .wrap > * { position: relative; z-index: 1; }
 
-/* ---- typography / links ---- */
-body.index-php #wpbody-content .wrap > h1,
-body.index-php #dashboard-widgets .postbox h2,
-body.index-php #dashboard-widgets .postbox h3 { color: var(--lg-ink); }
-body.index-php #wpbody-content a:not(.button):not(.lavwp-btn) { color: var(--lg-accent); }
-body.index-php #wpbody-content a:not(.button):not(.lavwp-btn):hover { color: #fff; }
+/* ---- 2. text + links (global on the dashboard) ------------------------- */
+body.index-php #wpbody-content,
+body.index-php #wpbody-content .wrap,
+body.index-php #wpbody-content p,
+body.index-php #wpbody-content li,
+body.index-php #wpbody-content td,
+body.index-php #wpbody-content th,
+body.index-php #wpbody-content label,
+body.index-php #wpbody-content .inside { color: var(--g-mut); }
+body.index-php #wpbody-content h1,
+body.index-php #wpbody-content h2,
+body.index-php #wpbody-content h3,
+body.index-php #wpbody-content strong,
+body.index-php #wpbody-content .wp-heading-inline { color: var(--g-ink); }
+body.index-php #wpbody-content a:not(.button):not(.lavwp-btn):not(.ab-item) { color: var(--g-accent); transition: color .15s var(--ease); }
+body.index-php #wpbody-content a:not(.button):not(.lavwp-btn):not(.ab-item):hover { color: #fff; }
 
-/* ---- glass postboxes (dashboard widgets) ---- */
+/* ---- 3. admin bar (glass) ---------------------------------------------- */
+body.index-php #wpadminbar {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(160%); backdrop-filter: blur(var(--blur)) saturate(160%);
+	border-bottom: 1px solid var(--g-line);
+	box-shadow: 0 8px 30px rgba(0,0,0,.3);
+}
+body.index-php #wpadminbar .ab-item,
+body.index-php #wpadminbar a.ab-item,
+body.index-php #wpadminbar > #wp-toolbar span.ab-label,
+body.index-php #wpadminbar .ab-icon::before,
+body.index-php #wpadminbar .ab-item::before { color: var(--g-ink) !important; }
+body.index-php #wpadminbar .ab-top-menu > li:hover > .ab-item,
+body.index-php #wpadminbar .ab-top-menu > li.hover > .ab-item { background: var(--g-fill-2) !important; color: #fff !important; }
+body.index-php #wpadminbar .ab-submenu,
+body.index-php #wpadminbar .ab-sub-wrapper,
+body.index-php #wpadminbar .quicklinks .menupop ul li .ab-item {
+	background: rgba(18,24,44,.92) !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+}
+
+/* ---- 4. side admin menu (glass panel) ---------------------------------- */
+body.index-php #adminmenu {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(160%); backdrop-filter: blur(var(--blur)) saturate(160%);
+	border-right: 1px solid var(--g-line);
+	box-shadow: 8px 0 30px rgba(0,0,0,.28);
+	/* no width/margin/overflow changes — keeps folded + submenu fly-outs intact */
+}
+body.index-php #adminmenu a { color: var(--g-mut); }
+body.index-php #adminmenu .wp-menu-image::before { color: var(--g-mut) !important; opacity: .9; }
+body.index-php #adminmenu li.menu-top:hover,
+body.index-php #adminmenu li.opensub > a.menu-top,
+body.index-php #adminmenu li > a.menu-top:focus { background: var(--g-fill-2) !important; color: #fff !important; }
+body.index-php #adminmenu li.menu-top:hover .wp-menu-image::before,
+body.index-php #adminmenu li.menu-top:focus-within .wp-menu-image::before { color: #fff !important; }
+/* active item — accent glass pill */
+body.index-php #adminmenu li.current a.menu-top,
+body.index-php #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+body.index-php #adminmenu .wp-menu-arrow,
+body.index-php #adminmenu .wp-has-current-submenu .wp-submenu .wp-submenu-head {
+	background: linear-gradient(135deg, rgba(124,131,255,.55), rgba(34,211,238,.4)) !important;
+	color: #fff !important;
+}
+body.index-php #adminmenu li.current .wp-menu-image::before,
+body.index-php #adminmenu li.wp-has-current-submenu .wp-menu-image::before { color: #fff !important; }
+body.index-php #adminmenu li.current a.menu-top::after { border: none; }
+/* submenus / flyouts */
+body.index-php #adminmenu .wp-submenu,
+body.index-php #adminmenu .wp-has-current-submenu .wp-submenu,
+body.index-php #adminmenu .wp-not-current-submenu .wp-submenu {
+	background: rgba(16,21,40,.96) !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+	border-radius: 0 12px 12px 0; box-shadow: 0 18px 40px rgba(0,0,0,.45);
+}
+body.index-php #adminmenu .wp-submenu a { color: var(--g-mut) !important; }
+body.index-php #adminmenu .wp-submenu a:hover,
+body.index-php #adminmenu .wp-submenu li.current a { color: #fff !important; }
+body.index-php #adminmenu .wp-submenu li.current a { font-weight: 600; }
+body.index-php #adminmenu .awaiting-mod,
+body.index-php #adminmenu .update-plugins { background: var(--g-accent) !important; color: #fff !important; border-radius: 999px; }
+/* collapse button */
+body.index-php #collapse-button { color: var(--g-faint) !important; }
+body.index-php #wpfooter { display: none; }
+
+/* ---- 5. unified glass cards: widgets, welcome, notices ----------------- */
 body.index-php #dashboard-widgets .postbox,
-body.index-php #welcome-panel.welcome-panel {
-	background: var(--lg-glass) !important;
-	border: 1px solid var(--lg-stroke) !important;
-	border-radius: 16px !important;
-	box-shadow: 0 18px 50px rgba(0,0,0,.35) !important;
-	-webkit-backdrop-filter: blur(var(--lg-blur)) saturate(140%);
-	backdrop-filter: blur(var(--lg-blur)) saturate(140%);
-	color: var(--lg-ink);
+body.index-php #welcome-panel.welcome-panel,
+body.index-php .wrap .notice,
+body.index-php .wrap div.updated,
+body.index-php .wrap div.error,
+body.index-php #dashboard-widgets .meta-box-sortables .postbox {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(150%); backdrop-filter: blur(var(--blur)) saturate(150%);
+	border: 1px solid var(--g-line) !important;
+	border-radius: var(--r) !important;
+	box-shadow: var(--shadow) !important;
+	color: var(--g-mut) !important;
 	overflow: hidden;
 }
+body.index-php #dashboard-widgets .postbox:hover { border-color: var(--g-line-2) !important; }
 body.index-php #dashboard-widgets .postbox-header,
-body.index-php #dashboard-widgets .postbox .hndle {
+body.index-php #dashboard-widgets .postbox .hndle,
+body.index-php #dashboard-widgets .postbox h2,
+body.index-php #welcome-panel .welcome-panel-header {
 	background: transparent !important;
-	border-bottom: 1px solid var(--lg-stroke) !important;
-	color: var(--lg-ink) !important;
+	border-bottom: 1px solid var(--g-line) !important;
+	color: var(--g-ink) !important;
 }
-body.index-php #dashboard-widgets .postbox .inside,
-body.index-php #dashboard-widgets .postbox p,
-body.index-php #dashboard-widgets .postbox li,
-body.index-php #dashboard-widgets .postbox td,
-body.index-php #dashboard-widgets .postbox .wp-clearfix { color: var(--lg-mut); }
 body.index-php #dashboard-widgets .postbox .inside h3,
-body.index-php #dashboard-widgets .postbox .inside strong { color: var(--lg-ink); }
-body.index-php #dashboard-widgets .postbox .subsubsub a,
-body.index-php #dashboard-widgets .hndle button,
-body.index-php #dashboard-widgets .handle-actions .handlediv { color: var(--lg-mut) !important; }
-body.index-php #dashboard-widgets .postbox table.widefat,
-body.index-php #dashboard-widgets .postbox .activity-block { background: transparent !important; border-color: var(--lg-stroke) !important; }
+body.index-php #dashboard-widgets .postbox .inside h4,
+body.index-php #dashboard-widgets .postbox .inside b,
+body.index-php #dashboard-widgets .main strong { color: var(--g-ink) !important; }
+body.index-php #dashboard-widgets .postbox .handlediv,
+body.index-php #dashboard-widgets .postbox .handle-order-higher,
+body.index-php #dashboard-widgets .postbox .handle-order-lower,
+body.index-php #dashboard-widgets .postbox-header .order-higher-indicator::before,
+body.index-php #dashboard-widgets .postbox-header button { color: var(--g-mut) !important; }
+/* inner structures: tables, activity, at-a-glance, lists */
+body.index-php #dashboard-widgets .postbox table,
+body.index-php #dashboard-widgets .postbox .activity-block,
+body.index-php #dashboard-widgets .postbox .subsubsub,
+body.index-php #dashboard-widgets .postbox .inside ul,
+body.index-php #dashboard-widgets #dashboard_right_now,
+body.index-php #dashboard-widgets .system-status { background: transparent !important; border-color: var(--g-line) !important; }
+body.index-php #dashboard-widgets td,
+body.index-php #dashboard-widgets th { border-color: var(--g-line) !important; }
+body.index-php #dashboard_right_now .b,
+body.index-php #dashboard_right_now a { color: var(--g-ink) !important; }
+body.index-php #dashboard_right_now li a::before,
+body.index-php #dashboard-widgets .dashicons,
+body.index-php #dashboard-widgets .welcome-icon::before { color: var(--g-accent) !important; }
+body.index-php .activity-block .subject a { color: var(--g-accent) !important; }
+/* hairline separators inside widgets */
+body.index-php #dashboard-widgets .postbox .inside hr,
+body.index-php #dashboard-widgets .postbox li { border-color: var(--g-line) !important; }
 
-/* keep buttons usable/visible on glass */
-body.index-php #dashboard-widgets .button,
-body.index-php #wpbody-content .wrap .button { border-radius: 9px; }
+/* notices: tint the accent stripe by type but keep the glass body */
+body.index-php .wrap .notice { border-left: 3px solid var(--g-accent) !important; }
+body.index-php .wrap .notice-success { border-left-color: #34d399 !important; }
+body.index-php .wrap .notice-error, body.index-php .wrap div.error { border-left-color: #ff6b8b !important; }
+body.index-php .wrap .notice-warning { border-left-color: #fbbf24 !important; }
+body.index-php .wrap .notice p, body.index-php .wrap .notice a { color: var(--g-mut) !important; }
+body.index-php .wrap .notice-dismiss::before { color: var(--g-mut) !important; }
 
-/* ---- the editable hero (template.php) ---- */
+/* ---- 6. buttons (glass) ------------------------------------------------ */
+body.index-php #wpbody-content .button,
+body.index-php #wpbody-content .button-secondary {
+	background: var(--g-fill) !important;
+	border: 1px solid var(--g-line-2) !important;
+	color: var(--g-ink) !important;
+	border-radius: 10px !important;
+	box-shadow: none !important;
+	transition: background .15s var(--ease), transform .15s var(--ease);
+}
+body.index-php #wpbody-content .button:hover { background: var(--g-fill-2) !important; color: #fff !important; transform: translateY(-1px); }
+body.index-php #wpbody-content .button-primary {
+	background: linear-gradient(135deg, var(--g-accent), var(--g-accent2)) !important;
+	border: 1px solid transparent !important; color: #fff !important;
+	border-radius: 10px !important; box-shadow: 0 8px 20px rgba(124,131,255,.4) !important;
+	text-shadow: none !important;
+}
+body.index-php #wpbody-content .button-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+body.index-php #wpbody-content .button:focus,
+body.index-php #wpbody-content .button-primary:focus { box-shadow: 0 0 0 3px rgba(124,131,255,.55) !important; outline: none; }
+
+/* ---- 7. form controls (glass) ----------------------------------------- */
+body.index-php #wpbody-content input[type="text"],
+body.index-php #wpbody-content input[type="search"],
+body.index-php #wpbody-content input[type="email"],
+body.index-php #wpbody-content input[type="url"],
+body.index-php #wpbody-content input[type="number"],
+body.index-php #wpbody-content textarea,
+body.index-php #wpbody-content select {
+	background: rgba(8,11,22,.45) !important;
+	border: 1px solid var(--g-line-2) !important;
+	color: var(--g-ink) !important;
+	border-radius: 10px !important;
+	box-shadow: none !important;
+}
+body.index-php #wpbody-content input::placeholder,
+body.index-php #wpbody-content textarea::placeholder { color: var(--g-faint) !important; }
+body.index-php #wpbody-content input:focus,
+body.index-php #wpbody-content textarea:focus,
+body.index-php #wpbody-content select:focus { border-color: rgba(124,131,255,.6) !important; box-shadow: 0 0 0 3px rgba(124,131,255,.4) !important; outline: none; }
+
+/* ---- 8. screen-meta tabs + panels (Screen Options / Help) -------------- */
+body.index-php #screen-meta { background: var(--glass) !important; border-color: var(--g-line) !important; -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); border-radius: 0 0 14px 14px; }
+body.index-php #screen-meta-links .show-settings,
+body.index-php #screen-meta-links .button.show-settings {
+	background: var(--glass) !important; border: 1px solid var(--g-line) !important;
+	color: var(--g-ink) !important; border-radius: 0 0 10px 10px !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: none !important;
+}
+body.index-php #screen-meta label,
+body.index-php #screen-meta .metabox-prefs label { color: var(--g-mut) !important; }
+
+/* ---- 9. the editable hero (template.php) — the showpiece glass card ---- */
 body.index-php .lavwp-hero {
-	position: relative; overflow: hidden; margin: 10px 0 22px;
-	padding: clamp(22px, 3vw, 38px); border-radius: 22px;
-	background: linear-gradient(135deg, rgba(124,131,255,.22), rgba(34,211,238,.12)), var(--lg-glass);
-	border: 1px solid var(--lg-stroke);
-	box-shadow: 0 24px 70px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.18);
-	-webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%);
+	position: relative; overflow: hidden; margin: 12px 0 24px;
+	padding: clamp(24px, 3.2vw, 40px); border-radius: 26px;
+	background: var(--glass-hi);
+	border: 1px solid var(--g-line-2);
+	box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.28);
+	-webkit-backdrop-filter: blur(26px) saturate(165%); backdrop-filter: blur(26px) saturate(165%);
 }
 body.index-php .lavwp-hero-in { position: relative; z-index: 2; }
-body.index-php .lavwp-orb { position: absolute; z-index: 1; border-radius: 50%; filter: blur(46px); opacity: .55; pointer-events: none; animation: lavwp-float 13s ease-in-out infinite alternate; }
-body.index-php .lavwp-orb.a { width: 320px; height: 320px; top: -120px; right: -60px; background: radial-gradient(circle, rgba(124,131,255,.8), transparent 70%); }
-body.index-php .lavwp-orb.b { width: 300px; height: 300px; bottom: -140px; left: -40px; background: radial-gradient(circle, rgba(34,211,238,.7), transparent 70%); animation-delay: -6s; }
-@keyframes lavwp-float { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(26px,18px,0) scale(1.1); } }
-body.index-php .lavwp-eyebrow { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--lg-accent2); margin-bottom: 8px; }
-body.index-php .lavwp-title { font-size: clamp(24px, 3vw, 34px); font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.1; }
-body.index-php .lavwp-title b { background: linear-gradient(135deg, #fff, var(--lg-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-body.index-php .lavwp-wave { display: inline-block; animation: lavwp-wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; -webkit-text-fill-color: initial; }
+body.index-php .lavwp-orb { position: absolute; z-index: 1; border-radius: 50%; filter: blur(48px); opacity: .6; pointer-events: none; animation: lavwp-orb 14s var(--ease) infinite alternate; }
+body.index-php .lavwp-orb.a { width: 340px; height: 340px; top: -130px; right: -60px; background: radial-gradient(circle, rgba(124,131,255,.85), transparent 70%); }
+body.index-php .lavwp-orb.b { width: 320px; height: 320px; bottom: -150px; left: -50px; background: radial-gradient(circle, rgba(34,211,238,.75), transparent 70%); animation-delay: -7s; }
+@keyframes lavwp-orb { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(28px,20px,0) scale(1.12); } }
+body.index-php .lavwp-eyebrow { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--g-accent2); margin-bottom: 8px; }
+body.index-php .lavwp-title { font-size: clamp(24px, 3vw, 36px); font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.08; letter-spacing: -.01em; }
+body.index-php .lavwp-title b { background: linear-gradient(135deg, #fff, var(--g-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+body.index-php .lavwp-wave { display: inline-block; animation: lavwp-wave 2.6s var(--ease) infinite; transform-origin: 70% 70%; -webkit-text-fill-color: initial; }
 @keyframes lavwp-wave { 0%,60%,100% { transform: rotate(0); } 15% { transform: rotate(16deg); } 30% { transform: rotate(-8deg); } 45% { transform: rotate(14deg); } }
-body.index-php .lavwp-sub { color: var(--lg-mut); font-size: 14.5px; margin: 0 0 20px; max-width: 60ch; }
+body.index-php .lavwp-sub { color: var(--g-mut); font-size: 14.5px; margin: 0 0 22px; max-width: 60ch; }
 body.index-php .lavwp-quick { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
-body.index-php .lavwp-stat { min-width: 110px; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid var(--lg-stroke); }
-body.index-php .lavwp-stat-n { display: block; font-size: 26px; font-weight: 800; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
-body.index-php .lavwp-stat-l { font-size: 12px; color: var(--lg-mut); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+body.index-php .lavwp-stat { min-width: 116px; padding: 15px 18px; border-radius: 16px; background: var(--g-fill); border: 1px solid var(--g-line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+body.index-php .lavwp-stat-n { display: block; font-size: 27px; font-weight: 800; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+body.index-php .lavwp-stat-l { font-size: 12px; color: var(--g-mut); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 body.index-php .lavwp-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-body.index-php .lavwp-btn { display: inline-flex; align-items: center; height: 42px; padding: 0 20px; border-radius: 12px; font-size: 13.5px; font-weight: 700; text-decoration: none; background: rgba(255,255,255,.08); border: 1px solid var(--lg-stroke); color: var(--lg-ink); transition: transform .16s ease, background .16s ease; }
-body.index-php .lavwp-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.14); color: #fff; }
-body.index-php .lavwp-btn.primary { background: linear-gradient(135deg, var(--lg-accent), var(--lg-accent2)); border-color: transparent; color: #fff; box-shadow: 0 12px 26px rgba(124,131,255,.4); }
+body.index-php .lavwp-btn { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 13px; font-size: 13.5px; font-weight: 700; text-decoration: none; background: var(--g-fill-2); border: 1px solid var(--g-line); color: var(--g-ink); transition: transform .15s var(--ease), background .15s var(--ease); }
+body.index-php .lavwp-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.16); color: #fff; }
+body.index-php .lavwp-btn.primary { background: linear-gradient(135deg, var(--g-accent), var(--g-accent2)); border-color: transparent; color: #fff; box-shadow: 0 12px 28px rgba(124,131,255,.45); }
 body.index-php .lavwp-btn.ghost { background: transparent; }
 
-/* hide the default WP "Welcome to WordPress" panel (we ship our own hero) */
-body.index-php #welcome-panel .welcome-panel-content { color: var(--lg-mut); }
-
-/* ---- responsive + motion ---- */
-@media (max-width: 782px) {
+/* ---- 10. responsive + reduced motion ----------------------------------- */
+@media (max-width: 960px) {
+	body.index-php #adminmenu { margin: 6px; }
 	body.index-php .lavwp-quick { gap: 8px; }
-	body.index-php .lavwp-stat { flex: 1 1 40%; min-width: 0; }
+	body.index-php .lavwp-stat { flex: 1 1 42%; min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-	body.index-php #wpbody::before,
+	body.index-php::after,
 	body.index-php .lavwp-orb,
 	body.index-php .lavwp-wave { animation: none; }
 }
