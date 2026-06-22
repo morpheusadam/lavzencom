@@ -48,6 +48,7 @@ lavtheme_require( 'edd-single-product-hooks.php' );
 // Blog archive (real posts + filters).
 lavtheme_require( 'blog.php' );
 lavtheme_require( 'blog-ui.php' );
+lavtheme_require( 'single-comments.php' );
 lavtheme_require( 'edd-product-meta.php' );
 
 // Theme Code Studio: per-section code editing panel (DB + file modes).
@@ -61,10 +62,15 @@ lavtheme_require( 'code-studio-pages.php' );
 lavtheme_require( 'code-studio-downloads.php' );
 lavtheme_require( 'code-studio-shop.php' );
 lavtheme_require( 'code-studio-blog.php' );
+lavtheme_require( 'code-studio-single.php' );
 lavtheme_require( 'code-studio-404.php' );
+lavtheme_require( 'code-studio-account.php' );
 
 // Read-only: download a section's saved code (Global/Schema/section, all tabs).
 lavtheme_require( 'code-studio-export.php' );
 
 // Standalone admin tool: Backlink Spam Checker (SSE + polling fallback).
 lavtheme_require( 'backlink-checker.php' );
+
+// Theme plugins: auto-load every module under plugins/<slug>/<slug>.php.
+require_once trailingslashit( get_template_directory() ) . 'plugins/loader.php';

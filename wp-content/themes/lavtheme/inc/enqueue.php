@@ -19,6 +19,37 @@ function lavtheme_asset_ver( $relative ) {
 }
 
 /**
+ * Whether the current request is an EDD purchase-flow page (checkout, success/
+ * confirmation, failed transaction, purchase history, or the configured receipt
+ * page). Used to load the theme's EDD styling only where it's needed.
+ *
+ * @return bool
+ */
+function lavtheme_is_edd_flow() {
+	if ( ! function_exists( 'edd_get_option' ) ) {
+		return false;
+	}
+	if ( function_exists( 'edd_is_checkout' ) && edd_is_checkout() ) {
+		return true;
+	}
+	if ( function_exists( 'edd_is_success_page' ) && edd_is_success_page() ) {
+		return true;
+	}
+	if ( function_exists( 'edd_is_failed_transaction_page' ) && edd_is_failed_transaction_page() ) {
+		return true;
+	}
+	$ids = array_filter( array_map( 'absint', array(
+		edd_get_option( 'purchase_page', 0 ),
+		edd_get_option( 'success_page', 0 ),
+		edd_get_option( 'failure_page', 0 ),
+		edd_get_option( 'purchase_history_page', 0 ),
+		edd_get_option( 'confirmation_page', 0 ),
+	) ) );
+
+	return ! empty( $ids ) && is_page( $ids );
+}
+
+/**
  * Enqueue front-end styles and scripts.
  */
 function lavtheme_enqueue_assets() {
@@ -51,22 +82,22 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
-	// Single blog post: article reading experience (CSS + progressive JS).
-	if ( is_singular( 'post' ) ) {
+	// EDD purchase-flow styling (checkout, cart, receipt, purchase history,
+	// confirmation, failed transaction). EDD ships unstyled markup; this maps it
+	// onto the theme tokens. Only loads on the EDD flow pages.
+	if ( lavtheme_is_edd_flow() ) {
 		wp_enqueue_style(
-			'lavtheme-single',
-			LAVTHEME_URI . 'assets/css/single.css',
+			'lavtheme-checkout',
+			LAVTHEME_URI . 'assets/css/checkout.css',
 			array( 'lavtheme-main' ),
-			lavtheme_asset_ver( 'assets/css/single.css' )
-		);
-		wp_enqueue_script(
-			'lavtheme-single',
-			LAVTHEME_URI . 'assets/js/single.js',
-			array(),
-			lavtheme_asset_ver( 'assets/js/single.js' ),
-			true
+			lavtheme_asset_ver( 'assets/css/checkout.css' )
 		);
 	}
+
+	// Single blog post CSS/JS are NOT enqueued here: the Code Studio "Single Post"
+	// context injects them (override-or-file) via lavtheme_cs_single_head() /
+	// lavtheme_cs_single_footer() (single source, edits apply live). The files in
+	// assets/css|js/single.* remain on disk as the editor defaults + fallback.
 
 	// Shop archive CSS/JS are NOT enqueued here anymore: the Code Studio "Shop
 	// (archive)" context injects them (override-or-file) via

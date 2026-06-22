@@ -86,7 +86,7 @@
 .lav-shop .sort { display: flex; align-items: center; gap: 10px; }
 .lav-shop .sort label { font-size: 13px; color: var(--muted); }
 .lav-shop .sort select { height: 42px; padding: 0 36px 0 14px; border-radius: var(--r-sm); color: #fff; font-family: var(--sans); font-size: 14px; cursor: pointer; background: var(--glass-1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%239aa3bd' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; border: 1px solid var(--stroke); -webkit-appearance: none; appearance: none; }
-.lav-shop .sort select option { background: #141a2e; color: #fff; }
+.lav-shop .sort select option { background: var(--menu-bg); color: #fff; }
 
 /* active chips */
 .lav-shop .active-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -114,7 +114,8 @@
 .lav-shop .pfav.is-on svg { fill: #fff; }
 .lav-shop .pfav svg { width: 17px; height: 17px; }
 .lav-shop .pquick { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 40px; border: 1px solid var(--stroke-soft); border-radius: var(--r-sm); background: rgba(11,17,32,.78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #fff; font-family: var(--sans); font-weight: 600; font-size: 13px; cursor: pointer; opacity: 0; transform: translateY(8px); transition: .2s var(--ease); z-index: 2; }
-.lav-shop .pcard:hover .pquick { opacity: 1; transform: translateY(0); }
+.lav-shop .pcard:hover .pquick, .lav-shop .pcard:focus-within .pquick { opacity: 1; transform: translateY(0); }
+.lav-shop .pbuy:focus-visible, .lav-shop .pfav:focus-visible, .lav-shop .pquick:focus-visible, .lav-shop .apply-btn:focus-visible, .lav-shop .view-toggle button:focus-visible, .lav-shop .page-numbers:focus-visible { outline: 0; box-shadow: var(--focus); }
 .lav-shop .pbody { padding: var(--s4) var(--s5) var(--s5); display: flex; flex-direction: column; gap: 10px; flex: 1; }
 .lav-shop .pcat { font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
 .lav-shop .ptitle { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: .3px; line-height: 1.3; color: #fff; }
@@ -126,9 +127,9 @@
 .lav-shop .pprice .now { font-family: var(--display); font-weight: 600; font-size: 22px; color: #fff; }
 .lav-shop .pprice .now .edd_price { color: #fff; }
 .lav-shop .pprice .was { font-size: 14px; color: var(--muted); text-decoration: line-through; }
-.lav-shop .pbuy { height: 40px; padding: 0 18px; border: none; border-radius: var(--r-sm); cursor: pointer; font-family: var(--sans); font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: var(--ink); transition: .16s var(--ease); white-space: nowrap; }
+.lav-shop .pbuy { height: 40px; padding: 0 18px; border: none; border-radius: var(--r-sm); cursor: pointer; font-family: var(--sans); font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; background: var(--cta); color: var(--cta-ink); transition: .16s var(--ease); white-space: nowrap; }
 .lav-shop .pbuy svg { width: 15px; height: 15px; }
-.lav-shop .pbuy:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(124,131,255,.4); }
+.lav-shop .pbuy:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(245,197,24,.4); }
 /* EDD purchase form normalised inside the card foot */
 .lav-shop .pfoot .edd_download_purchase_form, .lav-shop .pfoot .edd_purchase_submit_wrapper { margin: 0; padding: 0; display: inline-flex; }
 .lav-shop .pfoot .edd-cart-added-alert { display: none; }

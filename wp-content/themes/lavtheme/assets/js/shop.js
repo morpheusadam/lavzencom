@@ -47,6 +47,8 @@
 			fill.style.width = ( ( mx - mn ) / span * 100 ) + '%';
 			if ( bubMin ) { bubMin.textContent = money( mn ); }
 			if ( bubMax ) { bubMax.textContent = money( mx ); }
+			rMin.setAttribute( 'aria-valuetext', money( mn ) );
+			rMax.setAttribute( 'aria-valuetext', money( mx ) );
 		};
 		rMin.addEventListener( 'input', function() { paint( rMin ); } );
 		rMax.addEventListener( 'input', function() { paint( rMax ); } );
@@ -84,11 +86,14 @@
 
 	/* ---- quick view ---- */
 	var qv = document.getElementById( 'lavQv' );
-	function qvOpen( card ) {
+	var qvLast = null;
+	function qvOpen( card, trigger ) {
 		if ( ! qv ) { return; }
+		qvLast = trigger || null;
 		var d = function( k ) { return card.getAttribute( 'data-' + k ) || ''; };
 		var set = function( sel, val, attr ) { var el = qv.querySelector( sel ); if ( ! el ) { return; } if ( attr ) { el.setAttribute( attr, val ); } else { el.textContent = val; } };
 		set( '[data-qv-img]', d( 'img' ), 'src' );
+		set( '[data-qv-img]', d( 'title' ), 'alt' );
 		set( '[data-qv-cat]', d( 'cat' ) );
 		set( '[data-qv-title]', d( 'title' ) );
 		set( '[data-qv-price]', d( 'price' ) );
@@ -96,14 +101,30 @@
 		set( '[data-qv-link]', d( 'url' ), 'href' );
 		qv.hidden = false;
 		document.body.style.overflow = 'hidden';
+		var closeBtn = qv.querySelector( '[data-qv-close]' );
+		if ( closeBtn ) { closeBtn.focus(); }
 	}
-	function qvClose() { if ( qv ) { qv.hidden = true; document.body.style.overflow = ''; } }
+	function qvClose() {
+		if ( ! qv ) { return; }
+		qv.hidden = true;
+		document.body.style.overflow = '';
+		if ( qvLast ) { qvLast.focus(); qvLast = null; }
+	}
 	root.addEventListener( 'click', function( e ) {
 		var q = e.target.closest( '.pquick' );
-		if ( q ) { e.preventDefault(); qvOpen( q.closest( '.pcard' ) ); }
+		if ( q ) { e.preventDefault(); qvOpen( q.closest( '.pcard' ), q ); }
 	} );
 	if ( qv ) {
 		qv.addEventListener( 'click', function( e ) { if ( e.target.closest( '[data-qv-close]' ) ) { qvClose(); } } );
+		// Focus trap inside the dialog (keeps Tab within the modal).
+		qv.addEventListener( 'keydown', function( e ) {
+			if ( e.key !== 'Tab' ) { return; }
+			var f = Array.prototype.slice.call( qv.querySelectorAll( 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])' ) ).filter( function( el ) { return ! el.disabled && el.offsetParent !== null; } );
+			if ( ! f.length ) { return; }
+			var first = f[ 0 ], last = f[ f.length - 1 ];
+			if ( e.shiftKey && document.activeElement === first ) { e.preventDefault(); last.focus(); }
+			else if ( ! e.shiftKey && document.activeElement === last ) { e.preventDefault(); first.focus(); }
+		} );
 	}
 
 	document.addEventListener( 'keydown', function( e ) {

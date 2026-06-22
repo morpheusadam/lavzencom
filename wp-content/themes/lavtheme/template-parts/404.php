@@ -25,7 +25,7 @@ if ( $lav_cats && ! is_wp_error( $lav_cats ) ) {
 	}
 }
 ?>
-<main class="lav-404" id="content" role="main">
+<div class="lav-404" id="content">
 	<div class="e-card glass">
 
 		<div class="e-code" data-parallax aria-hidden="true">
@@ -73,4 +73,4 @@ if ( $lav_cats && ! is_wp_error( $lav_cats ) ) {
 		<?php endif; ?>
 
 	</div>
-</main>
+</div><!-- #content -->

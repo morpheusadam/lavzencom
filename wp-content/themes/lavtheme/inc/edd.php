@@ -166,9 +166,10 @@ function lavtheme_category_bubbles_html() {
 	$more = function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : get_post_type_archive_link( 'download' );
 	if ( $more ) {
 		printf(
-			'<a class="ibubble is-more" href="%1$s"><span class="bub" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="19" cy="12" r="2.2" fill="currentColor"/></svg></span><span class="ilabel">%2$s</span></a>',
+			'<a class="ibubble is-more" href="%1$s" aria-label="%3$s"><span class="bub" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="19" cy="12" r="2.2" fill="currentColor"/></svg></span><span class="ilabel">%2$s</span></a>',
 			esc_url( $more ),
-			esc_html__( 'More', 'lavtheme' )
+			esc_html__( 'All products', 'lavtheme' ),
+			esc_attr__( 'Browse all products', 'lavtheme' )
 		);
 	}
 

@@ -28,7 +28,7 @@
 	aspect-ratio: 16 / 10;
 	overflow: hidden;
 	position: relative;
-	background: linear-gradient(135deg, var(--accent), #8b5cf6);
+	background: linear-gradient(135deg, var(--accent), var(--accent-3));
 }
 
 .lavp-thumb img {
@@ -91,7 +91,7 @@
 	padding: 8px 14px;
 	border-radius: 11px;
 	border: 1px solid rgba(255, 255, 255, .22);
-	background: linear-gradient(180deg, var(--accent), #8b5cf6);
+	background: linear-gradient(180deg, var(--accent), var(--accent-3));
 	box-shadow: 0 6px 16px rgba(124, 131, 255, .4);
 }
 

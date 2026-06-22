@@ -35,6 +35,12 @@ function lavtheme_cs_dl_valid( $ctx ) {
 	if ( '404' === $ctx ) {
 		return true; // the error page always exists.
 	}
+	if ( 'single' === $ctx ) {
+		return true; // single posts always exist as a type.
+	}
+	if ( 'account' === $ctx ) {
+		return true; // the My Account dashboard context always exists.
+	}
 	if ( 'shop' === $ctx ) {
 		// The shop (download archive) reuses the dl context plumbing.
 		return post_type_exists( 'download' );
@@ -80,7 +86,7 @@ function lavtheme_cs_dl_products() {
 /* ============================ registry & values =========================== */
 
 function lavtheme_cs_dl_builtin( $ctx ) {
-	if ( 'shop' === $ctx || 'blog' === $ctx || '404' === $ctx ) {
+	if ( 'shop' === $ctx || 'blog' === $ctx || '404' === $ctx || 'single' === $ctx || 'account' === $ctx ) {
 		// Archive / standalone context: Global (CSS/JS/Background) + editable Template.
 		return array(
 			array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),

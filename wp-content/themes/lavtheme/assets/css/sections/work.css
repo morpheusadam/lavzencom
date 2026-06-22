@@ -38,6 +38,6 @@
 .case-detail p::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--text-3)}
 .case-detail p.res::before{background:var(--c,var(--accent));box-shadow:0 0 8px var(--c,var(--accent))}
 .case-detail strong{color:var(--text-1,#fff);font-weight:600}
-.cg-growth{--c:var(--accent);--c2:#8b5cf6;--c-soft:rgba(124,131,255,.16)}
+.cg-growth{--c:var(--accent);--c2:var(--accent-3);--c-soft:rgba(124,131,255,.16)}
 .cg-automate{--c:var(--green);--c2:#65a30d;--c-soft:rgba(163,230,53,.16)}
 .cg-build{--c:var(--blue);--c2:#2563eb;--c-soft:rgba(74,158,255,.16)}

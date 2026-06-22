@@ -17,7 +17,7 @@
 .hero-searchbar .si{width:20px;height:20px;color:var(--text-3);flex:0 0 auto}
 .hero-searchbar input{flex:1;min-width:0;background:0 0;border:none;outline:0;color:#fff;font-family:var(--sans);font-size:15px}
 .hero-searchbar input::placeholder{color:var(--text-3)}
-.hero-searchbar .go{flex:0 0 auto;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:700;color:#fff;padding:0 24px;min-height:44px;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,var(--accent),#8b5cf6);box-shadow:0 8px 22px rgba(124,131,255,.4);transition:.18s var(--ease);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.hero-searchbar .go{flex:0 0 auto;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:700;color:#fff;padding:0 24px;min-height:44px;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,var(--accent),var(--accent-3));box-shadow:0 8px 22px rgba(124,131,255,.4);transition:.18s var(--ease);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
 .hero-searchbar .go:hover{transform:translateY(-1px);filter:brightness(1.06)}
 .hero-searchbar .go svg{width:15px;height:15px}
 .hero-results{position:absolute;left:0;right:0;top:calc(100% + 10px);background:rgba(18,15,13,.92);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid var(--stroke);border-radius:var(--r-lg);box-shadow:0 24px 60px rgba(0,0,0,.6);padding:12px;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s var(--ease);max-height:340px;overflow-y:auto;z-index:20}
@@ -56,7 +56,7 @@
 .pcard .foot .price{display:flex;align-items:baseline;gap:7px}
 .pcard .foot .price .now{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.3px}
 .pcard .foot .price .was{font-size:13px;color:var(--text-3);text-decoration:line-through}
-.pcard .foot .add{cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;color:#fff;padding:9px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,var(--accent),#8b5cf6);box-shadow:0 6px 16px rgba(124,131,255,.4)}
+.pcard .foot .add{cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;color:#fff;padding:9px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,var(--accent),var(--accent-3));box-shadow:0 6px 16px rgba(124,131,255,.4)}
 .pfloat{position:absolute;z-index:4;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 60%),rgba(255,255,255,.1);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid var(--stroke);border-radius:var(--r-pill);padding:9px 14px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.5);animation:5s ease-in-out infinite pBob}
 .pfloat .fd{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
 .pfloat.f1{top:24px;left:-6px}

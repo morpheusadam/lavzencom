@@ -93,3 +93,48 @@ function lavtheme_perf_defer_scripts( $tag, $handle ) {
 	return $tag;
 }
 add_filter( 'script_loader_tag', 'lavtheme_perf_defer_scripts', 10, 2 );
+
+/* -------------------------------------------------------------------------
+ * Security response headers — addresses Lighthouse "Trust and safety"
+ * (HSTS, COOP, clickjacking, MIME-sniffing, referrer & permissions policy).
+ * Only sent on front-end HTML responses; admin, REST, AJAX and feeds are left
+ * untouched. A strict script-src CSP is intentionally omitted (the theme ships
+ * inline bootstrap scripts); add one per-site via the filter when ready.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Emit hardening headers for public front-end requests.
+ */
+function lavtheme_perf_security_headers() {
+	if ( is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || is_feed() || is_robots() ) {
+		return;
+	}
+	if ( headers_sent() ) {
+		return;
+	}
+
+	$headers = array(
+		// Force HTTPS for a year incl. subdomains; eligible for the preload list.
+		'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
+		// Block MIME-type sniffing.
+		'X-Content-Type-Options'    => 'nosniff',
+		// Clickjacking protection (kept alongside CSP frame-ancestors if added).
+		'X-Frame-Options'           => 'SAMEORIGIN',
+		// Trim referrer leakage to other origins.
+		'Referrer-Policy'           => 'strict-origin-when-cross-origin',
+		// Isolate the browsing context from cross-origin popups (COOP).
+		'Cross-Origin-Opener-Policy' => 'same-origin',
+		// Lock down powerful features the site does not use.
+		'Permissions-Policy'        => 'geolocation=(), camera=(), microphone=(), browsing-topics=()',
+	);
+
+	/** Filter the full set of security headers (e.g. to add Content-Security-Policy). */
+	$headers = (array) apply_filters( 'lavtheme_security_headers', $headers );
+
+	foreach ( $headers as $name => $value ) {
+		if ( '' !== (string) $value ) {
+			header( $name . ': ' . $value );
+		}
+	}
+}
+add_action( 'send_headers', 'lavtheme_perf_security_headers' );

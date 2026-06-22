@@ -67,8 +67,14 @@ class Lav_CS_Source_Reader {
 		if ( 'blog' === $ctx ) {
 			return 'template-parts/blog.php';
 		}
+		if ( 'single' === $ctx ) {
+			return 'template-parts/single-article.php';
+		}
 		if ( '404' === $ctx ) {
 			return 'template-parts/404.php';
+		}
+		if ( 'account' === $ctx ) {
+			return 'template-parts/account.php';
 		}
 		if ( 'dl-template' === $ctx || 0 === strpos( (string) $ctx, 'dl-' ) ) {
 			return 'template-parts/single-download-body.php';
@@ -128,8 +134,10 @@ class Lav_CS_Source_Reader {
 		$map = array(
 			'shop'        => array( 'css' => 'assets/css/shop.css', 'js' => 'assets/js/shop.js' ),
 			'blog'        => array( 'css' => 'assets/css/blog.css', 'js' => 'assets/js/blog.js' ),
+			'single'      => array( 'css' => 'assets/css/single.css', 'js' => 'assets/js/single.js' ),
 			'404'         => array( 'css' => 'assets/css/404.css', 'js' => 'assets/js/404.js' ),
 			'dl-template' => array( 'css' => 'assets/css/single-product.css', 'js' => 'assets/js/single-product.js' ),
+			'account'     => array( 'css' => 'assets/css/account.css', 'js' => 'assets/js/account.js' ),
 		);
 
 		if ( 'html' === $tab ) {

@@ -75,9 +75,21 @@ if ( ! function_exists( 'lavtheme_blog_cards_html' ) ) {
 			}
 
 			if ( has_post_thumbnail( $pid ) ) {
-				$thumb = get_the_post_thumbnail_url( $pid, 'medium_large' );
+				// Let WordPress emit width/height + srcset/sizes so the browser can
+				// pull a right-sized file (cards render ~300px wide, not 768) — cuts
+				// image payload and prevents layout shift.
+				$img_html = get_the_post_thumbnail(
+					$pid,
+					'medium_large',
+					array(
+						'alt'      => $title,
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+						'sizes'    => '(max-width: 700px) 88vw, 300px',
+					)
+				);
 			} else {
-				$thumb = lavtheme_blog_gradient( $pid );
+				$img_html = '<img decoding="async" loading="lazy" width="240" height="300" src="' . esc_url( lavtheme_blog_gradient( $pid ) ) . '" alt="' . esc_attr( $title ) . '">';
 			}
 
 			$author  = get_the_author();
@@ -90,7 +102,7 @@ if ( ! function_exists( 'lavtheme_blog_cards_html' ) ) {
 			$out .= '<a class="glass post' . $active . '" href="' . esc_url( $link ) . '">'
 				. '<div class="post-thumb">'
 				. '<span class="post-pill">' . esc_html( $pill ) . '</span>'
-				. '<img decoding="async" src="' . esc_url( $thumb ) . '" alt="' . esc_attr( $title ) . '">'
+				. $img_html
 				. '</div>'
 				. '<div class="post-body">'
 				. '<div class="post-title">' . esc_html( $title ) . '</div>'

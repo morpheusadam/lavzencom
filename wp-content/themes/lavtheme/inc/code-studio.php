@@ -473,9 +473,20 @@ function lavtheme_cs_render_page() {
 					<optgroup label="<?php esc_attr_e( 'Shop (EDD)', 'lavtheme' ); ?>">
 						<option value="shop" data-view="<?php echo esc_url( function_exists( 'lavtheme_shop_url' ) ? lavtheme_shop_url() : get_post_type_archive_link( 'download' ) ); ?>"><?php esc_html_e( 'Shop (archive)', 'lavtheme' ); ?></option>
 					</optgroup>
+					<optgroup label="<?php esc_attr_e( 'Account', 'lavtheme' ); ?>">
+						<option value="account" data-view="<?php echo esc_url( function_exists( 'lavtheme_account_url' ) ? lavtheme_account_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'My Account (dashboard)', 'lavtheme' ); ?></option>
+					</optgroup>
 				<?php endif; ?>
 				<optgroup label="<?php esc_attr_e( 'Blog', 'lavtheme' ); ?>">
 					<option value="blog" data-view="<?php echo esc_url( function_exists( 'lavtheme_blog_url' ) ? lavtheme_blog_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Blog (archive)', 'lavtheme' ); ?></option>
+					<?php
+					$lav_post_view = '';
+					$lav_recent    = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => 1, 'fields' => 'ids', 'suppress_filters' => true ) );
+					if ( ! empty( $lav_recent ) ) {
+						$lav_post_view = (string) get_permalink( $lav_recent[0] );
+					}
+					?>
+					<option value="single" data-view="<?php echo esc_url( $lav_post_view ); ?>"><?php esc_html_e( 'Single Post (template)', 'lavtheme' ); ?></option>
 				</optgroup>
 				<optgroup label="<?php esc_attr_e( 'Error pages', 'lavtheme' ); ?>">
 					<option value="404" data-view="<?php echo esc_url( home_url( '/404-page-not-found-preview/' ) ); ?>"><?php esc_html_e( '404 / Error page', 'lavtheme' ); ?></option>

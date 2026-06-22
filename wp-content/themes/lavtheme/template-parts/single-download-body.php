@@ -199,14 +199,14 @@ while ( have_posts() ) :
 				<!-- tabs -->
 				<div class="glass tabs-wrap">
 					<div class="tablist" role="tablist">
-						<button class="tab is-active" data-panel="desc" role="tab" aria-selected="true"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><?php esc_html_e( 'Description', 'lavtheme' ); ?></button>
-						<?php if ( $has_qa ) : ?><button class="tab" data-panel="faq" role="tab" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><?php esc_html_e( 'Q & A', 'lavtheme' ); ?></button><?php endif; ?>
-						<?php if ( $has_tut ) : ?><button class="tab" data-panel="tutorials" role="tab" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h20v14H2z"/><path d="m10 8 5 3-5 3V8z"/></svg></span><?php esc_html_e( 'Tutorials', 'lavtheme' ); ?></button><?php endif; ?>
-						<?php if ( $has_support ) : ?><button class="tab" data-panel="support" role="tab" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><?php esc_html_e( 'Support', 'lavtheme' ); ?></button><?php endif; ?>
+						<button class="tab is-active" data-panel="desc" role="tab" id="lavtab-desc" aria-controls="lavpanel-desc" aria-selected="true" tabindex="0"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><?php esc_html_e( 'Description', 'lavtheme' ); ?></button>
+						<?php if ( $has_qa ) : ?><button class="tab" data-panel="faq" role="tab" id="lavtab-faq" aria-controls="lavpanel-faq" aria-selected="false" tabindex="-1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><?php esc_html_e( 'Q & A', 'lavtheme' ); ?></button><?php endif; ?>
+						<?php if ( $has_tut ) : ?><button class="tab" data-panel="tutorials" role="tab" id="lavtab-tutorials" aria-controls="lavpanel-tutorials" aria-selected="false" tabindex="-1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h20v14H2z"/><path d="m10 8 5 3-5 3V8z"/></svg></span><?php esc_html_e( 'Tutorials', 'lavtheme' ); ?></button><?php endif; ?>
+						<?php if ( $has_support ) : ?><button class="tab" data-panel="support" role="tab" id="lavtab-support" aria-controls="lavpanel-support" aria-selected="false" tabindex="-1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><?php esc_html_e( 'Support', 'lavtheme' ); ?></button><?php endif; ?>
 					</div>
 
 					<!-- DESCRIPTION -->
-					<div class="panel is-active" data-panel="desc">
+					<div class="panel is-active" data-panel="desc" id="lavpanel-desc" role="tabpanel" aria-labelledby="lavtab-desc" tabindex="0">
 						<div class="intro">
 							<h2><?php printf( esc_html__( 'About %s', 'lavtheme' ), esc_html( $title ) ); ?></h2>
 							<?php the_content(); ?>
@@ -273,7 +273,7 @@ while ( have_posts() ) :
 										continue;
 									}
 									?>
-									<a class="gal-item" href="<?php echo esc_url( $g_full ? $g_full : $g_thumb ); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url( $g_thumb ); ?>" alt="" loading="lazy"></a>
+									<a class="gal-item" href="<?php echo esc_url( $g_full ? $g_full : $g_thumb ); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url( $g_thumb ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy"></a>
 								<?php endforeach; ?>
 							</div>
 						<?php endif; ?>
@@ -281,19 +281,19 @@ while ( have_posts() ) :
 
 					<!-- Q&A -->
 					<?php if ( $has_qa ) : ?>
-						<div class="panel" data-panel="faq">
+						<div class="panel" data-panel="faq" id="lavpanel-faq" role="tabpanel" aria-labelledby="lavtab-faq" tabindex="0">
 							<div class="intro"><h2><?php esc_html_e( 'Questions & Answers', 'lavtheme' ); ?></h2><?php echo wp_kses_post( wpautop( $tab_qa ) ); ?></div>
 						</div>
 					<?php endif; ?>
 					<!-- TUTORIALS -->
 					<?php if ( $has_tut ) : ?>
-						<div class="panel" data-panel="tutorials">
+						<div class="panel" data-panel="tutorials" id="lavpanel-tutorials" role="tabpanel" aria-labelledby="lavtab-tutorials" tabindex="0">
 							<div class="intro"><h2><?php esc_html_e( 'Tutorials', 'lavtheme' ); ?></h2><?php echo wp_kses_post( wpautop( $tab_tut ) ); ?></div>
 						</div>
 					<?php endif; ?>
 					<!-- SUPPORT -->
 					<?php if ( $has_support ) : ?>
-						<div class="panel" data-panel="support">
+						<div class="panel" data-panel="support" id="lavpanel-support" role="tabpanel" aria-labelledby="lavtab-support" tabindex="0">
 							<div class="intro"><h2><?php esc_html_e( 'Support', 'lavtheme' ); ?></h2><?php echo wp_kses_post( wpautop( $tab_support ) ); ?></div>
 						</div>
 					<?php endif; ?>

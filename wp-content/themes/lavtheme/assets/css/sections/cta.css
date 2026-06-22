@@ -14,7 +14,7 @@
 .cta-field svg{width:18px;height:18px;color:var(--text-3);flex:0 0 auto}
 .cta-input{height:54px;background:0 0;border:none;outline:0;color:#fff;font-family:var(--sans);font-size:15px;width:240px;max-width:60vw}
 .cta-input::placeholder{color:var(--muted)}
-.cta-submit{min-height:56px;padding:0 28px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,var(--accent),#8b5cf6);color:#fff;font-family:var(--sans);font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 10px 28px rgba(124,131,255,.38);transition:.18s var(--ease)}
+.cta-submit{min-height:56px;padding:0 28px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.22);background:var(--cta);color:var(--cta-ink);font-family:var(--sans);font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 10px 28px rgba(245,197,24,.3);transition:.18s var(--ease)}
 .cta-submit svg{width:16px;height:16px}
-.cta-submit:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 14px 34px rgba(124,131,255,.5)}
+.cta-submit:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 14px 34px rgba(245,197,24,.42)}
 .cta-submit:active{transform:translateY(0)}

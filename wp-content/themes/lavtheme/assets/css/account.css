@@ -1,0 +1,133 @@
+/**
+ * lavtheme — My Account dashboard (Code Studio "My Account" context).
+ * Inherits the Liquid-Glass tokens. Styles the theme shell (sidebar + content)
+ * AND the EDD shortcode output (orders/downloads tables, profile editor) so the
+ * whole account area reads as one designed surface. Scoped under .lav-account.
+ */
+
+/* ---------- layout ---------- */
+.lav-account { display: grid; grid-template-columns: 280px 1fr; gap: var(--s5); align-items: start; }
+
+/* ---------- sidebar ---------- */
+.lav-account .la-side { padding: var(--s5); position: sticky; top: var(--topbar-offset, 84px); display: flex; flex-direction: column; gap: var(--s4); }
+.lav-account .la-user { display: flex; align-items: center; gap: 12px; padding-bottom: var(--s4); border-bottom: 1px solid var(--stroke-soft); }
+.lav-account .la-av img { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--stroke); display: block; }
+.lav-account .la-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lav-account .la-id b { font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--text); }
+.lav-account .la-mail { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lav-account .la-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--success); margin-top: 2px; }
+.lav-account .la-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px rgba(47, 210, 122, .7); }
+
+.lav-account .la-nav { display: flex; flex-direction: column; gap: 4px; }
+.lav-account .la-navitem { display: flex; align-items: center; gap: 12px; min-height: var(--tap); padding: 0 14px; border-radius: var(--r-sm); color: var(--text-3); font-size: 14px; font-weight: 600; text-decoration: none; border: 1px solid transparent; transition: background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease); }
+.lav-account .la-navitem:hover { background: var(--glass-1); color: var(--text); }
+.lav-account .la-navitem.is-active { background: linear-gradient(180deg, rgba(124, 131, 255, .26), rgba(124, 131, 255, .12)); border-color: rgba(124, 131, 255, .45); color: #fff; }
+.lav-account .la-navitem:focus-visible { outline: 0; box-shadow: var(--focus); }
+.lav-account .la-ic { display: grid; place-items: center; flex: 0 0 20px; color: var(--accent); }
+.lav-account .la-ic svg { width: 19px; height: 19px; }
+.lav-account .la-navitem.is-active .la-ic { color: #fff; }
+.lav-account .la-logout { margin-top: 6px; color: var(--danger); }
+.lav-account .la-logout .la-ic { color: var(--danger); }
+.lav-account .la-logout:hover { background: rgba(255, 107, 138, .1); color: var(--danger); }
+
+/* ---------- main column ---------- */
+.lav-account .la-main { display: flex; flex-direction: column; gap: var(--s5); min-width: 0; }
+.lav-account .la-head h1 { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 3vw, 32px); letter-spacing: .4px; color: var(--text); }
+.lav-account .la-head p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+/* dashboard stats */
+.lav-account .la-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+.lav-account .la-stat { padding: var(--s5); display: flex; flex-direction: column; gap: 4px; text-decoration: none; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+.lav-account a.la-stat:hover { transform: translateY(-3px); box-shadow: var(--edge), var(--e2); }
+.lav-account .la-stat-n { font-family: var(--display); font-weight: 700; font-size: 30px; color: var(--text); line-height: 1; }
+.lav-account .la-stat-l { font-size: 13px; color: var(--muted); }
+
+.lav-account .la-panel { padding: var(--s6); }
+.lav-account .la-welcome h2 { font-family: var(--display); font-weight: 600; font-size: 22px; color: var(--text); }
+.lav-account .la-welcome p { color: var(--text-3); font-size: 14.5px; line-height: 1.6; margin-top: 8px; max-width: 54ch; }
+.lav-account .la-quick { display: flex; gap: 12px; flex-wrap: wrap; margin-top: var(--s5); }
+.lav-account .la-empty { color: var(--text-3); font-size: 15px; text-align: center; padding: var(--s5); }
+
+/* ---------- EDD shortcode output (orders / downloads / profile) ---------- */
+.lav-account .la-edd { color-scheme: dark; }
+.lav-account .edd_purchase_history,
+.lav-account #edd_user_history,
+.lav-account table.edd-table,
+.lav-account .edd_download_history {
+	width: 100%; border-collapse: collapse; font-family: var(--sans);
+	background: var(--glass-1); border: 1px solid var(--stroke-soft); border-radius: var(--r-md); overflow: hidden;
+}
+.lav-account .edd_purchase_history th, .lav-account .edd_download_history th, .lav-account table.edd-table th {
+	text-align: start; font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: .03em; text-transform: uppercase;
+	color: var(--text-3); padding: 14px 16px; background: var(--glass-2); border-bottom: 1px solid var(--stroke-soft);
+}
+.lav-account .edd_purchase_history td, .lav-account .edd_download_history td, .lav-account table.edd-table td {
+	padding: 14px 16px; border-bottom: 1px solid var(--stroke-soft); font-size: 14px; color: var(--text-2); vertical-align: middle;
+}
+.lav-account .edd_purchase_history tr:last-child td, .lav-account .edd_download_history tr:last-child td { border-bottom: none; }
+.lav-account .edd_purchase_history a, .lav-account .edd_download_history a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.lav-account .edd_purchase_history a:hover, .lav-account .edd_download_history a:hover { text-decoration: underline; }
+.lav-account .edd_download_file_link { display: inline-flex; align-items: center; gap: 6px; }
+
+/* status pills (complete / pending / refunded) */
+.lav-account .edd_purchase_status { display: inline-block; padding: 3px 10px; border-radius: var(--r-pill); font-size: 11.5px; font-weight: 700; text-transform: capitalize; }
+.lav-account .edd_purchase_status.publish, .lav-account .edd_purchase_status.complete { background: rgba(47, 210, 122, .14); color: #b6f0d0; }
+.lav-account .edd_purchase_status.pending, .lav-account .edd_purchase_status.processing { background: rgba(232, 197, 71, .14); color: var(--gold); }
+.lav-account .edd_purchase_status.refunded, .lav-account .edd_purchase_status.failed { background: rgba(255, 107, 138, .14); color: #ffc2cf; }
+
+/* profile editor form */
+.lav-account #edd_profile_editor_form { display: flex; flex-direction: column; gap: var(--s4); }
+.lav-account #edd_profile_editor_form fieldset { border: 1px solid var(--stroke-soft); border-radius: var(--r-md); background: var(--glass-1); padding: var(--s5); margin: 0; }
+.lav-account #edd_profile_editor_form legend { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--text); padding-bottom: var(--s3); }
+.lav-account #edd_profile_editor_form label { display: block; font-size: 13px; font-weight: 600; color: var(--text-3); margin-bottom: 6px; }
+.lav-account #edd_profile_editor_form input[type="text"],
+.lav-account #edd_profile_editor_form input[type="email"],
+.lav-account #edd_profile_editor_form input[type="password"],
+.lav-account #edd_profile_editor_form select {
+	width: 100%; min-height: 48px; padding: 0 14px; border-radius: var(--r-sm);
+	background: var(--glass-1); border: 1px solid var(--stroke); color: var(--text); font-family: var(--sans); font-size: 15px;
+	transition: border-color .16s var(--ease), box-shadow .16s var(--ease);
+}
+.lav-account #edd_profile_editor_form input:focus, .lav-account #edd_profile_editor_form select:focus { outline: 0; border-color: rgba(124, 131, 255, .55); box-shadow: var(--focus); }
+.lav-account #edd_profile_editor_form .edd-description { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+/* EDD primary buttons inside the account (brand CTA) */
+.lav-account .edd-submit.button,
+.lav-account input[type="submit"].edd-submit,
+.lav-account .edd_profile_editor_form input[type="submit"] {
+	display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+	min-height: 50px; padding: 0 28px; border: none; border-radius: var(--r-md);
+	background: var(--cta); color: var(--cta-ink); font-family: var(--sans); font-weight: 700; font-size: 15px; cursor: pointer;
+	box-shadow: 0 10px 28px rgba(245, 197, 24, .28); transition: transform .16s var(--ease), filter .16s var(--ease);
+}
+.lav-account .edd-submit:hover { transform: translateY(-2px); filter: brightness(1.03); }
+.lav-account .edd-submit:focus-visible { outline: 0; box-shadow: var(--focus); }
+
+/* EDD alerts inside the account */
+.lav-account .edd_errors, .lav-account .edd-alert { border-radius: var(--r-sm); padding: 14px 16px; font-size: 14px; margin: 0 0 var(--s4); border: 1px solid var(--stroke-soft); background: var(--glass-1); color: var(--text-2); }
+.lav-account .edd_errors { border-color: rgba(255, 107, 138, .4); background: rgba(255, 107, 138, .1); color: #ffc2cf; }
+.lav-account .edd_success, .lav-account .edd-alert-success { border-color: rgba(47, 210, 122, .4); background: rgba(47, 210, 122, .1); color: #b6f0d0; }
+
+/* ---------- guest card ---------- */
+.lav-account.is-guest { display: block; }
+.lav-account .la-guest { max-width: 460px; margin: 40px auto; padding: var(--s6); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--s3); }
+.lav-account .la-guest-ic { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: var(--glass-2); border: 1px solid var(--stroke-soft); color: var(--accent); margin-bottom: 4px; }
+.lav-account .la-guest-ic svg { width: 30px; height: 30px; }
+.lav-account .la-guest h1 { font-family: var(--display); font-weight: 700; font-size: 26px; color: var(--text); }
+.lav-account .la-guest p { color: var(--text-3); font-size: 14.5px; line-height: 1.6; }
+.lav-account .la-guest-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: var(--s3); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+	.lav-account { grid-template-columns: 1fr; }
+	.lav-account .la-side { position: static; }
+	.lav-account .la-nav { flex-direction: row; overflow-x: auto; gap: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+	.lav-account .la-nav::-webkit-scrollbar { display: none; }
+	.lav-account .la-navitem { flex: 0 0 auto; }
+	.lav-account .la-logout { margin-top: 0; }
+}
+@media (max-width: 560px) {
+	.lav-account .la-stats { grid-template-columns: 1fr; }
+	.lav-account .edd_purchase_history, .lav-account .edd_download_history, .lav-account table.edd-table { display: block; overflow-x: auto; }
+	.lav-account #edd_profile_editor_form input, .lav-account #edd_profile_editor_form select { font-size: 16px; } /* avoid iOS zoom */
+}

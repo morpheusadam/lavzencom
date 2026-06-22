@@ -3,6 +3,7 @@
 > هدف این فایل: **بدون خواندن همهٔ فایل‌ها**، با یک نگاه بفهمم برای هر درخواست باید
 > سراغ کدام فایل بروم. جزئیاتِ «چرا/چطور» در `AI_CONTEXT.md` و `AI_CONTEXT2.md` است؛
 > این فایل فقط «کجا» را می‌گوید. اگر رفتاری عوض شد، این جدول‌ها را هم به‌روز کن.
+> بخشی از مجموعهٔ **[Ai-Help](README.md)** (هاب اسناد).
 
 نقشهٔ ذهنی پروژه در یک خط: **تم کلاسیک وردپرس (lavzen.com)** که از یک طراحی HTML
 ساخته شده، محصولاتش با **EDD** است، و قلبش **Theme Code Studio** (ویرایش کد هر سکشن
@@ -31,6 +32,9 @@
 | **UI بلاگ: کارت‌ها، فیلتر بار، سایدبار، pagination** | `inc/blog-ui.php` + `assets/css/blog.css` + `assets/js/blog.js` |
 | **تمپلیت آرشیو بلاگ / صفحهٔ بلاگ** | `template-parts/blog.php`, `template-parts/blog-page-template.php`, `home.php`, `archive.php`, `search.php` |
 | **سکشن بلاگ صفحهٔ اصلی** | `template-parts/section-blog.php` |
+| **تک‌پست بلاگ: قالب/CSS/JS/کامنت** | `single.php` + `template-parts/single-article.php` + `assets/css/single.css` + `assets/js/single.js` + `comments.php` + `inc/single-comments.php` |
+| **صفحات جریان خرید EDD (checkout/receipt/history/confirmation/failed): استایل تم** | `assets/css/checkout.css` + شرطِ `lavtheme_is_edd_flow()` در `inc/enqueue.php` |
+| **داشبورد حساب کاربری (Dashboard/Orders/Downloads/Profile): قالب/CSS/JS + seed صفحه + routing + لینک پاپ‌اور** | `template-parts/account.php` + `template-parts/account-page-template.php` + `assets/css/account.css` + `assets/js/account.js` + `inc/code-studio-account.php` + `inc/menus.php` |
 
 ### Code Studio (پنل ادمین ویرایش کد)
 | اگر درخواست دربارهٔ… | برو سراغ |
@@ -44,6 +48,9 @@
 | **کانتکست تک‌محصول EDD (dl-template, توکن‌ها)** | `inc/code-studio-downloads.php` |
 | **کانتکست فروشگاه (آرشیو) در Code Studio** | `inc/code-studio-shop.php` |
 | **کانتکست بلاگ (آرشیو) در Code Studio** | `inc/code-studio-blog.php` |
+| **کانتکست تک‌پست بلاگ در Code Studio** | `inc/code-studio-single.php` |
+| **کانتکست صفحهٔ ۴۰۴ در Code Studio** | `inc/code-studio-404.php` |
+| **کانتکست داشبورد حساب (My Account) در Code Studio + seed صفحه + routing** | `inc/code-studio-account.php` |
 | **Export/Import کد سکشن (JSON)** | `inc/code-studio-export.php` |
 | **تشخیص EDD/Woo (deprecated)** | `inc/code-studio-contexts.php` |
 | **UI/منطق پنل: CodeMirror, tabs, sortable, AJAX کلاینت** | `assets/admin/code-studio.js` + `assets/admin/code-studio.css` |

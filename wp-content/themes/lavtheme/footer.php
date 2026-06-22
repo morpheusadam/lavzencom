@@ -7,6 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+echo '</main><!-- #main -->';
+
 lavtheme_render_section( 'footer' );
 ?>
 </div><!-- .main -->

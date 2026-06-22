@@ -132,6 +132,12 @@ function lavtheme_account_popover() {
 	$history  = lavtheme_edd_page_url( 'history' );
 	$checkout = lavtheme_edd_page_url( 'checkout' );
 
+	// Designed My Account dashboard (seeded page); fall back to EDD pages if absent.
+	$acct_id     = function_exists( 'lavtheme_account_page_id' ) ? lavtheme_account_page_id() : 0;
+	$acct_orders = $acct_id ? lavtheme_account_url( 'orders' ) : $history;
+	$acct_dl     = $acct_id ? lavtheme_account_url( 'downloads' ) : $history;
+	$acct_prof   = $acct_id ? lavtheme_account_url( 'profile' ) : admin_url( 'profile.php' );
+
 	ob_start();
 
 	if ( is_user_logged_in() ) {
@@ -147,13 +153,13 @@ function lavtheme_account_popover() {
 		</div>
 		<div class="acct-sep"></div>
 		<?php if ( $history ) : ?>
-			<a class="acct-item" href="<?php echo esc_url( $history ); ?>" role="menuitem"><?php echo $icons['orders']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Orders', 'lavtheme' ); ?></a>
-			<a class="acct-item" href="<?php echo esc_url( $history ); ?>" role="menuitem"><?php echo $icons['dl']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Downloads', 'lavtheme' ); ?></a>
+			<a class="acct-item" href="<?php echo esc_url( $acct_orders ); ?>" role="menuitem"><?php echo $icons['orders']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Orders', 'lavtheme' ); ?></a>
+			<a class="acct-item" href="<?php echo esc_url( $acct_dl ); ?>" role="menuitem"><?php echo $icons['dl']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Downloads', 'lavtheme' ); ?></a>
 		<?php endif; ?>
 		<?php if ( $checkout ) : ?>
 			<a class="acct-item" href="<?php echo esc_url( $checkout ); ?>" role="menuitem"><?php echo $icons['cart']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Checkout', 'lavtheme' ); ?></a>
 		<?php endif; ?>
-		<a class="acct-item" href="<?php echo esc_url( admin_url( 'profile.php' ) ); ?>" role="menuitem"><?php echo $icons['user']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Profile', 'lavtheme' ); ?></a>
+		<a class="acct-item" href="<?php echo esc_url( $acct_prof ); ?>" role="menuitem"><?php echo $icons['user']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'My Profile', 'lavtheme' ); ?></a>
 		<?php lavtheme_account_extra_menu(); ?>
 		<div class="acct-sep"></div>
 		<a class="acct-item acct-logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" role="menuitem"><?php echo $icons['out']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Log out', 'lavtheme' ); ?></a>

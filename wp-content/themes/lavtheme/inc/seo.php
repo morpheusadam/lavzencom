@@ -79,6 +79,20 @@ function lavtheme_seo_description() {
 	/** Allow overriding the computed description. */
 	$desc = (string) apply_filters( 'lavtheme_seo_description', $desc );
 
+	if ( '' === $desc ) {
+		// Guarantee a meta description always renders — e.g. the front page when
+		// the site tagline is empty, or archives with no description. Filterable
+		// so each site can tailor the wording.
+		$desc = (string) apply_filters(
+			'lavtheme_seo_default_description',
+			sprintf(
+				/* translators: %s: site name. */
+				__( '%s — premium digital downloads, automation workflows and SEO services, built to ship fast and rank.', 'lavtheme' ),
+				get_bloginfo( 'name' )
+			)
+		);
+	}
+
 	if ( mb_strlen( $desc ) > 160 ) {
 		$desc = rtrim( mb_substr( $desc, 0, 157 ), " ,.;:–-" ) . '…';
 	}

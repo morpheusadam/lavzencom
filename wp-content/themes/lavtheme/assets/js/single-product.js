@@ -13,23 +13,36 @@
 		return;
 	}
 
-	var tabs   = root.querySelectorAll( '.tab' );
+	var tabs   = Array.prototype.slice.call( root.querySelectorAll( '.tab' ) );
 	var panels = root.querySelectorAll( '.panel' );
 
-	function activate( key ) {
+	function activate( key, focusTab ) {
 		tabs.forEach( function( t ) {
 			var on = t.getAttribute( 'data-panel' ) === key;
 			t.classList.toggle( 'is-active', on );
 			t.setAttribute( 'aria-selected', on ? 'true' : 'false' );
+			t.setAttribute( 'tabindex', on ? '0' : '-1' );
+			if ( on && focusTab ) { t.focus(); }
 		} );
 		panels.forEach( function( p ) {
 			p.classList.toggle( 'is-active', p.getAttribute( 'data-panel' ) === key );
 		} );
 	}
 
-	tabs.forEach( function( t ) {
+	tabs.forEach( function( t, i ) {
 		t.addEventListener( 'click', function() {
 			activate( t.getAttribute( 'data-panel' ) );
+		} );
+		// Roving keyboard navigation (WAI-ARIA tabs pattern).
+		t.addEventListener( 'keydown', function( e ) {
+			var idx = null;
+			if ( e.key === 'ArrowRight' || e.key === 'ArrowDown' ) { idx = ( i + 1 ) % tabs.length; }
+			else if ( e.key === 'ArrowLeft' || e.key === 'ArrowUp' ) { idx = ( i - 1 + tabs.length ) % tabs.length; }
+			else if ( e.key === 'Home' ) { idx = 0; }
+			else if ( e.key === 'End' ) { idx = tabs.length - 1; }
+			if ( idx === null ) { return; }
+			e.preventDefault();
+			activate( tabs[ idx ].getAttribute( 'data-panel' ), true );
 		} );
 	} );
 

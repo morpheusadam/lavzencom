@@ -145,7 +145,7 @@
 /* accent buttons (scoped to the product page only) */
 .lav-product .btn { height: 50px; border-radius: var(--r-md); font-family: var(--sans); font-weight: 700; font-size: 15px; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: .18s var(--ease); width: 100%; }
 .lav-product .btn svg { width: 18px; height: 18px; }
-.lav-product .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 10px 28px rgba(124,131,255,.35); }
+.lav-product .btn-primary { background: var(--cta); color: var(--cta-ink); box-shadow: 0 10px 28px rgba(245,197,24,.3); }
 .lav-product .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.07); }
 
 /* EDD purchase form normalised inside the buy card */
@@ -154,7 +154,7 @@
 .lav-product .s-buy .edd-add-to-cart,
 .lav-product .s-buy .edd-add-to-cart.btn { width: 100%; }
 .lav-product .s-buy .edd-cart-added-alert { justify-content: center; margin-top: 8px; font-size: 13px; color: var(--green); }
-.lav-product .s-buy .edd_purchase_submit_wrapper a.edd-add-to-cart { background: var(--accent); color: #fff; }
+.lav-product .s-buy .edd_purchase_submit_wrapper a.edd-add-to-cart { background: var(--cta); color: var(--cta-ink); }
 
 /* seller */
 .lav-product .s-seller { padding: var(--s4); display: flex; flex-direction: column; gap: var(--s3); }
