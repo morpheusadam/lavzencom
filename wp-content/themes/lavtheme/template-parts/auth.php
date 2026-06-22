@@ -108,7 +108,7 @@ $lav_self = lavtheme_login_url();
 					<?php if ( ! $lav_reg_enabled ) : ?><div class="la-alert la-alert--error" role="alert"><?php esc_html_e( 'Sign-ups are currently closed. (Admin: enable “Anyone can register” in Settings → General.)', 'lavtheme' ); ?></div><?php endif; ?>
 					<header class="la-pane-head">
 						<h1><?php esc_html_e( 'Create your account', 'lavtheme' ); ?></h1>
-						<p><?php esc_html_e( 'It takes a minute — we’ll email a link to set your password.', 'lavtheme' ); ?></p>
+						<p><?php esc_html_e( 'Choose a username, email and password to get started.', 'lavtheme' ); ?></p>
 					</header>
 
 					<label class="la-field">
@@ -124,6 +124,17 @@ $lav_self = lavtheme_login_url();
 						<span class="la-input">
 							<span class="la-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
 							<input type="email" name="user_email" autocomplete="email" required placeholder="you@example.com" aria-required="true">
+						</span>
+					</label>
+
+					<label class="la-field">
+						<span class="la-label"><?php esc_html_e( 'Password', 'lavtheme' ); ?></span>
+						<span class="la-input">
+							<span class="la-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+							<input type="password" name="user_pass" autocomplete="new-password" required minlength="8" placeholder="<?php esc_attr_e( 'At least 8 characters', 'lavtheme' ); ?>" aria-required="true">
+							<button type="button" class="la-toggle" data-pwtoggle aria-label="<?php esc_attr_e( 'Show password', 'lavtheme' ); ?>" aria-pressed="false">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+							</button>
 						</span>
 					</label>
 

@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 $lavtheme_bubbles = function_exists( 'lavtheme_category_bubbles_html' ) ? lavtheme_category_bubbles_html() : '';
 $lavtheme_grid    = function_exists( 'lavtheme_products_grid_html' ) ? lavtheme_products_grid_html() : '';
 ?>
-<section class="block" id="products"><div class="block-head"><div><div class="kicker">Transactional engine</div><h2 class="block-title">Browse Digital Downloads</h2></div></div>
+<section class="block" id="products"><div class="block-head"><div><div class="kicker">Transactional engine</div><h2 class="block-title">Browse Digital Downloads</h2><p class="block-intro">Download premium WordPress plugins, n8n automation templates, Telegram bots, AI scripts and design assets — instant delivery, lifetime updates, and built to help you ship faster.</p></div></div>
 <?php
 if ( '' !== $lavtheme_bubbles ) {
 	echo $lavtheme_bubbles; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

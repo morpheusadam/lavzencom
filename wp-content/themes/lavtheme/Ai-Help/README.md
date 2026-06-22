@@ -20,6 +20,7 @@ editable — HTML/PHP · CSS · JS · Mobile CSS — without FTP.
 | **[AI_CONTEXT2.md](AI_CONTEXT2.md)** | **DEEP DIVE** — Code Studio internals | You're extending Code Studio itself (contexts, registry, storage, placement, PHP tab). |
 | **[AI_SKILLS.md](AI_SKILLS.md)** | **WHICH skills** to activate per task | Every request — pick the right assistant skills (wordpress-pro, frontend-design, …). |
 | **[SINGLE-PRODUCT-GUIDE.md](SINGLE-PRODUCT-GUIDE.md)** | Feature guide — the single Download page | Working on the product page (`dl-template` context). |
+| **[CHANGELOG-AI.md](CHANGELOG-AI.md)** | **WHAT CHANGED** — recent AI-session features (SEO, 404, plugins, WP Dash, checkout, brand) | You want a quick log of what was added/changed and which files. |
 | **[DEPLOY.md](DEPLOY.md)** | **SHIP** — push to the host safely (FTP + lint + cache) | You're about to upload changes to the live site. |
 | **[ui-ux-pro-max/](ui-ux-pro-max/)** | Vendored UI/UX skill (read-only reference) | You want the offline UI/UX catalogs. **Don't edit** — it's a third-party copy. |
 

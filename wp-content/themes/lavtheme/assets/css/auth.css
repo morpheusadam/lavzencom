@@ -88,16 +88,59 @@
 .lav-auth a.la-link-strong { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .lav-auth .la-home { display: none; font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: .4px; color: #fff; text-decoration: none; margin-bottom: 6px; }
 
-/* ---------- standalone full-screen page (no header / no footer) ---------- */
-.lav-auth-page { margin: 0; padding: 0; min-height: 100dvh; background: var(--bg-deep); }
-.lav-auth-page .lav-auth { min-height: 100dvh; padding: 0; align-items: stretch; }
-.lav-auth-page .la-card { max-width: none; width: 100%; min-height: 100dvh; border: none; border-radius: 0; box-shadow: none; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.lav-auth-page .la-brand { padding: clamp(40px, 6vw, 72px) clamp(32px, 6vw, 80px); }
-.lav-auth-page .la-form-wrap { padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px); align-items: center; justify-content: center; background: rgba(7, 11, 22, .5); border-left: 1px solid var(--stroke-soft); }
-.lav-auth-page .la-form-wrap > * { width: 100%; max-width: 420px; }
+/* ---------- standalone full-screen page (no header/footer) — iOS Liquid Glass ---------- */
+.lav-auth-page { margin: 0; padding: 0; min-height: 100dvh; background: #070b16; color: var(--text); }
+
+/* full-bleed animated mesh-gradient backdrop */
+.lav-auth-page::before {
+	content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+	background:
+		radial-gradient(60% 50% at 16% 20%, rgba(124, 131, 255, .50), transparent 60%),
+		radial-gradient(55% 45% at 86% 16%, rgba(34, 211, 238, .32), transparent 60%),
+		radial-gradient(60% 55% at 80% 88%, rgba(245, 197, 24, .16), transparent 62%),
+		radial-gradient(50% 50% at 18% 92%, rgba(255, 107, 157, .22), transparent 60%),
+		linear-gradient(160deg, #0b1120, #070b16);
+	animation: laMesh 24s ease-in-out infinite alternate;
+}
+@keyframes laMesh { 50% { transform: scale(1.06) translate3d(1%, -1%, 0); filter: hue-rotate(16deg); } }
+
+.lav-auth-page .lav-auth { position: relative; z-index: 1; min-height: 100dvh; padding: clamp(16px, 4vw, 44px); align-items: center; justify-content: center; }
+
+/* the floating frosted-glass card (iOS Liquid Glass) */
+.lav-auth-page .la-card {
+	position: relative; z-index: 1; max-width: 960px; width: 100%; margin: auto; overflow: hidden;
+	border-radius: 28px;
+	border: 1px solid rgba(255, 255, 255, .18);
+	background: linear-gradient(150deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .045) 55%, rgba(255, 255, 255, .08));
+	box-shadow: 0 40px 90px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .4), inset 0 -1px 1px rgba(255, 255, 255, .06);
+	backdrop-filter: blur(34px) saturate(185%);
+	-webkit-backdrop-filter: blur(34px) saturate(185%);
+}
+/* specular top highlight (the "liquid" sheen) */
+.lav-auth-page .la-card::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 40%; background: linear-gradient(180deg, rgba(255, 255, 255, .14), transparent); pointer-events: none; }
+
+.lav-auth-page .la-brand { padding: clamp(36px, 5vw, 64px) clamp(30px, 5vw, 64px); }
+.lav-auth-page .la-form-wrap { padding: clamp(36px, 5vw, 64px) clamp(26px, 4.5vw, 56px); align-items: center; justify-content: center; background: rgba(255, 255, 255, .035); border-left: 1px solid rgba(255, 255, 255, .12); position: relative; z-index: 1; }
+.lav-auth-page .la-form-wrap > * { width: 100%; max-width: 400px; }
+
+/* frostier inputs on the glass card */
+.lav-auth-page .la-input { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .16); }
+.lav-auth-page .la-tabs { background: rgba(255, 255, 255, .07); border-color: rgba(255, 255, 255, .14); }
+
+/* ---------- responsive ---------- */
 @media (max-width: 820px) {
-	.lav-auth-page .la-card { grid-template-columns: 1fr; }
+	.lav-auth-page .la-card { grid-template-columns: 1fr; max-width: 460px; border-radius: 26px; }
 	.lav-auth-page .la-brand { display: none; }
 	.lav-auth-page .la-form-wrap { border-left: none; background: transparent; }
 	.lav-auth-page .la-home { display: block; }
+}
+@media (max-width: 480px) {
+	.lav-auth-page .lav-auth { padding: 12px; }
+	.lav-auth-page .la-card { border-radius: 22px; }
+	.lav-auth-page .la-form-wrap { padding: 26px 20px; }
+	.lav-auth-page .la-form-wrap > * { max-width: 100%; }
+	.lav-auth-page .la-pane-head h1 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.lav-auth-page::before { animation: none; }
 }

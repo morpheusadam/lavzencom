@@ -68,9 +68,13 @@
 		}
 	}
 	function validate( input ) {
-		var v = ( input.value || '' ).trim();
-		if ( input.hasAttribute( 'required' ) && ! v ) { setError( input, 'This field is required.' ); return false; }
+		var raw = input.value || '';
+		var v = raw.trim();
+		var filled = input.type === 'password' ? raw : v; // don't trim passwords
+		if ( input.hasAttribute( 'required' ) && ! filled ) { setError( input, 'This field is required.' ); return false; }
 		if ( input.type === 'email' && v && ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( v ) ) { setError( input, 'Enter a valid email address.' ); return false; }
+		var min = parseInt( input.getAttribute( 'minlength' ) || '0', 10 );
+		if ( min && raw && raw.length < min ) { setError( input, 'Use at least ' + min + ' characters.' ); return false; }
 		setError( input, '' );
 		return true;
 	}

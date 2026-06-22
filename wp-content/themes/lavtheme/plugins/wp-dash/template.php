@@ -17,7 +17,7 @@ $lavwp_name  = $lavwp_user && $lavwp_user->display_name ? $lavwp_user->display_n
 $lavwp_posts = (int) wp_count_posts( 'post' )->publish;
 $lavwp_users = (int) count_users()['total_users'];
 $lavwp_prods = post_type_exists( 'download' ) ? (int) wp_count_posts( 'download' )->publish : 0;
-$lavwp_comm  = (int) wp_get_comment_count()['approved'];
+$lavwp_comm  = (int) wp_count_comments()->approved;
 
 $lavwp_stats = array(
 	array( __( 'Posts', 'lavtheme' ), $lavwp_posts ),

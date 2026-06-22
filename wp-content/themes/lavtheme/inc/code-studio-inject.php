@@ -162,13 +162,36 @@ function lavtheme_render_section( $key ) {
 }
 
 /**
+ * Normalise legacy brand tokens to the current brand in any stored/override
+ * markup (covers Code Studio DB overrides — the template files are already
+ * corrected). Filterable so a site can adjust the map or disable it.
+ *
+ * @param string $html Markup.
+ * @return string
+ */
+function lavtheme_brand_normalize( $html ) {
+	$map = (array) apply_filters(
+		'lavtheme_brand_replacements',
+		array(
+			'channeliq.com'                                     => 'lavzen.com',
+			'>CHANNEL</tspan><tspan fill="#7c83ff">IQ<'          => '>LAVZEN</tspan><tspan fill="#7c83ff">WEB<',
+			'CHANNELIQ'                                         => 'LAVZEN WEB',
+			'ChannelIQ'                                         => 'Lavzen Web',
+			'Channeliq'                                         => 'Lavzen Web',
+		)
+	);
+	return $map ? strtr( (string) $html, $map ) : (string) $html;
+}
+
+/**
  * Sanitise + expand a stored HTML override for safe output.
  *
  * @param string $html Raw stored markup.
  * @return string
  */
 function lavtheme_cs_render_html( $html ) {
-	$html = do_shortcode( (string) $html );
+	$html = lavtheme_brand_normalize( (string) $html );
+	$html = do_shortcode( $html );
 	return wp_kses( $html, lavtheme_kses_extended() );
 }
 

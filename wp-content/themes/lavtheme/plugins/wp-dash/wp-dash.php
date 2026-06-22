@@ -50,7 +50,7 @@ add_action( 'admin_enqueue_scripts', 'lavtheme_wp_dash_assets' );
  */
 function lavtheme_wp_dash_data() {
 	$posts    = (int) wp_count_posts( 'post' )->publish;
-	$comments = (int) wp_get_comment_count()['approved'];
+	$comments = (int) wp_count_comments()->approved;
 	$users    = (int) count_users()['total_users'];
 	$products = post_type_exists( 'download' ) ? (int) wp_count_posts( 'download' )->publish : 0;
 

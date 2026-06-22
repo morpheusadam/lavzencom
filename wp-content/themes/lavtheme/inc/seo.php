@@ -164,6 +164,31 @@ function lavtheme_seo_robots( $robots ) {
 }
 add_filter( 'wp_robots', 'lavtheme_seo_robots' );
 
+/**
+ * Keyword-rich front-page <title>. The default WordPress front-page title is
+ * just the site name ("Lavzen Web"), which wastes the single most important
+ * on-page SEO signal. Give the homepage a descriptive, ~55-char title covering
+ * the three pillars (products, automation, SEO). Filterable; other views keep
+ * WordPress's native title logic.
+ *
+ * @param string $title Short-circuit title ('' lets core compute it).
+ * @return string
+ */
+function lavtheme_seo_front_title( $title ) {
+	if ( is_front_page() ) {
+		$name    = get_bloginfo( 'name' );
+		$name    = $name ? $name : 'Lavzen';
+		$default = sprintf(
+			/* translators: %s: site name. */
+			__( '%s — Digital Products, Automation & SEO Services', 'lavtheme' ),
+			$name
+		);
+		return (string) apply_filters( 'lavtheme_seo_front_title', $default );
+	}
+	return $title;
+}
+add_filter( 'pre_get_document_title', 'lavtheme_seo_front_title' );
+
 /* -------------------------------------------------------------------------
  * <head> output: description, canonical, Open Graph, Twitter.
  * ---------------------------------------------------------------------- */

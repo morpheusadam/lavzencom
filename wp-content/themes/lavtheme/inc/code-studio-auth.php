@@ -121,38 +121,46 @@ function lavtheme_auth_handle() {
 		}
 		$login = isset( $_POST['user_login'] ) ? sanitize_user( wp_unslash( $_POST['user_login'] ), true ) : '';
 		$email = isset( $_POST['user_email'] ) ? sanitize_email( wp_unslash( $_POST['user_email'] ) ) : '';
+		$pass  = isset( $_POST['user_pass'] ) ? (string) wp_unslash( $_POST['user_pass'] ) : ''; // never sanitise a password
 
-		if ( function_exists( 'register_new_user' ) ) {
-			$res = register_new_user( $login, $email ); // WP core: validates, creates, emails the set-password link.
-			if ( is_wp_error( $res ) ) {
-				lavtheme_auth_error( wp_strip_all_tags( $res->get_error_message() ) );
-				return;
-			}
-		} else {
-			// Fallback: same checks WP core applies.
-			$err = new WP_Error();
-			if ( '' === $login || ! validate_username( $login ) ) {
-				$err->add( 'login', __( 'Please enter a valid username.', 'lavtheme' ) );
-			} elseif ( username_exists( $login ) ) {
-				$err->add( 'login', __( 'That username is already taken.', 'lavtheme' ) );
-			}
-			if ( ! is_email( $email ) ) {
-				$err->add( 'email', __( 'Please enter a valid email address.', 'lavtheme' ) );
-			} elseif ( email_exists( $email ) ) {
-				$err->add( 'email', __( 'That email is already registered.', 'lavtheme' ) );
-			}
-			if ( $err->has_errors() ) {
-				lavtheme_auth_error( $err->get_error_message() );
-				return;
-			}
-			$uid = wp_create_user( $login, wp_generate_password( 24, true, true ), $email );
-			if ( is_wp_error( $uid ) ) {
-				lavtheme_auth_error( wp_strip_all_tags( $uid->get_error_message() ) );
-				return;
-			}
-			wp_new_user_notification( $uid, null, 'user' ); // emails the set-password link.
+		$err = new WP_Error();
+		if ( '' === $login || ! validate_username( $login ) ) {
+			$err->add( 'login', __( 'Please enter a valid username.', 'lavtheme' ) );
+		} elseif ( username_exists( $login ) ) {
+			$err->add( 'login', __( 'That username is already taken.', 'lavtheme' ) );
 		}
-		wp_safe_redirect( add_query_arg( 'lavreg', 'sent', lavtheme_login_url() ) );
+		if ( ! is_email( $email ) ) {
+			$err->add( 'email', __( 'Please enter a valid email address.', 'lavtheme' ) );
+		} elseif ( email_exists( $email ) ) {
+			$err->add( 'email', __( 'That email is already registered.', 'lavtheme' ) );
+		}
+		if ( strlen( $pass ) < 8 ) {
+			$err->add( 'pass', __( 'Password must be at least 8 characters.', 'lavtheme' ) );
+		}
+		// Let plugins (EDD, etc.) add their own registration checks.
+		$err = apply_filters( 'registration_errors', $err, $login, $email );
+		if ( is_wp_error( $err ) && $err->has_errors() ) {
+			lavtheme_auth_error( wp_strip_all_tags( $err->get_error_message() ) );
+			return;
+		}
+
+		$uid = wp_create_user( $login, $pass, $email );
+		if ( is_wp_error( $uid ) ) {
+			lavtheme_auth_error( wp_strip_all_tags( $uid->get_error_message() ) );
+			return;
+		}
+		// Notify the admin a new user registered (the user chose their own password).
+		if ( function_exists( 'wp_new_user_notification' ) ) {
+			wp_new_user_notification( $uid, null, 'admin' );
+		}
+		// Sign the new user in immediately, then route by role.
+		$user = get_user_by( 'id', $uid );
+		wp_set_current_user( $uid );
+		wp_set_auth_cookie( $uid, true, is_ssl() );
+		if ( $user instanceof WP_User ) {
+			do_action( 'wp_login', $user->user_login, $user );
+		}
+		wp_safe_redirect( lavtheme_auth_redirect_for( $user ) );
 		exit;
 	}
 }
