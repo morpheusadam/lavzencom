@@ -331,8 +331,16 @@ function lavtheme_wp_dash_ctx_get( $type ) {
 
 /** Inject the dashboard skin CSS into the Dashboard <head>. */
 function lavtheme_wp_dash_skin_css() {
-	if ( ! lavtheme_wp_dash_is_home() ) {
+	if ( ! is_admin() ) {
 		return;
+	}
+	// Apply across the whole admin (scoped to body.wp-admin in the CSS) so the
+	// look never "jumps" between menu items. The block editor keeps its own UI.
+	if ( function_exists( 'get_current_screen' ) ) {
+		$screen = get_current_screen();
+		if ( $screen && method_exists( $screen, 'is_block_editor' ) && $screen->is_block_editor() ) {
+			return;
+		}
 	}
 	$css = lavtheme_wp_dash_ctx_get( 'css' );
 	$m   = function_exists( 'lavtheme_cs_dl_get' ) ? (string) lavtheme_cs_dl_get( 'wp-dash', 'design', 'mcss' ) : '';

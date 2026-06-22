@@ -207,20 +207,43 @@ function lavtheme_security_fingerprint() {
 	);
 	add_filter( 'x_redirect_by', '__return_false' );
 
-	// Strip the ?ver= query that equals the core version (hides the WP version
-	// while keeping real file-version cache-busting on theme/plugin assets).
-	$strip_core_ver = function ( $src ) {
-		if ( ! $src ) {
+	// Mask ALL asset versions: replace every ?ver=… with a stable 8-char hash, so
+	// fingerprinters can't read "EDD 3.6.8", "jQuery 3.7.1", etc., while per-version
+	// cache-busting still works (same version → same hash).
+	$mask_ver = function ( $src ) {
+		if ( ! $src || false === strpos( $src, 'ver=' ) ) {
 			return $src;
 		}
-		$v = get_bloginfo( 'version' );
-		if ( $v && false !== strpos( $src, 'ver=' . $v ) ) {
-			$src = remove_query_arg( 'ver', $src );
-		}
-		return $src;
+		return preg_replace_callback(
+			'/([?&]ver=)([^&#]+)/',
+			function ( $m ) {
+				$salt = defined( 'AUTH_SALT' ) ? AUTH_SALT : 'lavsec';
+				return $m[1] . substr( md5( $m[2] . $salt ), 0, 8 );
+			},
+			$src
+		);
 	};
-	add_filter( 'style_loader_src', $strip_core_ver, 9999 );
-	add_filter( 'script_loader_src', $strip_core_ver, 9999 );
+	add_filter( 'style_loader_src', $mask_ver, 9999 );
+	add_filter( 'script_loader_src', $mask_ver, 9999 );
+
+	// Drop jQuery Migrate on the front (a WordPress/version tell; modern jQuery
+	// rarely needs it).
+	add_action(
+		'wp_default_scripts',
+		function ( $scripts ) {
+			if ( is_admin() ) {
+				return;
+			}
+			if ( isset( $scripts->registered['jquery'] ) && ! empty( $scripts->registered['jquery']->deps ) ) {
+				$scripts->registered['jquery']->deps = array_diff( $scripts->registered['jquery']->deps, array( 'jquery-migrate' ) );
+			}
+		}
+	);
+
+	// Remove the wp-embed script and the RSS feed <link> advertisements.
+	add_action( 'wp_enqueue_scripts', function () { wp_dequeue_script( 'wp-embed' ); }, 100 );
+	remove_action( 'wp_head', 'feed_links', 2 );
+	remove_action( 'wp_head', 'feed_links_extra', 3 );
 }
 
 if ( lavtheme_security_on( 'fingerprint' ) ) {
