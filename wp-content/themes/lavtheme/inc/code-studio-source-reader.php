@@ -67,6 +67,9 @@ class Lav_CS_Source_Reader {
 		if ( 'blog' === $ctx ) {
 			return 'template-parts/blog.php';
 		}
+		if ( '404' === $ctx ) {
+			return 'template-parts/404.php';
+		}
 		if ( 'dl-template' === $ctx || 0 === strpos( (string) $ctx, 'dl-' ) ) {
 			return 'template-parts/single-download-body.php';
 		}
@@ -125,6 +128,7 @@ class Lav_CS_Source_Reader {
 		$map = array(
 			'shop'        => array( 'css' => 'assets/css/shop.css', 'js' => 'assets/js/shop.js' ),
 			'blog'        => array( 'css' => 'assets/css/blog.css', 'js' => 'assets/js/blog.js' ),
+			'404'         => array( 'css' => 'assets/css/404.css', 'js' => 'assets/js/404.js' ),
 			'dl-template' => array( 'css' => 'assets/css/single-product.css', 'js' => 'assets/js/single-product.js' ),
 		);
 
@@ -175,9 +179,14 @@ class Lav_CS_Source_Reader {
 		return is_readable( $path ) ? (string) file_get_contents( $path ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 	}
 
+	/** Widest max-width (px) treated as a "mobile" @media query. */
+	const MOBILE_MAX = 768;
+
 	/**
 	 * Extract the mobile layer of a stylesheet: every @media block whose query
-	 * targets a viewport <= 640px wide. Brace-aware (handles nested rules).
+	 * targets a phone-width viewport (max-width <= MOBILE_MAX, e.g. the theme's
+	 * 640 / 680 / 380px breakpoints), excluding tablet/desktop (980 / 1024px).
+	 * Brace-aware (handles nested rules).
 	 *
 	 * @param string $css Full stylesheet.
 	 * @return string Concatenated @media blocks, or ''.
@@ -229,7 +238,7 @@ class Lav_CS_Source_Reader {
 	 */
 	protected static function is_mobile_query( $prelude ) {
 		if ( preg_match( '/max-width\s*:\s*(\d+)\s*px/i', $prelude, $m ) ) {
-			return (int) $m[1] <= 640;
+			return (int) $m[1] <= self::MOBILE_MAX;
 		}
 		return false;
 	}

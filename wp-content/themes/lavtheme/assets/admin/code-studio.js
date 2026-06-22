@@ -425,14 +425,14 @@
 		function escHtml( s ) { return $( '<div>' ).text( s == null ? '' : s ).html(); }
 		function escAttr( s ) { return String( s == null ? '' : s ).replace( /"/g, '&quot;' ); }
 		function pmode( type ) {
-			if ( type === 'css' || type === 'bg' ) { return 'text/css'; }
+			if ( type === 'css' || type === 'bg' || type === 'mcss' ) { return 'text/css'; }
 			if ( type === 'js' ) { return 'text/javascript'; }
 			if ( type === 'json' ) { return 'application/json'; }
 			return 'application/x-httpd-php';
 		}
 		// Dispatch page vs download AJAX based on the current context. The shop
 		// (download archive) reuses the download (dl) AJAX handlers + context param.
-		function ctxIsDl() { return currentCtx.indexOf( 'dl-' ) === 0 || currentCtx === 'shop' || currentCtx === 'blog'; }
+		function ctxIsDl() { return currentCtx.indexOf( 'dl-' ) === 0 || currentCtx === 'shop' || currentCtx === 'blog' || currentCtx === '404'; }
 		function ctxPost( name, extra ) {
 			var d = { action: ( ctxIsDl() ? 'lavtheme_cs_dl_' : 'lavtheme_cs_page_' ) + name, nonce: LavthemeCS.nonce };
 			if ( ctxIsDl() ) { d.context = currentCtx; } else { d.page_id = currentPage; }
@@ -480,6 +480,16 @@
 				} );
 				$tabs.append( '<span class="lavcs-spacer"></span><button type="button" class="button lavcs-fullscreen">⤢</button>' );
 				$panel.append( $tabs );
+
+				// The unified Template section: tell the user which real file backs the
+				// HTML/PHP tab, and warn when Elementor (canvas) owns the markup.
+				if ( sec.slug === 'design' ) {
+					if ( sec.elementor ) {
+						$panel.append( '<p class="lavcs-php-warn" style="margin:8px 0;">⚠ ' + escHtml( 'This page is built with Elementor (canvas), which bypasses the_content — Code Studio has no control over its HTML/PHP here. CSS, JS, Mobile CSS and Schema still apply.' ) + '</p>' );
+					} else if ( sec.template ) {
+						$panel.append( '<p class="description" style="margin:8px 0;">' + escHtml( 'HTML / PHP shows the real template that renders this context: ' ) + '<code>' + escHtml( sec.template ) + '</code>. ' + escHtml( 'Edit + Save to override it (PHP sections must be unlocked to run).' ) + '</p>' );
+					}
+				}
 
 				types.forEach( function ( t, ti ) {
 					var $w = $( '<div class="lavcs-editorwrap' + ( ti === 0 ? ' is-active' : '' ) + '" data-type="' + escAttr( t ) + '"></div>' );

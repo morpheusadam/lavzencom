@@ -224,6 +224,9 @@ function lavtheme_cs_builtin_base_css() {
  * Inject section + global CSS overrides in the head (after the base CSS).
  */
 function lavtheme_cs_head_css() {
+	if ( is_404() ) {
+		return; // the standalone error page uses its own '404' context CSS.
+	}
 	$css = '';
 
 	foreach ( array( 'root', 'css', 'bg' ) as $type ) {
@@ -272,6 +275,9 @@ add_action( 'wp_head', 'lavtheme_cs_head_css', 100 );
  * Inject section + global JS in the footer.
  */
 function lavtheme_cs_footer_js() {
+	if ( is_404() ) {
+		return; // the standalone error page uses its own '404' context JS (no header/footer DOM).
+	}
 	// One shared scope (exactly like the original single main.js) so helpers
 	// such as go() and shared vars are visible to every section. Global runs
 	// FIRST, then sections in order, so anything depending on go() works.

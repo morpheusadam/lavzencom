@@ -140,7 +140,29 @@ function lavtheme_cs_page_registry( $id ) {
 	if ( ! is_array( $reg ) || empty( $reg ) ) {
 		$reg = lavtheme_cs_page_builtin();
 		update_option( $opt, $reg );
+		return $reg;
 	}
+
+	// Migration: add the unified "Template (this page)" section (after Schema) to
+	// registries created before it existed.
+	if ( ! in_array( 'design', wp_list_pluck( $reg, 'slug' ), true ) ) {
+		$design   = array( 'slug' => 'design', 'label' => 'Template (this page)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false );
+		$new      = array();
+		$inserted = false;
+		foreach ( $reg as $r ) {
+			$new[] = $r;
+			if ( ! $inserted && isset( $r['slug'] ) && 'schema' === $r['slug'] ) {
+				$new[]    = $design;
+				$inserted = true;
+			}
+		}
+		if ( ! $inserted ) {
+			array_unshift( $new, $design );
+		}
+		$reg = $new;
+		update_option( $opt, $reg );
+	}
+
 	return $reg;
 }
 
@@ -180,7 +202,24 @@ function lavtheme_cs_page_get( $id, $slug, $type ) {
 		$p = get_post( $id );
 		return $p ? (string) $p->post_content : '';
 	}
-	$stored = get_option( lavtheme_cs_page_key( $id, $slug, $type ), null );
+
+	$key    = lavtheme_cs_page_key( $id, $slug, $type );
+	$stored = get_option( $key, null );
+	if ( null !== $stored && '' !== $stored ) {
+		return (string) $stored;
+	}
+
+	// The Template (design) section is pre-filled from the real render chain:
+	// HTML/PHP ← the resolved page template, CSS/JS ← per-page layers (empty by
+	// default), Mobile CSS ← extracted @640 layer. The body (html) always shows
+	// the real template; css/js/mcss honour an intentional clear.
+	if ( 'design' === $slug ) {
+		if ( '' === $stored && '' !== get_option( $key . '_empty', '' ) && 'html' !== $type ) {
+			return '';
+		}
+		return Lav_CS_Source_Reader::default_value( 'page-' . absint( $id ), $type );
+	}
+
 	return ( null !== $stored ) ? (string) $stored : '';
 }
 
@@ -196,6 +235,11 @@ function lavtheme_cs_page_fields( $rec ) {
 	}
 	if ( 'schema' === $rec['slug'] ) {
 		return array( 'json' => 'JSON-LD Schema' );
+	}
+	if ( 'design' === $rec['slug'] ) {
+		// Unified five tabs (HTML/PHP, CSS, JS, Mobile CSS, PHP) — the real code
+		// that renders this page, resolved by Lav_CS_Source_Reader.
+		return Lav_CS_Source_Reader::tabs();
 	}
 	if ( ! empty( $rec['pagecontent'] ) ) {
 		return array( 'html' => 'Page Content (post_content)' );
@@ -267,6 +311,9 @@ function lavtheme_cs_page_head() {
 		if ( 'global' === $r['slug'] ) {
 			$c .= "\n" . (string) get_option( lavtheme_cs_page_key( $id, 'global', 'bg' ), '' );
 		}
+		if ( 'design' === $r['slug'] ) {
+			$c .= "\n" . (string) get_option( lavtheme_cs_page_key( $id, 'design', 'mcss' ), '' );
+		}
 		if ( '' !== trim( $c ) ) {
 			$css .= "\n" . $c;
 		}
@@ -326,6 +373,97 @@ function lavtheme_cs_page_footer() {
 	}
 }
 add_action( 'wp_footer', 'lavtheme_cs_page_footer', 101 );
+
+/* =========================================================================
+ * Editable per-page Template (design/html) — render chain
+ * ====================================================================== */
+
+/**
+ * Compose the editable Template body for a page: optional extra-PHP output
+ * (design/php) + the HTML/PHP override (design/html), with a guaranteed
+ * fall-through to the real resolved template file. Returns '' to let the
+ * caller include the file directly (also when PHP sections are locked).
+ *
+ * @param int $id Page id.
+ * @return string
+ */
+function lavtheme_cs_page_compose_body( $id ) {
+	$id = absint( $id );
+	if ( ! $id || ! lavtheme_cs_php_allowed() ) {
+		return '';
+	}
+	$body_override = (string) get_option( lavtheme_cs_page_key( $id, 'design', 'html' ), '' );
+	$php_extra     = (string) get_option( lavtheme_cs_page_key( $id, 'design', 'php' ), '' );
+	if ( '' === trim( $body_override ) && '' === trim( $php_extra ) ) {
+		return '';
+	}
+	$pre  = '' !== trim( $php_extra ) ? lavtheme_cs_run_php( $php_extra ) : '';
+	$body = '' !== trim( $body_override ) ? lavtheme_cs_run_php( $body_override ) : '';
+	if ( '' === trim( $body ) ) {
+		ob_start();
+		$path = get_theme_file_path( Lav_CS_Source_Reader::resolve_page_template( $id ) );
+		if ( is_readable( $path ) ) {
+			include $path;
+		}
+		$body = (string) ob_get_clean();
+	}
+	return $pre . $body;
+}
+
+/**
+ * Materialise the dedicated per-page template copy (File mode only). In DB mode
+ * the override is stored as an option and rendered live; no file is written.
+ *
+ * @param int    $id      Page id.
+ * @param string $content Template body.
+ */
+function lavtheme_cs_page_materialise_copy( $id, $content ) {
+	if ( ! lavtheme_cs_file_allowed() || ! function_exists( 'lavtheme_cs_fs_write' ) ) {
+		return;
+	}
+	$rel  = Lav_CS_Source_Reader::page_copy_rel( $id );
+	$path = get_theme_file_path( $rel );
+	if ( '' === trim( $content ) ) {
+		if ( file_exists( $path ) && function_exists( 'wp_delete_file' ) ) {
+			wp_delete_file( $path );
+		}
+		return;
+	}
+	$err = '';
+	lavtheme_cs_fs_write( $rel, $content, $err );
+}
+
+/**
+ * Route a single page through the editable Template loader, but ONLY when it
+ * has a non-empty Template (design/html) override AND PHP sections are unlocked
+ * AND it is not an Elementor canvas page. With no override the template is
+ * returned untouched — default page rendering is unchanged (zero risk).
+ *
+ * @param string $template Resolved template path.
+ * @return string
+ */
+function lavtheme_cs_page_template_include( $template ) {
+	if ( is_admin() || ! is_page() ) {
+		return $template;
+	}
+	$id = (int) get_queried_object_id();
+	if ( ! $id || ! lavtheme_cs_php_allowed() ) {
+		return $template;
+	}
+	if ( Lav_CS_Source_Reader::is_elementor( $id ) ) {
+		return $template; // builder owns the markup; don't fight it.
+	}
+	if ( function_exists( 'lavtheme_shop_page_id' ) && (int) lavtheme_shop_page_id() === $id ) {
+		return $template; // the Shop Page has its own dedicated route.
+	}
+	$override = (string) get_option( lavtheme_cs_page_key( $id, 'design', 'html' ), '' );
+	if ( '' === trim( $override ) ) {
+		return $template;
+	}
+	$loader = get_theme_file_path( 'template-parts/context-page-loader.php' );
+	return is_readable( $loader ) ? $loader : $template;
+}
+add_filter( 'template_include', 'lavtheme_cs_page_template_include', 95 );
 
 /**
  * Render one custom section: sanitised HTML + (gated) PHP output.
@@ -456,9 +594,10 @@ function lavtheme_cs_page_ajax_load() {
 		wp_send_json_error( array( 'message' => __( 'Page not found.', 'lavtheme' ) ), 404 );
 	}
 
-	$reg      = lavtheme_cs_page_registry( $id );
-	$sections = array();
-	$data     = array();
+	$reg          = lavtheme_cs_page_registry( $id );
+	$is_elementor = Lav_CS_Source_Reader::is_elementor( $id );
+	$sections     = array();
+	$data         = array();
 	foreach ( $reg as $r ) {
 		$fields    = lavtheme_cs_page_fields( $r );
 		$is_custom = empty( $r['builtin'] ) || ( 'content' === $r['slug'] );
@@ -471,6 +610,8 @@ function lavtheme_cs_page_ajax_load() {
 			'placeable'   => ( ( isset( $r['zone'] ) ? $r['zone'] : 'content' ) === 'content' ) && empty( $r['pagecontent'] ),
 			'placement'   => isset( $r['placement'] ) ? $r['placement'] : 'after',
 			'fields'      => $fields,
+			'elementor'   => ( 'design' === $r['slug'] ) ? $is_elementor : false,
+			'template'    => ( 'design' === $r['slug'] ) ? Lav_CS_Source_Reader::resolve_template( 'page-' . $id ) : '',
 		);
 		foreach ( $fields as $type => $label ) {
 			$val = lavtheme_cs_page_get( $id, $r['slug'], $type );
@@ -492,6 +633,7 @@ function lavtheme_cs_page_ajax_load() {
 			'shortcode'  => $has_short,
 			'placements' => lavtheme_cs_placements(),
 			'phpAllowed' => lavtheme_cs_php_allowed(),
+			'isElementor' => $is_elementor,
 		)
 	);
 }
@@ -567,6 +709,28 @@ function lavtheme_cs_page_ajax_save() {
 		wp_send_json_success( array( 'message' => __( 'Page content updated.', 'lavtheme' ) ) );
 	}
 
+	// Template body (design/html) → executable template PHP: syntax-check, store raw.
+	if ( 'design' === $slug && 'html' === $type ) {
+		$err = '';
+		if ( '' !== trim( $content ) && function_exists( 'lavtheme_cs_dl_check_template' ) && ! lavtheme_cs_dl_check_template( $content, $err ) ) {
+			wp_send_json_error( array( 'message' => __( 'PHP syntax error — not saved: ', 'lavtheme' ) . $err ) );
+		}
+		$hkey = lavtheme_cs_page_key( $id, 'design', 'html' );
+		update_option( $hkey . '_prev', get_option( $hkey, '' ) );
+		update_option( $hkey, (string) $content );
+		if ( '' === trim( (string) $content ) ) {
+			update_option( $hkey . '_empty', '1' );
+		} else {
+			delete_option( $hkey . '_empty' );
+		}
+		// Materialise the dedicated per-page template copy so the source is real and
+		// future loads resolve to it (file mode only; DB mode renders the override live).
+		if ( function_exists( 'lavtheme_cs_page_materialise_copy' ) ) {
+			lavtheme_cs_page_materialise_copy( $id, (string) $content );
+		}
+		wp_send_json_success( array( 'message' => lavtheme_cs_php_allowed() ? __( 'Template saved and active.', 'lavtheme' ) : __( 'Template saved, but NOT running — add define(\'LAVTHEME_ALLOW_PHP_SECTIONS\', true) to wp-config.php.', 'lavtheme' ) ) );
+	}
+
 	// PHP tab → syntax-check + backup; stored even when locked, run only if unlocked.
 	if ( 'php' === $type ) {
 		$err = '';
@@ -598,8 +762,8 @@ function lavtheme_cs_page_ajax_save() {
 		wp_send_json_success( array( 'message' => __( 'Schema saved.', 'lavtheme' ) ) );
 	}
 
-	// CSS / Background → sanitise; JS → neutralise; HTML → raw (kses at render).
-	if ( in_array( $type, array( 'css', 'bg' ), true ) ) {
+	// CSS / Background / Mobile CSS → sanitise; JS → neutralise; HTML → raw.
+	if ( in_array( $type, array( 'css', 'bg', 'mcss' ), true ) ) {
 		$clean = lavtheme_sanitize_css( $content );
 	} elseif ( 'js' === $type ) {
 		$clean = str_ireplace( '</script', '<\/script', $content );

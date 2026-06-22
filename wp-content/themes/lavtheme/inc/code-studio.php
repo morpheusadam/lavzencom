@@ -477,6 +477,9 @@ function lavtheme_cs_render_page() {
 				<optgroup label="<?php esc_attr_e( 'Blog', 'lavtheme' ); ?>">
 					<option value="blog" data-view="<?php echo esc_url( function_exists( 'lavtheme_blog_url' ) ? lavtheme_blog_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Blog (archive)', 'lavtheme' ); ?></option>
 				</optgroup>
+				<optgroup label="<?php esc_attr_e( 'Error pages', 'lavtheme' ); ?>">
+					<option value="404" data-view="<?php echo esc_url( home_url( '/404-page-not-found-preview/' ) ); ?>"><?php esc_html_e( '404 / Error page', 'lavtheme' ); ?></option>
+				</optgroup>
 			</select>
 			<?php if ( function_exists( 'lavtheme_cs_edd' ) && lavtheme_cs_edd() ) : ?>
 				<span class="lavcs-badge edd"><?php esc_html_e( 'EDD detected', 'lavtheme' ); ?></span>

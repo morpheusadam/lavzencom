@@ -32,6 +32,9 @@ function lavtheme_cs_dl_valid( $ctx ) {
 	if ( 'blog' === $ctx ) {
 		return true; // the blog always exists.
 	}
+	if ( '404' === $ctx ) {
+		return true; // the error page always exists.
+	}
 	if ( 'shop' === $ctx ) {
 		// The shop (download archive) reuses the dl context plumbing.
 		return post_type_exists( 'download' );
@@ -77,8 +80,8 @@ function lavtheme_cs_dl_products() {
 /* ============================ registry & values =========================== */
 
 function lavtheme_cs_dl_builtin( $ctx ) {
-	if ( 'shop' === $ctx || 'blog' === $ctx ) {
-		// Archive context: Global (CSS/JS/Background) + the editable Template.
+	if ( 'shop' === $ctx || 'blog' === $ctx || '404' === $ctx ) {
+		// Archive / standalone context: Global (CSS/JS/Background) + editable Template.
 		return array(
 			array( 'slug' => 'global', 'label' => 'Global (this context)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
 			array( 'slug' => 'design', 'label' => 'Template (PHP/HTML)', 'zone' => 'settings', 'builtin' => true, 'deletable' => false, 'html' => false, 'pagecontent' => false ),
@@ -575,6 +578,8 @@ function lavtheme_cs_dl_ajax_load() {
 			'placeable'   => ( ( isset( $r['zone'] ) ? $r['zone'] : 'content' ) === 'content' ) && empty( $r['pagecontent'] ),
 			'placement'   => isset( $r['placement'] ) ? $r['placement'] : 'inline',
 			'fields'      => $fields,
+			'elementor'   => false,
+			'template'    => ( 'design' === $r['slug'] ) ? Lav_CS_Source_Reader::resolve_template( $ctx ) : '',
 		);
 		foreach ( $fields as $type => $label ) {
 			$data[ $r['slug'] ][ $type ] = lavtheme_cs_dl_get( $ctx, $r['slug'], $type );
@@ -667,7 +672,7 @@ function lavtheme_cs_dl_ajax_save() {
 		wp_send_json_success( array( 'message' => __( 'Schema saved.', 'lavtheme' ) ) );
 	}
 
-	if ( in_array( $type, array( 'css', 'bg' ), true ) ) {
+	if ( in_array( $type, array( 'css', 'bg', 'mcss' ), true ) ) {
 		$clean = lavtheme_sanitize_css( $content );
 	} elseif ( 'js' === $type ) {
 		$clean = str_ireplace( '</script', '<\/script', $content );
@@ -677,9 +682,9 @@ function lavtheme_cs_dl_ajax_save() {
 	$key = lavtheme_cs_dl_key( $ctx, $slug, $type );
 	update_option( $key . '_prev', get_option( $key, '' ) );
 		update_option( $key, $clean );
-	// Honour an intentional clear for css/js/bg (render injects nothing). HTML is
-	// exempt so an empty HTML save still falls back to the file.
-	if ( in_array( $type, array( 'css', 'bg', 'js' ), true ) ) {
+	// Honour an intentional clear for css/js/bg/mcss (render injects nothing). HTML
+	// is exempt so an empty HTML save still falls back to the file.
+	if ( in_array( $type, array( 'css', 'bg', 'js', 'mcss' ), true ) ) {
 		if ( '' === trim( (string) $clean ) ) {
 			update_option( $key . '_empty', '1' );
 		} else {

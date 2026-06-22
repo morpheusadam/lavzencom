@@ -36,6 +36,8 @@ lavtheme_require( 'helpers.php' );
 lavtheme_require( 'setup.php' );
 lavtheme_require( 'menus.php' );
 lavtheme_require( 'enqueue.php' );
+lavtheme_require( 'seo.php' );
+lavtheme_require( 'performance.php' );
 
 // Front-end data: Easy Digital Downloads products.
 lavtheme_require( 'edd.php' );
@@ -59,6 +61,7 @@ lavtheme_require( 'code-studio-pages.php' );
 lavtheme_require( 'code-studio-downloads.php' );
 lavtheme_require( 'code-studio-shop.php' );
 lavtheme_require( 'code-studio-blog.php' );
+lavtheme_require( 'code-studio-404.php' );
 
 // Read-only: download a section's saved code (Global/Schema/section, all tabs).
 lavtheme_require( 'code-studio-export.php' );

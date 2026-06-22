@@ -35,6 +35,7 @@
 ### Code Studio (پنل ادمین ویرایش کد)
 | اگر درخواست دربارهٔ… | برو سراغ |
 |---|---|
+| **تشخیص فایل template هر context + کد واقعی ۵ تب (HTML/PHP·CSS·JS·Mobile CSS·PHP) + استخراج موبایل ≤768px + تشخیص Elementor** | `inc/code-studio-source-reader.php` (`Lav_CS_Source_Reader`) |
 | **رجیستری سکشن‌های صفحهٔ اصلی، add/rename/delete/reorder/placement** | `inc/code-studio-registry.php` |
 | **منوی ادمین، رندر پنل، enqueue ادیتور، accessorها** | `inc/code-studio.php` |
 | **ذخیره/بازیابی/بکاپ/نوشتن فایل/چک سینتکس + اکثر AJAXها** | `inc/code-studio-save.php` |
@@ -72,6 +73,8 @@
   استاتیک kses نشود؛ render خودش به فایل fallback می‌کند.
 - **هرگز PHP/فایل منبع را minify نکن**؛ فقط خروجی رندرشده.
 - **`_empty` marker**: ذخیرهٔ خالی CSS/JS یعنی «هیچی تزریق نکن» (به فایل برنگرد). HTML مستثناست.
+- **سکشن «Template» (design) یکپارچه**: shop/blog/dl-template و هر page یک سکشن design با ۵ تب دارند که از فایل واقعی پر می‌شود (`Lav_CS_Source_Reader`). بدنه از `design/html` خوانده می‌شود (مهاجرت از `design/php` قدیمی خودکار در `lavtheme_cs_dl_migrate_body`). برای shop/blog/dl، سکشن **Global دیگر default فایل ندارد** و فقط لایهٔ override است؛ CSS/JS واقعی از design می‌آید (تزریق دوبار نشود).
+- **روتینگ template page**: فقط وقتی page یک override غیرخالی `design/html` دارد و PHP باز است و Elementor نیست، `template_include`→`template-parts/context-page-loader.php`. بدون override رفتار صفحه دست‌نخورده (ریسک صفر).
 - **inline-css mode**: `main.css` دیگر enqueue نمی‌شود؛ rollback با
   `define('LAVTHEME_DISABLE_INLINE_CSS', true)`.
 - **lint** فقط با `token_get_all($code, TOKEN_PARSE)` (نه `php -l` — `shell_exec` بسته است).

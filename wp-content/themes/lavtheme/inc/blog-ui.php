@@ -91,7 +91,7 @@ function lavtheme_blog_featured_html() {
 	?>
 	<article class="featured glass">
 		<a class="fimg" href="<?php echo esc_url( get_permalink( $id ) ); ?>" tabindex="-1" aria-hidden="true">
-			<?php if ( $thumb ) : ?><img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $id ) ); ?>"><?php endif; ?>
+			<?php if ( $thumb ) : ?><img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $id ) ); ?>" fetchpriority="high" decoding="async"><?php endif; ?>
 		</a>
 		<div class="fbody">
 			<span class="fbadge"><?php esc_html_e( '★ Featured', 'lavtheme' ); ?></span>
