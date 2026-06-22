@@ -51,6 +51,23 @@ function lavtheme_enqueue_assets() {
 		);
 	}
 
+	// Single blog post: article reading experience (CSS + progressive JS).
+	if ( is_singular( 'post' ) ) {
+		wp_enqueue_style(
+			'lavtheme-single',
+			LAVTHEME_URI . 'assets/css/single.css',
+			array( 'lavtheme-main' ),
+			lavtheme_asset_ver( 'assets/css/single.css' )
+		);
+		wp_enqueue_script(
+			'lavtheme-single',
+			LAVTHEME_URI . 'assets/js/single.js',
+			array(),
+			lavtheme_asset_ver( 'assets/js/single.js' ),
+			true
+		);
+	}
+
 	// Shop archive CSS/JS are NOT enqueued here anymore: the Code Studio "Shop
 	// (archive)" context injects them (override-or-file) via
 	// lavtheme_cs_shop_head() / lavtheme_cs_shop_footer(), so the editors are the
