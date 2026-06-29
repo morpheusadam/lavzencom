@@ -12,11 +12,11 @@
 defined( 'ABSPATH' ) || exit;
 
 return array(
+	\Lavzen\Modules\Performance\Performance_Module::class,
+	\Lavzen\Modules\Seo\Seo_Module::class,
 	\Lavzen\Modules\Code_Studio\Code_Studio_Module::class,
 
-	// Added per build phase (Phase 4):
-	// \Lavzen\Modules\Seo\Seo_Module::class,
-	// \Lavzen\Modules\Performance\Performance_Module::class,
+	// Added later in Phase 4:
 	// \Lavzen\Modules\Security\Security_Module::class,
 	// \Lavzen\Modules\Edd\Edd_Module::class,
 	// \Lavzen\Modules\Blog\Blog_Module::class,
