@@ -105,4 +105,4 @@ get_template_part( 'template-parts/section-sproof' );
 get_template_part( 'template-parts/section-sell' );
 get_template_part( 'template-parts/section-pillars' );
 
-get_footer();
+get_footer( 'home' ); // footer-home.php — marketplace mega-footer + mobile tab bar.
