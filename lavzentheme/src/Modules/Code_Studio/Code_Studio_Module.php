@@ -33,10 +33,10 @@ final class Code_Studio_Module extends Abstract_Module {
 		// Front-end: one scope-aware injector (replaces the ~8 per-context clones).
 		( new Injector( $this->store ) )->register();
 
-		// Admin: the unified AJAX layer (replaces the legacy ~42 actions).
+		// Admin: the unified AJAX layer (replaces the legacy ~42 actions) + editor UI.
 		if ( is_admin() ) {
 			( new Ajax( $this->store, new Source_Reader() ) )->register();
-			// Admin editor UI is added in the next sub-phase.
+			( new Admin\Editor_Page() )->register();
 		}
 	}
 

@@ -1,0 +1,26 @@
+/* Code Studio editor — admin styling. */
+.lavcs-lead { max-width: 760px; color: #50575e; }
+.lavcs-bar { display: flex; align-items: flex-end; gap: 16px; margin: 16px 0 8px; flex-wrap: wrap; }
+.lavcs-ctl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 12px; color: #1d2327; }
+.lavcs-ctl select { min-width: 180px; }
+.lavcs-flag { font-size: 12px; color: #646970; padding-bottom: 6px; }
+.lavcs-flag.is-override { color: #b26900; font-weight: 600; }
+.lavcs-editor {
+	width: 100%;
+	min-height: 460px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 13px;
+	line-height: 1.55;
+	tab-size: 4;
+	background: #1e1e2e;
+	color: #e6e6e6;
+	border: 1px solid #313244;
+	border-radius: 8px;
+	padding: 14px 16px;
+	white-space: pre;
+	resize: vertical;
+}
+.lavcs-editor:focus { outline: 2px solid #2271b1; border-color: #2271b1; }
+.lavcs-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.lavcs-status { font-size: 13px; color: #1a7f37; }
+.lavcs-status.is-error { color: #d63638; }
