@@ -1,6 +1,0 @@
-.svc-rail{display:flex;grid-template-columns:none;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;will-change:scroll-position;padding:4px 12px 2px;margin:0 -12px;scroll-padding-left:12px}
-.svc-rail::-webkit-scrollbar{display:none}
-.svc{flex:0 0 84%;max-width:320px;scroll-snap-align:center}
-.svc-hero{flex:0 0 84%;max-width:320px}
-.svc-hero .svc-title{font-size:22px}
-.svc-dots{display:flex}

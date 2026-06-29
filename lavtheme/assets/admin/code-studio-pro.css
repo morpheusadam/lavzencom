@@ -1,0 +1,140 @@
+/* Theme Code Studio — "Pro" enhancement layer styling.
+ * VS Code-like status bar, command palette, find widget, dirty indicators. */
+
+/* keep content clear of the fixed status bar */
+.lavcs-wrap { padding-bottom: 46px; }
+
+/* ---- Unsaved pill in the topbar ---- */
+.lavcs-pro-pill {
+	display: inline-flex; align-items: center;
+	font-size: 11px; font-weight: 700; letter-spacing: .02em;
+	padding: 4px 10px; border-radius: 999px;
+	background: #fef3c7; color: #92600a; border: 1px solid #f3c05a;
+}
+
+/* ---- Dirty dot on nav items ---- */
+.lavcs-navitem.lavcs-pro-dirty, .lavcs-pnavitem.lavcs-pro-dirty { position: relative; }
+.lavcs-navitem.lavcs-pro-dirty::after, .lavcs-pnavitem.lavcs-pro-dirty::after {
+	content: ""; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+	width: 7px; height: 7px; border-radius: 50%; background: #e0a302; box-shadow: 0 0 0 2px rgba(224,163,2,.25);
+}
+
+/* ---- Bottom status bar ---- */
+.lavcs-pro-bar {
+	position: fixed; left: 160px; right: 0; bottom: 0; z-index: 9990;
+	display: flex; align-items: center; gap: 0;
+	height: 30px; padding: 0 8px;
+	background: #1e1e2e; color: #c8c8d4;
+	border-top: 1px solid #33334d;
+	font-family: -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 12px;
+	box-shadow: 0 -2px 10px rgba(0,0,0,.12);
+}
+body.folded .lavcs-pro-bar { left: 36px; }
+@media (max-width: 960px) { .lavcs-pro-bar { left: 36px; } }
+@media (max-width: 782px) { .lavcs-pro-bar { left: 0; } }
+.lavcs-pro-grow { flex: 1; }
+.lavcs-pro-seg { padding: 0 10px; white-space: nowrap; border-right: 1px solid #33334d; line-height: 30px; }
+.lavcs-pro-seg:empty { display: none; }
+.lavcs-pro-mode { color: #9cdcfe; font-weight: 600; border-right: 0; }
+.lavcs-pro-state[data-state="saved"] { color: #6bbf6b; }
+.lavcs-pro-state[data-state="unsaved"] { color: #e0a302; font-weight: 700; }
+.lavcs-pro-btn {
+	background: transparent; border: 0; color: #c8c8d4; cursor: pointer;
+	height: 24px; padding: 0 9px; margin: 0 1px; border-radius: 5px; font-size: 12px; line-height: 24px;
+}
+.lavcs-pro-btn:hover { background: #2f2f48; color: #fff; }
+.lavcs-pro-btn.is-on { background: #2271b1; color: #fff; }
+
+/* ---- Modals (palette + help) ---- */
+.lavcs-pro-modal {
+	position: fixed; inset: 0; z-index: 100001;
+	background: rgba(8, 8, 16, .55); backdrop-filter: blur(2px);
+	display: flex; align-items: flex-start; justify-content: center;
+}
+.lavcs-pro-modal[hidden] { display: none; }
+.lavcs-pro-modal-box {
+	margin-top: 11vh; width: 560px; max-width: calc(100vw - 40px);
+	background: #252536; color: #e6e6ef; border: 1px solid #3a3a55;
+	border-radius: 12px; box-shadow: 0 24px 70px rgba(0,0,0,.5); overflow: hidden;
+}
+
+/* command palette */
+.lavcs-pro-pinput {
+	width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid #3a3a55;
+	background: #2b2b40; color: #fff; font-size: 16px; padding: 15px 18px; outline: none;
+}
+.lavcs-pro-pinput::placeholder { color: #8a8aa5; }
+.lavcs-pro-plist { margin: 0; padding: 6px; max-height: 48vh; overflow: auto; list-style: none; }
+.lavcs-pro-pitem {
+	display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 12px;
+	border-radius: 7px; cursor: pointer;
+}
+.lavcs-pro-pitem.is-active, .lavcs-pro-pitem:hover { background: #2f6fb3; }
+.lavcs-pro-pkind {
+	font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+	color: #b9c7ff; background: #353553; border-radius: 4px; padding: 2px 7px; min-width: 58px; text-align: center;
+}
+.lavcs-pro-pitem.is-active .lavcs-pro-pkind, .lavcs-pro-pitem:hover .lavcs-pro-pkind { background: rgba(255,255,255,.18); color: #fff; }
+.lavcs-pro-plabel { font-size: 14px; }
+.lavcs-pro-pempty { padding: 16px; color: #8a8aa5; text-align: center; }
+
+/* help */
+.lavcs-pro-help .lavcs-pro-modal-box { padding: 20px 22px; }
+.lavcs-pro-help h2 { margin: 0 0 14px; color: #fff; font-size: 17px; }
+.lavcs-pro-keys { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.lavcs-pro-keys th { text-align: left; padding: 7px 10px 7px 0; width: 200px; }
+.lavcs-pro-keys td { padding: 7px 0; color: #c2c2d4; }
+.lavcs-pro-keys kbd {
+	background: #1b1b29; border: 1px solid #3a3a55; border-bottom-width: 2px;
+	border-radius: 5px; padding: 2px 8px; font-size: 12px; color: #e6e6ef; font-family: Consolas, monospace;
+}
+
+/* ---- Find & replace widget ---- */
+.lavcs-pro-find {
+	position: fixed; top: 52px; right: 28px; z-index: 100002;
+	display: flex; align-items: center; gap: 5px; flex-wrap: wrap; max-width: 560px;
+	background: #252536; border: 1px solid #3a3a55; border-radius: 10px;
+	padding: 8px 10px; box-shadow: 0 16px 50px rgba(0,0,0,.45);
+}
+.lavcs-pro-find[hidden] { display: none; }
+.lavcs-pro-find .lavcs-pro-find-r { display: none; }
+.lavcs-pro-find.has-replace .lavcs-pro-find-r { display: inline-block; }
+.lavcs-pro-find input[type="text"] {
+	background: #1b1b29; border: 1px solid #3a3a55; color: #fff;
+	border-radius: 6px; padding: 5px 9px; font-size: 13px; width: 170px; outline: none;
+}
+.lavcs-pro-find input[type="text"]:focus { border-color: #2f6fb3; }
+.lavcs-pro-find-cs { color: #c2c2d4; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; user-select: none; }
+.lavcs-pro-find-count { color: #9cdcfe; font-size: 12px; min-width: 42px; text-align: center; }
+.lavcs-pro-find .lavcs-pro-btn { border: 1px solid #3a3a55; }
+
+/* find highlight inside CodeMirror */
+.lavcs-panel .CodeMirror .lavcs-pro-hit { background: rgba(255, 213, 0, .28); border-radius: 2px; }
+
+/* ---- Live preview modal ---- */
+.lavcs-pro-preview { align-items: center; }
+.lavcs-pro-pv-box {
+	margin: auto; width: 92vw; height: 90vh; display: flex; flex-direction: column;
+	background: #252536; border: 1px solid #3a3a55; border-radius: 12px; overflow: hidden;
+	box-shadow: 0 24px 70px rgba(0,0,0,.5);
+}
+.lavcs-pro-pv-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #1e1e2e; border-bottom: 1px solid #33334d; }
+.lavcs-pro-pv-title { color: #fff; font-size: 13px; }
+.lavcs-pro-pv-url { color: #9cdcfe; font-size: 12px; max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lavcs-pro-pv-stage { flex: 1; overflow: auto; background: #0e0e16; display: flex; justify-content: center; }
+.lavcs-pro-pv-frame { width: 100%; max-width: 100%; height: 100%; border: 0; background: #fff; transition: max-width .2s; }
+
+/* ---- Revision history modal ---- */
+.lavcs-pro-history .lavcs-pro-modal-box { padding: 20px 22px; width: 620px; }
+.lavcs-pro-history h2 { margin: 0 0 6px; color: #fff; font-size: 17px; }
+.lavcs-pro-hist-sub { font-size: 12px; font-weight: 400; color: #8a8aa5; }
+.lavcs-pro-hist-list { list-style: none; margin: 12px 0; padding: 0; max-height: 56vh; overflow: auto; }
+.lavcs-pro-hist-item { border: 1px solid #3a3a55; border-radius: 8px; padding: 10px 12px; margin: 0 0 10px; }
+.lavcs-pro-hist-meta { display: block; color: #9cdcfe; font-size: 12px; margin-bottom: 6px; }
+.lavcs-pro-hist-prev { margin: 0 0 8px; max-height: 130px; overflow: auto; background: #1b1b29; border-radius: 6px; padding: 8px 10px; color: #c8c8d4; font-family: Consolas, monospace; font-size: 11px; white-space: pre-wrap; word-break: break-word; }
+
+/* ---- Lint marks (fallback styling for the dark editor) ---- */
+.lavcs-panel .CodeMirror-lint-markers { width: 16px; }
+.lavcs-panel .CodeMirror-lint-mark-error { border-bottom: 1px dotted #e5534b; }
+.lavcs-panel .CodeMirror-lint-mark-warning { border-bottom: 1px dotted #e0a302; }
+.CodeMirror-lint-tooltip { z-index: 100003; }
