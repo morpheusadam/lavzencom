@@ -45,7 +45,9 @@ if ( ! function_exists( 'lavzen_shop_url' ) ) {
 	 * The shop landing URL: the EDD download archive, else home. Filterable.
 	 */
 	function lavzen_shop_url(): string {
-		$url = get_post_type_archive_link( 'download' );
+		// An EDD "Shop Page" (products_page) wins; else the download archive.
+		$pid = function_exists( 'edd_get_option' ) ? (int) edd_get_option( 'products_page', 0 ) : 0;
+		$url = ( $pid && get_post( $pid ) ) ? get_permalink( $pid ) : get_post_type_archive_link( 'download' );
 		$url = $url ? $url : home_url( '/' );
 		return (string) apply_filters( 'lavzen_shop_url', $url );
 	}
