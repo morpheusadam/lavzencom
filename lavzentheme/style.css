@@ -1,0 +1,20 @@
+/*
+Theme Name: Lavzen
+Theme URI: https://lavzen.com/
+Author: Lavzen
+Author URI: https://lavzen.com/
+Description: Lavzen — a modern, OOP, module-based marketplace theme (Liquid-Glass design system) with Easy Digital Downloads integration and a built-in Code Studio. Architected for clean separation of concerns and feature modularity.
+Version: 2.0.0
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 8.1
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: lavzentheme
+Tags: custom-colors, custom-menu, custom-logo, featured-images, full-width-template, e-commerce, translation-ready
+*/
+
+/*
+ * All visual styling is enqueued from assets/dist/. This file holds only the
+ * required WordPress theme header (and the WP editor reads it for metadata).
+ */
