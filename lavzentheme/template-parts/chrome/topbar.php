@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 	<nav class="topnav" id="topnav"><?php lavzen_topnav(); ?></nav>
 	<div class="top-actions">
 		<div class="ta-wrap">
-			<button class="icon-btn has-dot" id="notifBtn" aria-label="<?php esc_attr_e( 'Notifications', 'lavzentheme' ); ?>" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+			<button class="icon-btn has-dot" id="notifBtn" aria-label="<?php esc_attr_e( 'Notifications', 'lavzentheme' ); ?>" aria-haspopup="true" aria-expanded="false"><?php lavzen_icon( 'bell' ); ?></button>
 		</div>
 		<div class="ta-wrap">
 			<button class="avatar is-online" id="avatarBtn" aria-label="<?php esc_attr_e( 'Account menu', 'lavzentheme' ); ?>" aria-haspopup="true" aria-expanded="false">
@@ -26,6 +26,6 @@ defined( 'ABSPATH' ) || exit;
 			</button>
 			<div class="popover acct-pop" id="acctPop" role="menu" aria-label="<?php esc_attr_e( 'Account', 'lavzentheme' ); ?>"><?php echo lavzen_account_popover(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within the builder. ?></div>
 		</div>
-		<button class="menu-toggle" id="menuToggle" aria-label="<?php esc_attr_e( 'Toggle menu', 'lavzentheme' ); ?>" aria-expanded="false"><svg class="ic-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+		<button class="menu-toggle" id="menuToggle" aria-label="<?php esc_attr_e( 'Toggle menu', 'lavzentheme' ); ?>" aria-expanded="false"><?php lavzen_icon( 'menu', 'ic-open' ); ?><?php lavzen_icon( 'close', 'ic-close' ); ?></button>
 	</div>
 </header>

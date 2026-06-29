@@ -19,15 +19,15 @@ $lavzen_year = (int) gmdate( 'Y' );
 			<div class="brand-meta"><a href="mailto:hello@lavzen.com">hello@lavzen.com</a> <span><?php esc_html_e( 'Remote-first · Worldwide', 'lavzentheme' ); ?></span></div>
 		</div>
 		<nav class="f-col" aria-label="<?php esc_attr_e( 'Product', 'lavzentheme' ); ?>">
-			<h3><?php esc_html_e( 'Product', 'lavzentheme' ); ?> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></h3>
+			<h3><?php esc_html_e( 'Product', 'lavzentheme' ); ?> <?php lavzen_icon( 'chevron-down', 'chev' ); ?></h3>
 			<ul><li><a href="#products" data-scroll="products"><?php esc_html_e( 'Scripts', 'lavzentheme' ); ?></a></li><li><a href="#products" data-scroll="products"><?php esc_html_e( 'AI Scripts', 'lavzentheme' ); ?></a></li><li><a href="#products" data-scroll="products"><?php esc_html_e( 'Telegram Bots', 'lavzentheme' ); ?></a></li><li><a href="#products" data-scroll="products"><?php esc_html_e( 'n8n Templates', 'lavzentheme' ); ?></a></li><li><a href="#products" data-scroll="products"><?php esc_html_e( 'WP Plugins', 'lavzentheme' ); ?></a></li></ul>
 		</nav>
 		<nav class="f-col" aria-label="<?php esc_attr_e( 'Company', 'lavzentheme' ); ?>">
-			<h3><?php esc_html_e( 'Company', 'lavzentheme' ); ?> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></h3>
+			<h3><?php esc_html_e( 'Company', 'lavzentheme' ); ?> <?php lavzen_icon( 'chevron-down', 'chev' ); ?></h3>
 			<ul><li><a href="#work" data-scroll="work"><?php esc_html_e( 'Case Studies', 'lavzentheme' ); ?></a></li><li><a href="#blog" data-scroll="blog"><?php esc_html_e( 'Blog', 'lavzentheme' ); ?></a></li><li><a href="#services" data-scroll="services"><?php esc_html_e( 'Services', 'lavzentheme' ); ?></a></li><li><a href="#contact" data-scroll="contact"><?php esc_html_e( 'Contact', 'lavzentheme' ); ?></a></li></ul>
 		</nav>
 		<nav class="f-col" aria-label="<?php esc_attr_e( 'Support', 'lavzentheme' ); ?>">
-			<h3><?php esc_html_e( 'Support', 'lavzentheme' ); ?> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></h3>
+			<h3><?php esc_html_e( 'Support', 'lavzentheme' ); ?> <?php lavzen_icon( 'chevron-down', 'chev' ); ?></h3>
 			<ul><li><a href="#"><?php esc_html_e( 'Help Center', 'lavzentheme' ); ?></a></li><li><a href="#"><?php esc_html_e( 'Documentation', 'lavzentheme' ); ?></a></li><li><a href="#"><?php esc_html_e( 'System Status', 'lavzentheme' ); ?></a></li><li><a href="#"><?php esc_html_e( 'Refund Policy', 'lavzentheme' ); ?></a></li></ul>
 		</nav>
 	</div>
