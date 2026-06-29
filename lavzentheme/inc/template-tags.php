@@ -11,8 +11,31 @@
  */
 
 use Lavzen\Core\Navigation;
+use Lavzen\Support\Icons;
 
 defined( 'ABSPATH' ) || exit;
+
+if ( ! function_exists( 'lavzen_icon' ) ) {
+	/**
+	 * Echo a named SVG icon from the single icon registry (Lavzen\Support\Icons).
+	 *
+	 * @param string $name  Icon key (e.g. 'cart', 'heart', 'user').
+	 * @param string $class Extra class on the <svg>.
+	 * @param array  $attrs Extra attributes.
+	 */
+	function lavzen_icon( string $name, string $class = '', array $attrs = array() ): void {
+		echo Icons::render( $name, $class, $attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed registry markup, attrs escaped in render().
+	}
+}
+
+if ( ! function_exists( 'lavzen_get_icon' ) ) {
+	/**
+	 * Return (don't echo) a named SVG icon — for use inside string builders.
+	 */
+	function lavzen_get_icon( string $name, string $class = '', array $attrs = array() ): string {
+		return Icons::render( $name, $class, $attrs );
+	}
+}
 
 if ( ! function_exists( 'lavzen_topnav' ) ) {
 	/**

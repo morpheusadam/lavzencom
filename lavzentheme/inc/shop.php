@@ -270,9 +270,9 @@ function lavzen_shop_card_html( $id ): string {
 	$rating     = lavzen_shop_rating( $id );
 	$excerpt    = wp_trim_words( get_the_excerpt( $id ), 26, '…' );
 
-	$heart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg>';
-	$cart  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>';
-	$star  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 19l-4.8 2.5.9-5.4L4.2 12.3l5.4-.8z"/></svg>';
+	$heart = lavzen_get_icon( 'heart' );
+	$cart  = lavzen_get_icon( 'cart' );
+	$star  = lavzen_get_icon( 'star' );
 
 	ob_start();
 	?>

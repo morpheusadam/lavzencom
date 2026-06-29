@@ -202,7 +202,7 @@ function lavzen_home_stats(): array {
 function lavzen_home_save_btn( string $title ): string {
 	return '<button class="card__save" type="button" aria-pressed="false" aria-label="'
 		. esc_attr( sprintf( __( 'Save %s', 'lavzentheme' ), $title ) ) . '" data-save>'
-		. '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.6-9.2-9C1.3 7.7 3 5 6 5c1.9 0 3.2 1.1 4 2.3C10.8 6.1 12.1 5 14 5c3 0 4.7 2.7 3.2 6C19 15.4 12 20 12 20z"/></svg>'
+		. lavzen_get_icon( 'heart' )
 		. '</button>';
 }
 
