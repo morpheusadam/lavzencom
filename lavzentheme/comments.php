@@ -20,6 +20,7 @@ $lav_cnum   = (int) get_comments_number();
 $lav_user   = wp_get_current_user();
 $lav_avatar = get_avatar( $lav_user->exists() ? $lav_user->ID : 0, 44, '', '', array( 'class' => 'cm-av-img' ) );
 $lav_cb     = function_exists( 'lavzen_comment_cb' ) ? 'lavzen_comment_cb' : null;
+$lav_end_cb = ( $lav_cb && function_exists( 'lavzen_comment_end_cb' ) ) ? 'lavzen_comment_end_cb' : null;
 ?>
 <div class="lav-comments">
 
@@ -73,9 +74,10 @@ $lav_cb     = function_exists( 'lavzen_comment_cb' ) ? 'lavzen_comment_cb' : nul
 			<?php
 			wp_list_comments(
 				array(
-					'callback'    => $lav_cb,
-					'style'       => 'ol',
-					'avatar_size' => 44,
+					'callback'     => $lav_cb,
+					'end-callback' => $lav_end_cb,
+					'style'        => 'ol',
+					'avatar_size'  => 44,
 				)
 			);
 			?>
