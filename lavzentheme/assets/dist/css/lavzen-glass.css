@@ -1,0 +1,623 @@
+/* ============================================================================
+   LAVZEN · Liquid Glass Design System  (v3.3.0-mono)
+   Generated from lavzen-glass.tokens.json (ORANGE edition). Single warm hue:
+   brand + accent + CTA all live on the orange ramp; the only non-orange colours
+   are functional status signals (success/warning/error/info). Re-themed from the
+   old orange system — PURE MONOCHROME: greys + one solid white pill, zero hue.
+   Aesthetic: Apple iOS 27 / macOS Tahoe "Liquid Glass"
+   Type: Satoshi (one signature face, loaded from the web via Fontshare)
+   ----------------------------------------------------------------------------
+   PERFORMANCE NOTE — for the best PageSpeed score, REMOVE the @import above
+   and instead put this in your <head> (a <link> beats CSS @import, no waterfall):
+
+     <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+
+   Self-hosting the woff2 files is faster still (one less third-party origin).
+   ----------------------------------------------------------------------------
+   QUICK START
+     <div class="lav-bg lav-bg--photo"></div>   (set --lav-bg-image: url(...))
+     <div class="lav-bg__scrim"></div>
+     <article class="glass glass--crystal">   ← default surface (the favourite)
+     <button class="lav-btn lav-btn--cta">Get a free consultation</button>
+
+   ELEVATION TIERS  (this is the "ranking": higher tier = more blur, more tint,
+   deeper shadow, brighter edge — Apple's atmospheric perspective)
+     Tier 0  canvas .......... .lav-bg + .lav-bg__scrim            (not glass)
+     Tier 1  frost ........... .glass .glass--frost-rim            (big panels)
+     Tier 2  surface ......... .glass .glass--crystal             (cards — DEFAULT)
+     Tier 3  control ......... .glass .glass--edge-lit .glass--shimmer (buttons/pills)
+     Tier 4  floating ........ .glass .glass--deep                (navbar/menus)
+     Tier 5  modal ........... .glass .glass--deep .glass--modal  (dialogs, on a scrim)
+     Accents .glass--tint-blue (showcase) · .glass--halo (CTA/focus) ·
+             .glass--dark (smoked scrim over photos) · .glass--clear (see-through)
+   Mix freely: e.g. <div class="glass glass--crystal glass--t4"> = crystal, floating blur.
+
+   DEFAULT THEME = dark. Add data-theme="light" on <html> for the light theme.
+============================================================================ */
+
+:root {
+  color-scheme: dark light;
+
+  /* ---- Typography (theme-agnostic) ------------------------------------- */
+  --lav-font: "Satoshi", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --lav-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  --lav-w-regular: 400;
+  --lav-w-medium: 500;
+  --lav-w-bold: 700;
+  --lav-w-black: 900;
+
+  --lav-text-xs: 0.8125rem;   /* 13 */
+  --lav-text-sm: 0.875rem;    /* 14 */
+  --lav-text-base: 1.0625rem; /* 17 — Apple body */
+  --lav-text-md: 1.1875rem;   /* 19 */
+  --lav-text-lg: clamp(1.375rem, 1.18rem + 0.85vw, 1.75rem);
+  --lav-text-xl: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
+  --lav-text-2xl: clamp(2.25rem, 1.6rem + 3vw, 3.5rem);
+  --lav-text-display: clamp(2.75rem, 1.8rem + 4.6vw, 5rem);
+
+  --lav-leading-tight: 1.08;
+  --lav-leading-snug: 1.25;
+  --lav-leading-normal: 1.5;
+  --lav-leading-relaxed: 1.62;
+
+  --lav-track-tight: -0.022em;
+  --lav-track-snug: -0.012em;
+  --lav-track-normal: 0;
+  --lav-track-wide: 0.06em;
+
+  /* ---- Space / Radius (theme-agnostic, 8pt grid) ----------------------- */
+  --lav-space-1: 0.25rem;  --lav-space-2: 0.5rem;   --lav-space-3: 0.75rem;
+  --lav-space-4: 1rem;     --lav-space-5: 1.25rem;  --lav-space-6: 1.5rem;
+  --lav-space-8: 2rem;     --lav-space-10: 2.5rem;  --lav-space-12: 3rem;
+  --lav-space-16: 4rem;    --lav-space-20: 5rem;    --lav-space-24: 6rem;
+  --lav-space-32: 8rem;
+
+  --lav-r-sm: 10px;  --lav-r-md: 14px;  --lav-r-lg: 20px;
+  --lav-r-xl: 28px;  --lav-r-pill: 999px;
+
+  /* ---- Glass shape + elevation tiers (theme-agnostic) ------------------ */
+  --lav-glass-intensity: 1;        /* one knob: ~0.7 clearer · 1 default · ~1.3 frostier */
+  --lav-glass-saturate: 180%;
+  --lav-glass-radius: 22px;
+  --lav-glass-radius-control: 14px;
+  --lav-glass-radius-modal: 28px;
+
+  --lav-blur-frost: 10px;
+  --lav-blur-surface: 14px;
+  --lav-blur-control: 12px;
+  --lav-blur-float: 18px;
+  --lav-blur-modal: 26px;
+  --lav-blur-clear: 3px;
+  --lav-glass-blur: var(--lav-blur-surface);  /* active blur — variants override this */
+
+  /* ---- Motion / z-index / a11y (theme-agnostic) ------------------------ */
+  --lav-dur-fast: 150ms;
+  --lav-dur-base: 260ms;
+  --lav-dur-slow: 420ms;
+  --lav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lav-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --lav-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --lav-z-base: 0;     --lav-z-raised: 10;    --lav-z-sticky: 100;
+  --lav-z-nav: 1000;   --lav-z-overlay: 2000; --lav-z-modal: 3000; --lav-z-toast: 4000;
+
+  --lav-tap: 44px;
+  --lav-focus-ring: 0 0 0 2px var(--lav-bg), 0 0 0 4px var(--lav-accent);
+
+  /* ====================================================================== */
+  /* DARK THEME (default): colour + glass tints + shadows                    */
+  /* ====================================================================== */
+  --lav-bg: #0B0B0B;
+  --lav-bg-raised: #1A1A1A;
+  --lav-surface: #1E1E1E;
+  --lav-text: #F5F5F5;
+  --lav-text-2: rgba(245, 245, 245, 0.66);
+  --lav-text-3: rgba(245, 245, 245, 0.44);
+  --lav-text-4: rgba(245, 245, 245, 0.30);
+  --lav-line: rgba(255, 255, 255, 0.12);
+  --lav-line-strong: rgba(255, 255, 255, 0.20);
+
+  --lav-accent: #F5F5F5;     /* ink.white — links/active/icons. Differentiation by brightness, never hue */
+  --lav-accent-2: #ABABAB;   /* ink.8 — a quieter grey step (no 2nd colour) */
+  --lav-cta: #F5F5F5;        /* ink.white — the ONE solid WHITE pill CTA */
+  --lav-cta-press: #D6D6D6;  /* ink.9 — pressed dims slightly */
+  --lav-cta-ink: #141414;    /* ink.1 — near-black ink on the white CTA (~17:1) */
+
+  --lav-success: #D6D6D6;
+  --lav-warning: #ABABAB;
+  --lav-error: #F5F5F5;
+  --lav-info: #ABABAB;
+
+  /* Apple system ramp NEUTRALISED — 100% achromatic (R=G=B). No hue anywhere */
+  --lav-blue: #8E8E8E;  --lav-indigo: #6E6E6E; --lav-purple: #9A9A9A; --lav-pink: #B0B0B0;
+  --lav-red: #9A9A9A;   --lav-orange: #B0B0B0; --lav-yellow: #D6D6D6; --lav-green: #ABABAB;
+  --lav-mint: #C8C8C8;  --lav-teal: #B8B8B8;   --lav-cyan: #C8C8C8;   --lav-brown: #8A8A8A;
+  /* pure-neutral gray ramp (R=G=B) — Dark */
+  --lav-gray: #8A8A8A;  --lav-gray2: #646464;  --lav-gray3: #484848;
+  --lav-gray4: #383838; --lav-gray5: #282828;  --lav-gray6: #1A1A1A;
+
+  /* glass material (dark = white frost over dark canvas; edge/refraction PURE WHITE — no hue) */
+  --lav-glass-brightness: 1.06;
+  --lav-glass-tint: rgb(255 255 255 / calc(0.10 * var(--lav-glass-intensity)));
+  --lav-glass-tint-strong: rgb(255 255 255 / calc(0.16 * var(--lav-glass-intensity)));
+  --lav-glass-edge: rgba(255, 255, 255, 0.20);
+  --lav-glass-edge-bright: rgba(255, 255, 255, 0.55);
+  --lav-glass-highlight: rgba(255, 255, 255, 0.55);
+  --lav-glass-shade: rgba(0, 0, 0, 0.24);
+  --lav-glass-scrim: rgba(10, 10, 10, 0.44);
+  --lav-glass-refract-1: rgba(255, 255, 255, 0.10);
+  --lav-glass-refract-2: rgba(255, 255, 255, 0.06);
+  --lav-glass-orange-tint: rgb(255 255 255 / calc(0.14 * var(--lav-glass-intensity)));
+  --lav-glass-blue-tint: var(--lav-glass-orange-tint); /* back-compat alias → neutral slab */
+  --lav-glass-smoke: rgb(10 10 10 / calc(0.46 * var(--lav-glass-intensity)));
+
+  /* depth (dark) */
+  --lav-glass-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  --lav-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.20);
+  --lav-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.24);
+  --lav-shadow-3: 0 10px 28px rgba(0, 0, 0, 0.32);
+  --lav-shadow-4: 0 20px 48px rgba(0, 0, 0, 0.42);
+  --lav-shadow-5: 0 32px 72px rgba(0, 0, 0, 0.52);
+}
+
+/* ========================================================================== */
+/* LIGHT THEME (opt-in via <html data-theme="light">)                          */
+/* ========================================================================== */
+[data-theme="light"] {
+  --lav-bg: #F5F5F5;
+  --lav-bg-raised: #FFFFFF;
+  --lav-surface: #FFFFFF;
+  --lav-text: #141414;
+  --lav-text-2: rgba(20, 20, 20, 0.64);
+  --lav-text-3: rgba(20, 20, 20, 0.42);
+  --lav-text-4: rgba(20, 20, 20, 0.30);
+  --lav-line: rgba(20, 20, 20, 0.14);
+  --lav-line-strong: rgba(20, 20, 20, 0.24);
+
+  --lav-accent: #141414;     /* ink.1 — dark reads on light. Differentiation by weight, not hue */
+  --lav-accent-2: #616161;   /* ink.6 */
+  --lav-cta: #141414;        /* near-black solid pill = the max-contrast element on light bg */
+  --lav-cta-press: #292929;  /* ink.3 */
+  --lav-cta-ink: #F5F5F5;    /* white ink on the dark pill */
+
+  --lav-success: #292929;
+  --lav-warning: #616161;
+  --lav-error: #141414;
+  --lav-info: #616161;
+
+  --lav-blue: #6E6E6E;  --lav-indigo: #5A5A5A; --lav-purple: #7A7A7A; --lav-pink: #8A8A8A;
+  --lav-red: #6E6E6E;   --lav-orange: #8A8A8A; --lav-yellow: #ABABAB; --lav-green: #808080;
+  --lav-mint: #909090;  --lav-teal: #888888;   --lav-cyan: #909090;   --lav-brown: #6E6E6E;
+  /* pure-neutral gray ramp (R=G=B) — Light */
+  --lav-gray: #8A8A8A;  --lav-gray2: #A8A8A8;  --lav-gray3: #C8C8C8;
+  --lav-gray4: #D6D6D6; --lav-gray5: #EAEAEA;  --lav-gray6: #F5F5F5;
+
+  --lav-glass-brightness: 1.0;
+  --lav-glass-tint: rgb(255 255 255 / calc(0.55 * var(--lav-glass-intensity)));
+  --lav-glass-tint-strong: rgb(255 255 255 / calc(0.70 * var(--lav-glass-intensity)));
+  --lav-glass-edge: rgba(255, 255, 255, 0.70);
+  --lav-glass-edge-bright: rgba(255, 255, 255, 0.95);
+  --lav-glass-highlight: rgba(255, 255, 255, 0.90);
+  --lav-glass-shade: rgba(0, 0, 0, 0.06);
+  --lav-glass-scrim: rgba(250, 250, 250, 0.55);
+  --lav-glass-refract-1: rgba(20, 20, 20, 0.06);
+  --lav-glass-refract-2: rgba(20, 20, 20, 0.05);
+  --lav-glass-orange-tint: rgb(255 255 255 / calc(0.16 * var(--lav-glass-intensity)));
+  --lav-glass-blue-tint: var(--lav-glass-orange-tint);
+  --lav-glass-smoke: rgb(20 20 20 / calc(0.30 * var(--lav-glass-intensity)));
+
+  --lav-glass-shadow: 0 20px 48px rgba(20, 20, 20, 0.18);
+  --lav-shadow-1: 0 1px 2px rgba(20, 20, 20, 0.08);
+  --lav-shadow-2: 0 4px 12px rgba(20, 20, 20, 0.10);
+  --lav-shadow-3: 0 10px 28px rgba(20, 20, 20, 0.14);
+  --lav-shadow-4: 0 20px 48px rgba(20, 20, 20, 0.18);
+  --lav-shadow-5: 0 32px 72px rgba(20, 20, 20, 0.22);
+}
+
+/* ========================================================================== */
+/* BASE                                                                        */
+/* ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--lav-font);
+  font-size: var(--lav-text-base);
+  line-height: var(--lav-leading-normal);
+  font-weight: var(--lav-w-regular);
+  letter-spacing: var(--lav-track-normal);
+  color: var(--lav-text);
+  background-color: var(--lav-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: color-mix(in srgb, var(--lav-accent) 38%, transparent); }
+
+/* ========================================================================== */
+/* LAYOUT HELPERS                                                               */
+/* ========================================================================== */
+.lav-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--lav-space-6);
+}
+.lav-section { padding-block: clamp(var(--lav-space-16), 8vw, var(--lav-space-32)); }
+.lav-stack > * + * { margin-top: var(--lav-space-4); }
+
+/* Three-layer background: fixed photo → scrim → glass UI on top */
+.lav-bg {
+  position: fixed; inset: 0; z-index: -2;
+  background: var(--lav-bg) center / cover no-repeat;
+}
+.lav-bg--photo { background-image: var(--lav-bg-image, none); }
+.lav-bg__scrim {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.58));
+}
+[data-theme="light"] .lav-bg__scrim {
+  background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.55));
+}
+
+/* ========================================================================== */
+/* TYPOGRAPHY UTILITIES                                                         */
+/* ========================================================================== */
+.lav-eyebrow {
+  font-size: var(--lav-text-sm); font-weight: var(--lav-w-medium);
+  letter-spacing: var(--lav-track-wide); text-transform: uppercase;
+  color: var(--lav-accent);
+}
+.lav-display {
+  font-size: var(--lav-text-display); font-weight: var(--lav-w-black);
+  line-height: var(--lav-leading-tight); letter-spacing: var(--lav-track-tight);
+  margin: 0;
+}
+.lav-h1 {
+  font-size: var(--lav-text-2xl); font-weight: var(--lav-w-bold);
+  line-height: var(--lav-leading-tight); letter-spacing: var(--lav-track-tight); margin: 0;
+}
+.lav-h2 {
+  font-size: var(--lav-text-xl); font-weight: var(--lav-w-bold);
+  line-height: var(--lav-leading-snug); letter-spacing: var(--lav-track-snug); margin: 0;
+}
+.lav-h3 {
+  font-size: var(--lav-text-lg); font-weight: var(--lav-w-medium);
+  line-height: var(--lav-leading-snug); letter-spacing: var(--lav-track-snug); margin: 0;
+}
+.lav-lead {
+  font-size: var(--lav-text-md); line-height: var(--lav-leading-relaxed);
+  color: var(--lav-text-2); max-width: 60ch; margin: 0;
+}
+.lav-body { font-size: var(--lav-text-base); line-height: var(--lav-leading-normal); max-width: 68ch; }
+.lav-small { font-size: var(--lav-text-sm); color: var(--lav-text-2); }
+.lav-caption { font-size: var(--lav-text-xs); color: var(--lav-text-3); }
+.lav-muted { color: var(--lav-text-2); }
+.lav-link {
+  color: var(--lav-accent); text-decoration: none;
+  transition: opacity var(--lav-dur-fast) var(--lav-ease);
+}
+.lav-link:hover { opacity: 0.8; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ========================================================================== */
+/* GLASS — BASE                                                                 */
+/* ========================================================================== */
+.glass {
+  position: relative;
+  border-radius: var(--lav-glass-radius);
+  background-color: var(--lav-glass-tint);
+  -webkit-backdrop-filter: blur(calc(var(--lav-glass-blur) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate)) brightness(var(--lav-glass-brightness));
+  backdrop-filter: blur(calc(var(--lav-glass-blur) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate)) brightness(var(--lav-glass-brightness));
+  border: 1px solid var(--lav-glass-edge);
+  box-shadow:
+    var(--lav-glass-shadow),
+    inset 0 1px 0 var(--lav-glass-highlight),
+    inset 0 -1px 0 var(--lav-glass-shade);
+  color: var(--lav-text);
+  isolation: isolate;
+}
+/* IMPORTANT: never put overflow:hidden on a PARENT of .glass — it clips the
+   backdrop blur. Use `overflow: clip` instead when you must clip a wrapper. */
+
+/* Legibility helper — a barrier plate so text never sits on bare glass
+   (keeps contrast >= 4.5:1, per Apple's "text on a solid layer" rule). */
+.glass-plate {
+  background-color: var(--lav-glass-scrim);
+  border-radius: var(--lav-r-md);
+  padding: var(--lav-space-4) var(--lav-space-5);
+}
+
+/* Tier modifiers — mix any material onto any elevation */
+.glass--t1 { --lav-glass-blur: var(--lav-blur-frost); }
+.glass--t2 { --lav-glass-blur: var(--lav-blur-surface); }
+.glass--t3 { --lav-glass-blur: var(--lav-blur-control); --lav-glass-radius: var(--lav-glass-radius-control); }
+.glass--t4 { --lav-glass-blur: var(--lav-blur-float); box-shadow: var(--lav-shadow-4), inset 0 1px 0 var(--lav-glass-highlight); }
+.glass--t5 { --lav-glass-blur: var(--lav-blur-modal); --lav-glass-radius: var(--lav-glass-radius-modal); box-shadow: var(--lav-shadow-5), inset 0 1px 0 var(--lav-glass-highlight); }
+.glass--pill { border-radius: var(--lav-r-pill); }
+
+/* ========================================================================== */
+/* GLASS — VARIANTS                                                             */
+/* ========================================================================== */
+
+/* CRYSTAL — bevelled chamfer; specular top-left, shade bottom-right. DEFAULT. */
+.glass--crystal {
+  --lav-glass-blur: var(--lav-blur-surface);
+  box-shadow:
+    var(--lav-glass-shadow),
+    inset 1.5px 1.5px 0 var(--lav-glass-edge-bright),
+    inset -1px -1px 1px var(--lav-glass-shade);
+}
+.glass--crystal::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background:
+    linear-gradient(135deg, var(--lav-glass-highlight) 0%, transparent 24%),
+    linear-gradient(160deg, var(--lav-glass-refract-1), transparent 55%, var(--lav-glass-refract-2));
+}
+
+/* EDGE-LIT — luminous rim, light piped along a cut-acrylic edge. */
+.glass--edge-lit {
+  --lav-glass-blur: var(--lav-blur-control);
+  border-color: transparent;
+  box-shadow:
+    var(--lav-glass-shadow),
+    inset 0 0 0 1px var(--lav-glass-edge-bright),
+    0 0 14px -2px var(--lav-glass-edge);
+}
+.glass--edge-lit::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(140deg, var(--lav-glass-edge-bright), transparent 38%, transparent 62%, var(--lav-glass-edge-bright));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+.glass--edge-lit.glass--accent { box-shadow: var(--lav-glass-shadow), inset 0 0 0 1px color-mix(in srgb, var(--lav-accent) 70%, white), 0 0 16px -2px color-mix(in srgb, var(--lav-accent) 50%, transparent); }
+
+/* FROST-RIM — clear at centre, feathering to frost at the edges. */
+.glass--frost-rim {
+  --lav-glass-blur: var(--lav-blur-frost);
+  background-color: transparent;
+  border-color: var(--lav-glass-edge);
+}
+.glass--frost-rim::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 50%, transparent 40%, var(--lav-glass-tint-strong) 100%);
+}
+
+/* DEEP — layered inner shadows recede the centre into real volume. Floating/modal. */
+.glass--deep {
+  --lav-glass-blur: var(--lav-blur-float);
+  background-color: var(--lav-glass-tint-strong);
+  box-shadow:
+    var(--lav-shadow-5),
+    inset 0 1px 0 var(--lav-glass-edge-bright),
+    inset 0 22px 44px -22px var(--lav-glass-shade),
+    inset 0 -22px 44px -22px var(--lav-glass-shade);
+}
+.glass--modal { --lav-glass-blur: var(--lav-blur-modal); --lav-glass-radius: var(--lav-glass-radius-modal); }
+
+/* CLEAR — almost no blur, crisp bright edge, refraction sheen. See-through. */
+.glass--clear {
+  --lav-glass-blur: var(--lav-blur-clear);
+  background-color: rgb(255 255 255 / calc(0.06 * var(--lav-glass-intensity)));
+  border-color: var(--lav-glass-edge-bright);
+  box-shadow: var(--lav-shadow-2), inset 0 1px 0 var(--lav-glass-edge-bright);
+}
+.glass--clear::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(120deg, var(--lav-glass-refract-1), transparent 45%, var(--lav-glass-refract-2));
+}
+/* Optional: true optical displacement via an SVG <filter id="lav-displace"> +
+   feDisplacementMap, applied as backdrop-filter: url(#lav-displace) blur(...).
+   It is GPU-heavy — skip it for top PageSpeed; the sheen above reads as glass. */
+
+/* DARK — smoked. Best as a scrim over busy/bright photos to protect text. */
+.glass--dark {
+  --lav-glass-blur: var(--lav-blur-surface);
+  background-color: var(--lav-glass-smoke);
+  border-color: var(--lav-line);
+  color: #fff;
+  box-shadow: var(--lav-glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* HALO — outer glow ring for emphasis + focus (gold on the CTA). */
+.glass--halo {
+  --lav-halo: var(--lav-accent);
+  box-shadow:
+    var(--lav-glass-shadow),
+    0 0 0 1px color-mix(in srgb, var(--lav-halo) 60%, transparent),
+    0 0 28px 2px color-mix(in srgb, var(--lav-halo) 42%, transparent),
+    inset 0 1px 0 var(--lav-glass-highlight);
+}
+.glass--halo.glass--gold { --lav-halo: var(--lav-cta); }
+
+/* SHIMMER — hover-only sheen sweep (transform-driven → composited → cheap). */
+.glass--shimmer { overflow: clip; }
+.glass--shimmer::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, var(--lav-glass-highlight) 50%, transparent 70%);
+  transform: translateX(-130%);
+  opacity: 0;
+  transition: transform var(--lav-dur-slow) var(--lav-ease), opacity var(--lav-dur-slow) var(--lav-ease);
+}
+.glass--shimmer:hover::after,
+.glass--shimmer:focus-visible::after { transform: translateX(130%); opacity: 0.7; }
+
+/* TINT-ORANGE — wide warm-orange slab with stronger refraction. Showcase / hero.
+   (.glass--tint-blue kept as a back-compat alias so existing markup stays valid.) */
+.glass--tint-orange,
+.glass--tint-blue {
+  --lav-glass-blur: 16px;
+  background-color: var(--lav-glass-orange-tint);
+  border-color: color-mix(in srgb, var(--lav-accent) 40%, var(--lav-glass-edge));
+  box-shadow:
+    var(--lav-glass-shadow),
+    inset 0 1px 0 var(--lav-glass-edge-bright),
+    inset 0 0 40px -10px color-mix(in srgb, var(--lav-cta) 45%, transparent);
+}
+.glass--tint-orange::before,
+.glass--tint-blue::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--lav-accent-2) 24%, transparent), transparent 50%, color-mix(in srgb, var(--lav-cta) 20%, transparent));
+}
+
+/* ========================================================================== */
+/* COMPONENTS — BUTTONS                                                         */
+/* ========================================================================== */
+.lav-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--lav-space-2);
+  min-height: var(--lav-tap);
+  padding: 0 var(--lav-space-6);
+  border: 0; border-radius: var(--lav-r-pill);
+  font-family: inherit; font-size: var(--lav-text-base); font-weight: var(--lav-w-medium);
+  letter-spacing: var(--lav-track-snug);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: transform var(--lav-dur-fast) var(--lav-ease),
+              box-shadow var(--lav-dur-base) var(--lav-ease),
+              background-color var(--lav-dur-fast) var(--lav-ease),
+              opacity var(--lav-dur-fast) var(--lav-ease);
+}
+.lav-btn:hover { transform: translateY(-1px); }
+.lav-btn:active { transform: translateY(0) scale(0.99); }
+
+/* Primary CTA — the single highest-contrast element. Reserve for ONE action. */
+.lav-btn--cta {
+  background-color: var(--lav-cta);
+  color: var(--lav-cta-ink);
+  font-weight: var(--lav-w-bold);
+  box-shadow: var(--lav-shadow-3), 0 0 0 1px color-mix(in srgb, var(--lav-cta) 60%, transparent);
+}
+.lav-btn--cta:hover {
+  background-color: var(--lav-cta);
+  box-shadow: var(--lav-shadow-4), 0 0 26px -2px color-mix(in srgb, var(--lav-cta) 55%, transparent);
+}
+.lav-btn--cta:active { background-color: var(--lav-cta-press); }
+
+/* Secondary — glass (edge-lit + shimmer). Visually subordinate to the CTA. */
+.lav-btn--glass {
+  background-color: var(--lav-glass-tint);
+  -webkit-backdrop-filter: blur(calc(var(--lav-blur-control) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate));
+          backdrop-filter: blur(calc(var(--lav-blur-control) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate));
+  color: var(--lav-text);
+  box-shadow: var(--lav-shadow-2), inset 0 0 0 1px var(--lav-glass-edge);
+}
+.lav-btn--glass:hover { box-shadow: var(--lav-shadow-3), inset 0 0 0 1px var(--lav-glass-edge-bright); }
+
+/* Tertiary — quiet text button */
+.lav-btn--ghost { background: transparent; color: var(--lav-text); }
+.lav-btn--ghost:hover { background-color: var(--lav-glass-tint); }
+
+.lav-btn--sm { min-height: 36px; padding: 0 var(--lav-space-4); font-size: var(--lav-text-sm); }
+.lav-btn--block { display: flex; width: 100%; }
+
+/* ========================================================================== */
+/* COMPONENTS — INPUT / NAV                                                     */
+/* ========================================================================== */
+.lav-input {
+  width: 100%; min-height: var(--lav-tap);
+  padding: 0 var(--lav-space-4);
+  font: inherit; color: var(--lav-text);
+  background-color: var(--lav-glass-tint);
+  -webkit-backdrop-filter: blur(calc(var(--lav-blur-control) * var(--lav-glass-intensity)));
+          backdrop-filter: blur(calc(var(--lav-blur-control) * var(--lav-glass-intensity)));
+  border: 1px solid var(--lav-glass-edge);
+  border-radius: var(--lav-r-md);
+  transition: border-color var(--lav-dur-fast) var(--lav-ease), box-shadow var(--lav-dur-fast) var(--lav-ease);
+}
+.lav-input::placeholder { color: var(--lav-text-3); }
+.lav-input:focus { outline: none; border-color: var(--lav-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lav-accent) 30%, transparent); }
+
+/* Floating top bar (Tier 4). NOTE: backdrop-filter on a position:fixed element
+   causes scroll jank in iOS Safari — keep blur modest and test on a device.
+   translateZ(0) promotes it to its own layer to soften the repaint cost. */
+.lav-nav {
+  position: sticky; top: 0; z-index: var(--lav-z-nav);
+  transform: translateZ(0);
+  background-color: var(--lav-glass-tint-strong);
+  -webkit-backdrop-filter: blur(calc(var(--lav-blur-float) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate));
+          backdrop-filter: blur(calc(var(--lav-blur-float) * var(--lav-glass-intensity))) saturate(var(--lav-glass-saturate));
+  border-bottom: 1px solid var(--lav-glass-edge);
+}
+
+/* ========================================================================== */
+/* FOCUS / INTERACTION                                                          */
+/* ========================================================================== */
+.lav-btn:focus-visible,
+.lav-input:focus-visible,
+.lav-link:focus-visible,
+.lav-focusable:focus-visible,
+.glass[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--lav-focus-ring);
+}
+
+/* ========================================================================== */
+/* ACCESSIBILITY & PERFORMANCE GUARDS                                           */
+/* ========================================================================== */
+
+/* Fallback when backdrop-filter is unavailable → solid, readable surfaces. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass, .glass--frost-rim, .glass--clear,
+  .lav-btn--glass, .lav-input, .lav-nav {
+    background-color: var(--lav-surface);
+    border-color: var(--lav-line-strong);
+  }
+  .glass--dark { background-color: rgba(10, 10, 10, 0.92); }
+  .glass--tint-orange,
+  .glass--tint-blue { background-color: color-mix(in srgb, var(--lav-cta) 22%, var(--lav-surface)); }
+}
+
+/* Respect Reduce Transparency → drop the glass, keep it solid and legible. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass--frost-rim, .glass--clear, .glass--crystal, .glass--deep,
+  .glass--edge-lit, .glass--tint-orange, .glass--tint-blue, .lav-btn--glass, .lav-input, .lav-nav {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    background-color: var(--lav-surface);
+    border-color: var(--lav-line-strong);
+  }
+  .glass--dark { background-color: rgba(10, 10, 10, 0.94); }
+  .glass--crystal::before, .glass--clear::before, .glass--frost-rim::before,
+  .glass--tint-orange::before, .glass--tint-blue::before, .glass--edge-lit::before { display: none; }
+}
+
+/* Respect Reduce Motion → no shimmer, no hover lift, no smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .glass--shimmer::after { display: none; }
+  .lav-btn:hover, .lav-btn:active { transform: none; }
+}
+
+/* Higher contrast → denser tint + stronger edges. */
+@media (prefers-contrast: more) {
+  :root {
+    --lav-glass-tint: rgb(255 255 255 / calc(0.18 * var(--lav-glass-intensity)));
+    --lav-glass-edge: rgba(255, 255, 255, 0.40);
+    --lav-text-2: rgba(235, 235, 235, 0.80);
+  }
+  [data-theme="light"] {
+    --lav-glass-tint: rgb(255 255 255 / calc(0.80 * var(--lav-glass-intensity)));
+    --lav-glass-edge: rgba(60, 60, 60, 0.45);
+    --lav-text-2: rgba(60, 60, 60, 0.78);
+  }
+}
+
+/* Windows High Contrast / forced colours → fall back to system colours + borders. */
+@media (forced-colors: active) {
+  .glass, .lav-btn, .lav-input, .lav-nav {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border: 1px solid CanvasText;
+    background-color: Canvas;
+  }
+  .lav-btn--cta { background-color: Highlight; color: HighlightText; }
+}

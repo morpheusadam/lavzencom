@@ -138,7 +138,7 @@ final class Performance_Module extends Abstract_Module {
 		if ( is_admin() ) {
 			return $tag;
 		}
-		$async = (array) apply_filters( 'lavzen/perf/async_style_handles', array( 'lavzen-fonts', 'lavzen-home-fonts' ) );
+		$async = (array) apply_filters( 'lavzen/perf/async_style_handles', array( 'lavzen-fonts', 'lavzen-gfonts' ) );
 		if ( ! in_array( $handle, $async, true ) ) {
 			return $tag;
 		}

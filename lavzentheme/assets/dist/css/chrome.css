@@ -1,0 +1,165 @@
+/* ============================================================================
+   LAVZEN home — original liquid-glass chrome (sidebar rail + topbar) ported
+   onto the new monochrome marketplace. Loads AFTER home.css on the front page
+   only. Colours/fonts are synced to the new design tokens; the sidebar/header
+   keep their original sizing + liquid-glass refraction (#lzx-glass-distort).
+   ========================================================================== */
+
+/* — base tokens the ported chrome needs, retokenised to the monochrome palette;
+     fonts mapped to the new design's display/text families — */
+/* Site-wide guard against horizontal overflow (iOS Safari treats 100vw / full-
+   bleed tricks differently and can push the page wider than the screen).
+   `clip` stops the scroll WITHOUT creating a scroll container, so sticky/fixed
+   keep working. */
+html, body { overflow-x: clip; max-width: 100%; }
+
+.app{
+  --accent:#F5F5F5; --accent-2:#D6D6D6; --accent-3:#ABABAB; --gold:#F5F5F5;
+  --cta:#F5F5F5; --cta-ink:#141414;
+  --text:#F5F5F5; --text-2:rgba(245,245,245,.72); --text-3:rgba(245,245,245,.56); --muted:rgba(245,245,245,.46);
+  --bg-deep:#0b0b0d; --success:#D6D6D6; --danger:#D6D6D6;
+  --glass-1:rgba(255,255,255,.06); --glass-2:rgba(255,255,255,.12); --glass-3:rgba(255,255,255,.17);
+  --stroke:rgba(255,255,255,.18); --stroke-soft:rgba(255,255,255,.10);
+  --sheen:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.04) 42%,rgba(255,255,255,0) 72%);
+  --edge:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 1px rgba(255,255,255,.08);
+  --blur:20px; --sat:170%;
+  --e1:0 2px 8px rgba(0,0,0,.28); --e2:0 12px 30px rgba(0,0,0,.36); --e3:0 40px 120px rgba(0,0,0,.5);
+  --r-sm:14px; --r-md:18px; --r-lg:24px; --r-xl:30px; --r-pill:999px;
+  --tap:44px; --ease:cubic-bezier(.2,.7,.2,1);
+}
+
+/* — app shell: main fills the width, icon rail pinned to the RIGHT — reduced
+   side margins (main 37px from the left, rail 16px from the right, 37px gap). — */
+.app{ width:100%; max-width:none; display:flex; flex-direction:row-reverse; align-items:flex-start; gap:37px; padding:22px 16px 22px 37px; }
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:22px; }
+/* keep ancestors neutral so the header/sidebar backdrop-filter refracts the page */
+.app,.main{ background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; transform:none !important; filter:none !important; border:none !important; box-shadow:none !important; contain:none !important; }
+
+/* ============================ SIDEBAR (icon rail) ========================== */
+.sidebar{ width:60px; flex:0 0 60px; display:flex; flex-direction:column; align-items:center; gap:24px; padding:18px 0; border-radius:24px; border:1px solid var(--stroke); box-shadow:var(--edge),var(--e1);
+  align-self:stretch; }
+.logo{ width:36px; height:36px; display:grid; place-items:center; color:var(--accent); }
+.logo svg{ width:26px; height:26px; }
+.nav{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.nav-item{ position:relative; width:44px; height:44px; border-radius:13px; display:grid; place-items:center; color:rgba(245,245,245,.7); cursor:pointer; background:0 0; border:none; padding:0; font:inherit; text-decoration:none;
+  transition:background .2s var(--ease),color .2s var(--ease),transform .15s var(--ease); }
+.nav-item svg{ width:20px; height:20px; }
+.nav-item:hover{ color:#fff; background:var(--glass-1); }
+.nav-item:active{ transform:scale(.94); }
+.nav-item.active{ color:#fff; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.18)); box-shadow:var(--edge),inset 0 0 0 1px rgba(255,255,255,.4); }
+.nav-item.active::before{ content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%); width:3px; height:18px; border-radius:3px; background:#F5F5F5; box-shadow:0 0 10px rgba(255,255,255,.6); }
+.nav-mobile{ display:none; }
+.nav-desktop{ display:grid; }
+/* liquid-glass crystal layers */
+.sidebar{ --accent:#F5F5F5; position:relative; isolation:isolate; background:transparent !important; border:none !important; box-shadow:0 22px 55px rgba(0,0,0,.4) !important; }
+.sidebar::before{ content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; backdrop-filter:blur(1px) url(#lzx-glass-distort); -webkit-backdrop-filter:blur(1px); }
+.sidebar::after{ content:""; position:absolute; inset:0; z-index:1; border-radius:inherit; pointer-events:none; background:rgba(255,255,255,.07); backdrop-filter:blur(7px) saturate(1.6) brightness(1.06); -webkit-backdrop-filter:blur(7px) saturate(1.6) brightness(1.06); box-shadow:inset 3px 3px 1px rgba(255,255,255,.9),inset -3px -3px 1px rgba(0,0,0,.34),inset 0 0 34px rgba(255,255,255,.14),inset 0 -22px 46px rgba(0,0,0,.20),0 1px 0 rgba(255,255,255,.5); }
+.sidebar>*{ position:relative; z-index:2; }
+
+/* ============================ TOPBAR (header) ============================== */
+.topbar{ --accent:#F5F5F5; --accent-2:#D6D6D6; --accent-3:#ABABAB; --gold:#F5F5F5; --cta:#F5F5F5; --success:#D6D6D6; --danger:#D6D6D6;
+  --text:#F5F5F5; --text-2:rgba(245,245,245,.72); --text-3:rgba(245,245,245,.56); --muted:rgba(245,245,245,.46); --bg-deep:#0b0b0d;
+  --stroke:rgba(255,255,255,.18); --stroke-soft:rgba(255,255,255,.10); --glass-1:rgba(255,255,255,.06); --glass-2:rgba(255,255,255,.12);
+  display:flex; align-items:center; justify-content:space-between; gap:20px; padding:10px 14px; border-radius:var(--r-lg);
+  position:sticky; top:10px; z-index:70; isolation:isolate; background:transparent; border:none; border-block-end:none;
+  backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:0 22px 55px rgba(0,0,0,.4); }
+.logo-type{ height:38px; width:auto; display:block; }
+.topnav{ display:flex; align-items:center; gap:30px; flex:1; justify-content:center; }
+.topnav a{ position:relative; font-size:15px; font-weight:500; color:var(--text-2); text-decoration:none; padding:8px 14px; border-radius:var(--r-pill); transition:color .2s var(--ease),background .2s var(--ease); }
+.topnav a:hover{ background:rgba(255,255,255,.07); }
+.topnav a.active{ background:rgba(255,255,255,.12); }
+.topnav a.active,.topnav a:hover{ color:#fff; }
+.topnav a::after{ content:""; position:absolute; left:50%; right:50%; bottom:4px; height:2px; background:#F5F5F5; border-radius:2px; transition:left .2s var(--ease),right .2s var(--ease); }
+.topnav a.active::after,.topnav a:hover::after{ left:0; right:0; }
+.menu-toggle{ display:none; width:var(--tap); height:var(--tap); border:1px solid var(--stroke); border-radius:13px; background:var(--glass-1); color:var(--text-2); cursor:pointer; place-items:center; }
+.menu-toggle svg{ width:22px; height:22px; }
+.menu-toggle .ic-close,.menu-toggle.open .ic-open{ display:none; }
+.menu-toggle.open .ic-close{ display:block; }
+.top-actions{ display:flex; align-items:center; gap:10px; }
+.topbar .icon-btn{ position:relative; width:var(--tap); height:var(--tap); border-radius:50%; display:grid; place-items:center; color:var(--text-3); cursor:pointer; background:0 0; border:none; padding:0; transition:background .2s var(--ease),color .2s var(--ease); }
+.topbar .icon-btn:hover{ background:var(--glass-2); color:#fff; }
+.topbar .icon-btn svg{ width:20px; height:20px; }
+.topbar .icon-btn.has-dot::after{ content:""; position:absolute; top:9px; right:10px; width:8px; height:8px; border-radius:50%; background:#F5F5F5; border:2px solid var(--bg-deep); box-shadow:0 0 8px rgba(255,255,255,.7); }
+.avatar{ position:relative; width:38px; height:38px; border-radius:50%; overflow:visible; border:1px solid var(--stroke); cursor:pointer; padding:0; background:0 0; box-shadow:var(--edge),var(--e1); }
+.avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.avatar.is-online::after{ content:""; position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-radius:50%; background:#D6D6D6; border:2.5px solid var(--bg-deep); box-shadow:0 0 8px rgba(255,255,255,.5); }
+.ta-wrap{ position:relative; display:flex; }
+.popover{ position:absolute; top:calc(100% + 12px); right:0; z-index:200; width:300px; background:rgba(14,14,18,.78); border:1px solid rgba(255,255,255,.14); border-radius:18px; box-shadow:inset 2px 2px 1px rgba(255,255,255,.85),inset -2px -2px 1px rgba(0,0,0,.30),inset 0 0 26px rgba(255,255,255,.06),0 24px 60px rgba(0,0,0,.55); backdrop-filter:blur(22px) saturate(150%) brightness(1.05); -webkit-backdrop-filter:blur(22px) saturate(150%) brightness(1.05); padding:8px; opacity:0; visibility:hidden; transform:translateY(-8px) scale(.98); transform-origin:top right; transition:opacity .2s var(--ease),transform .2s var(--ease),visibility .2s var(--ease); }
+.popover.open{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+.pop-head{ display:flex; align-items:center; justify-content:space-between; padding:8px 10px 10px; font-size:13px; font-weight:700; color:#fff; }
+.pop-badge{ font-size:10.5px; font-weight:700; color:#F5F5F5; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:3px 8px; border-radius:var(--r-pill); }
+.notif-item{ display:flex; gap:11px; padding:10px; border-radius:12px; text-decoration:none; transition:background .15s var(--ease); }
+.notif-item:hover{ background:var(--glass-1); }
+.ni-ic{ flex:0 0 34px; width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:var(--glass-2); border:1px solid var(--stroke-soft); color:var(--text-2); }
+.ni-ic svg{ width:17px; height:17px; }
+.ni-ic.ni-offer{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.3); color:#F5F5F5; }
+.ni-body{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.ni-title{ font-size:13px; font-weight:600; color:#fff; line-height:1.3; }
+.ni-sub{ font-size:11.5px; color:var(--muted); line-height:1.35; }
+.pop-foot{ display:block; text-align:center; padding:11px; margin-top:4px; font-size:12.5px; font-weight:600; color:#F5F5F5; text-decoration:none; border-top:1px solid var(--stroke-soft); border-radius:0 0 12px 12px; transition:background .15s var(--ease); }
+.pop-foot:hover{ background:var(--glass-1); }
+.acct-pop{ width:268px; }
+.acct-head{ display:flex; align-items:center; gap:11px; padding:10px; }
+.acct-av{ flex:0 0 40px; width:40px; height:40px; border-radius:50%; overflow:hidden; border:1px solid var(--stroke); }
+.acct-av img{ width:100%; height:100%; object-fit:cover; }
+.acct-id{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.acct-name{ font-size:14px; font-weight:700; color:#fff; }
+.acct-mail{ font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.acct-status{ display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--success); font-weight:600; margin-top:2px; }
+.acct-status .st-dot{ width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 6px rgba(214,214,214,.7); }
+.acct-sep{ height:1px; background:var(--stroke-soft); margin:6px 4px; }
+.acct-item{ display:flex; align-items:center; gap:11px; padding:10px; border-radius:11px; font-size:13.5px; color:var(--text-2); text-decoration:none; transition:background .15s var(--ease),color .15s var(--ease); }
+.acct-item svg{ width:18px; height:18px; flex:0 0 18px; color:var(--text-3); }
+.acct-item:hover{ background:var(--glass-1); color:#fff; }
+.acct-item:hover svg{ color:#F5F5F5; }
+.acct-logout,.acct-logout svg{ color:var(--danger); }
+.acct-logout:hover{ background:rgba(255,255,255,.12); color:var(--danger); }
+/* liquid-glass crystal layers + brand recolour */
+.lzx-rfr,.lzx-tnt,.lzx-shn{ position:absolute; inset:0; border-radius:inherit; pointer-events:none; }
+.lzx-rfr{ z-index:1; backdrop-filter:blur(1px) url(#lzx-glass-distort); -webkit-backdrop-filter:blur(1px); }
+.lzx-tnt{ z-index:2; background:rgba(255,255,255,.07); backdrop-filter:blur(7px) saturate(1.6) brightness(1.06); -webkit-backdrop-filter:blur(7px) saturate(1.6) brightness(1.06); }
+.lzx-shn{ z-index:3; border:none; box-shadow:inset 3px 3px 1px rgba(255,255,255,.9),inset -3px -3px 1px rgba(0,0,0,.34),inset 0 0 34px rgba(255,255,255,.14),inset 0 -22px 46px rgba(0,0,0,.20),0 1px 0 rgba(255,255,255,.5); }
+.topbar>.brand,.topbar>.topnav,.topbar>.top-actions{ position:relative; z-index:4; }
+.topbar .brand{ display:inline-flex; align-items:center; }
+.topbar .topnav a{ text-shadow:0 1px 3px rgba(0,0,0,.45); }
+.topbar .logo-type path[fill^="url"]{ fill:#D6D6D6 !important; }
+.topbar .logo-type text tspan{ fill:#F5F5F5 !important; }
+.topbar .logo-type text tspan:last-child{ fill:#ABABAB !important; }
+.topbar .avatar img[src^="data:image"]{ filter:none !important; }
+
+/* ============================ RESPONSIVE ==================================
+   The icon rail is a DESKTOP-only element. On phones it is removed entirely and
+   the marketplace's own bottom tab bar (from home.css) takes over navigation.
+   ========================================================================== */
+
+/* phones: drop the rail, stack the column, let the new tab bar show */
+@media (max-width:768px){
+  .sidebar{ display:none !important; }
+  .app{ flex-direction:column; align-items:stretch; padding:12px 14px; gap:14px; }
+}
+
+/* tablet: keep the rail, let the top nav wrap if it runs long */
+@media (min-width:769px) and (max-width:1024px){
+  .topbar{ flex-wrap:wrap; }
+  .topnav{ gap:18px; }
+}
+
+/* phones: compact header + dropdown nav */
+@media (max-width:640px){
+  .app{ padding:10px; gap:12px; }
+  .topbar{ position:sticky; top:0; gap:10px; padding:8px 10px; flex-wrap:nowrap; }
+  .logo-type{ height:30px; }
+  .menu-toggle{ display:grid; width:42px; height:42px; flex:0 0 42px; }
+  .top-actions{ gap:8px; flex:0 0 auto; }
+  .top-actions .icon-btn{ display:grid; width:42px; height:42px; }
+  .avatar{ width:42px; height:42px; }
+  .ta-wrap{ position:static; }
+  .popover{ position:fixed; top:64px; left:10px; right:10px; width:auto; }
+  .acct-pop{ width:auto; }
+  .topnav{ display:none; position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:60; flex-direction:column; align-items:stretch; gap:0; background:rgba(22,17,18,.96); border:1px solid var(--stroke); border-radius:16px; padding:4px 12px; box-shadow:var(--e2); backdrop-filter:blur(18px); }
+  .topnav.open{ display:flex; }
+  .topnav a{ width:100%; padding:14px 4px; border-bottom:1px solid var(--stroke-soft); min-height:var(--tap); display:flex; align-items:center; }
+  .topnav a:last-child{ border-bottom:none; }
+  .topnav a::after{ display:none; }
+  .topnav a.active{ color:#fff; }
+}

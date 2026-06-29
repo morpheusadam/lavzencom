@@ -1,0 +1,178 @@
+/* lavtheme — Blog archive. Editorial / magazine layout on the theme's Liquid
+   Glass design system. Scoped under .lav-blog so nothing leaks (card class is
+   .bpost to avoid the front-page .post). Tokens only; the shared .glass class
+   comes from the theme. Designed with ui-ux-pro-max (Swiss-editorial structure
+   + dark glass identity): fluid type, strong hierarchy, focus-visible a11y,
+   sticky rails, transform/opacity-only motion, reduced-motion safe.
+   Breakpoints: 1400 / 980 / 680 / 420. Sticky offset 84px clears the topbar. */
+
+.lav-blog { --lavb-sticky: 84px; width: 100%; }
+.lav-blog .shell { width: 100%; display: flex; flex-direction: column; gap: var(--s6); }
+.lav-blog a { color: inherit; text-decoration: none; }
+
+/* focus-visible: visible keyboard rings on every interactive element (a11y) */
+.lav-blog a:focus-visible,
+.lav-blog button:focus-visible,
+.lav-blog select:focus-visible,
+.lav-blog input:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 8px; }
+.lav-blog .bpost:focus-within,
+.lav-blog .featured:focus-within { box-shadow: var(--focus), var(--e3); }
+
+/* ---------- head (editorial masthead) ---------- */
+.lav-blog .blog-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; padding: 30px var(--s5) 4px; border-bottom: 1px solid var(--stroke-soft); }
+.lav-blog .blog-head .left { display: flex; flex-direction: column; gap: 10px; }
+.lav-blog .blog-head .kicker { display: inline-flex; align-items: center; gap: 9px; color: var(--accent); font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.lav-blog .blog-head .kicker::before { content: ""; width: 26px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.lav-blog .blog-head h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 4.4vw, 50px); line-height: 1.04; letter-spacing: .4px; text-transform: uppercase; }
+.lav-blog .blog-head p { color: var(--text-3); font-size: clamp(14px, 1.4vw, 16px); max-width: 56ch; line-height: 1.6; }
+.lav-blog .head-stats { display: flex; gap: 10px; }
+.lav-blog .hs { display: flex; flex-direction: column; gap: 3px; padding: 12px 20px; border-radius: var(--r-md); background: var(--glass-1); border: 1px solid var(--stroke-soft); box-shadow: var(--edge); }
+.lav-blog .hs b { font-family: var(--display); font-weight: 600; font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1; }
+.lav-blog .hs span { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+/* ---------- featured (cinematic hero) ---------- */
+.lav-blog .featured { position: relative; display: grid; grid-template-columns: 1.5fr 1fr; overflow: hidden; padding: 0; min-height: 420px; transition: box-shadow .25s var(--ease); }
+.lav-blog .featured:hover { box-shadow: var(--edge), var(--e3); }
+.lav-blog .featured .fimg { position: relative; overflow: hidden; background: var(--glass-1); display: block; }
+.lav-blog .featured .fimg img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.lav-blog .featured:hover .fimg img { transform: scale(1.04); }
+.lav-blog .featured .fimg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 35%, rgba(11,9,7,.55) 78%, rgba(11,9,7,.85)); }
+.lav-blog .featured .fbody { position: relative; padding: clamp(26px, 3vw, 44px); display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.lav-blog .fbadge { align-self: flex-start; display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: var(--r-pill); background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--ink); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; box-shadow: 0 6px 18px rgba(255,255,255,.4); }
+.lav-blog .featured h2 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 3.4vw, 40px); line-height: 1.12; letter-spacing: .3px; }
+.lav-blog .featured h2 a { background-image: linear-gradient(var(--accent), var(--accent)); background-size: 0% 2px; background-repeat: no-repeat; background-position: 0 100%; transition: background-size .3s var(--ease), color .16s var(--ease); }
+.lav-blog .featured h2 a:hover { color: var(--accent); background-size: 100% 2px; }
+.lav-blog .featured .fexc { color: var(--text-3); font-size: 15px; line-height: 1.65; max-width: 52ch; }
+.lav-blog .fmeta { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+.lav-blog .fmeta .who { display: flex; align-items: center; gap: 9px; color: var(--text-2); font-weight: 500; }
+.lav-blog .fmeta .av, .lav-blog .pfoot .av { background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; font-weight: 700; color: var(--ink); border-radius: 50%; }
+.lav-blog .fmeta .av { width: 34px; height: 34px; font-size: 14px; }
+.lav-blog .fread { align-self: flex-start; margin-top: 4px; display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap); padding: 0 26px; border-radius: var(--r-md); background: var(--cta); color: var(--cta-ink); font-weight: 700; font-size: 14px; transition: transform .16s var(--ease), box-shadow .16s var(--ease); }
+.lav-blog .fread:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(245,245,245,.28); }
+.lav-blog .fread svg { width: 16px; height: 16px; transition: transform .2s var(--ease); }
+.lav-blog .fread:hover svg { transform: translateX(3px); }
+
+/* ---------- filter bar (sticky, segmented) ---------- */
+.lav-blog .filter-bar { position: sticky; top: var(--lavb-sticky); z-index: 40; display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
+.lav-blog .fb-cats { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding: 15px var(--s5); border-bottom: 1px solid var(--stroke-soft); }
+.lav-blog .cpill { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 8px 16px; border-radius: var(--r-pill); font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-3); background: var(--glass-1); border: 1px solid var(--stroke-soft); transition: color .16s var(--ease), background .16s var(--ease), border-color .16s var(--ease); }
+.lav-blog .cpill .n { font-size: 11px; color: var(--muted); background: rgba(255,255,255,.08); padding: 1px 7px; border-radius: var(--r-pill); font-variant-numeric: tabular-nums; }
+.lav-blog .cpill:hover { color: #fff; background: var(--glass-2); border-color: var(--stroke); }
+.lav-blog .cpill.active { background: linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.14)); border-color: rgba(255,255,255,.5); color: #fff; }
+.lav-blog .cpill.active .n { color: var(--text-2); background: rgba(255,255,255,.14); }
+.lav-blog .fb-controls { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 14px var(--s5); }
+.lav-blog .fb-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lav-blog .ctrl { position: relative; }
+.lav-blog .ctrl select { min-height: var(--tap); padding: 0 38px 0 14px; border-radius: var(--r-sm); color: #fff; font-family: var(--sans); font-size: 13.5px; cursor: pointer; background: var(--glass-1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%239aa3bd' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; border: 1px solid var(--stroke); -webkit-appearance: none; appearance: none; transition: border-color .16s var(--ease); }
+.lav-blog .ctrl select:hover { border-color: var(--stroke); background-color: var(--glass-2); }
+.lav-blog .ctrl select option { background: var(--menu-bg); color: #fff; }
+.lav-blog .ctrl .lbl { position: absolute; top: -8px; left: 12px; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--menu-bg); padding: 0 6px; border-radius: 4px; pointer-events: none; }
+.lav-blog .search-mini { position: relative; }
+.lav-blog .search-mini svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+.lav-blog .search-mini input { min-height: var(--tap); width: 250px; padding: 0 14px 0 38px; border-radius: var(--r-sm); background: var(--glass-1); border: 1px solid var(--stroke); color: #fff; font-family: var(--sans); font-size: 13.5px; transition: border-color .16s var(--ease); }
+.lav-blog .search-mini input::placeholder { color: var(--muted); }
+.lav-blog .search-mini input:hover { border-color: var(--stroke); }
+.lav-blog .fb-right { display: flex; align-items: center; gap: 14px; }
+.lav-blog .result-n { font-size: 13px; color: var(--text-3); white-space: nowrap; }
+.lav-blog .result-n b { color: #fff; font-variant-numeric: tabular-nums; }
+
+/* ---------- magazine grid + cards ---------- */
+.lav-blog .blog-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: var(--s6); align-items: start; }
+.lav-blog .posts { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s5); }
+.lav-blog .bpost { display: flex; flex-direction: column; overflow: hidden; padding: 0; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
+.lav-blog .bpost:hover { transform: translateY(-5px); box-shadow: var(--edge), var(--e3); }
+.lav-blog .pthumb { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--glass-1); display: block; }
+.lav-blog .pthumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s var(--ease); }
+.lav-blog .bpost:hover .pthumb img { transform: scale(1.06); }
+.lav-blog .pthumb::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(11,9,7,.45)); opacity: 0; transition: opacity .22s var(--ease); }
+.lav-blog .bpost:hover .pthumb::after { opacity: 1; }
+.lav-blog .ppill { position: absolute; top: 12px; left: 12px; z-index: 1; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; border-radius: var(--r-pill); background: rgba(11,9,7,.66); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; border: 1px solid var(--stroke-soft); }
+.lav-blog .pbody { padding: var(--s4) var(--s5) var(--s5); display: flex; flex-direction: column; gap: 11px; flex: 1; }
+.lav-blog .ptitle { font-family: var(--display); font-weight: 600; font-size: 20px; line-height: 1.28; letter-spacing: .2px; color: #fff; }
+.lav-blog .ptitle a { transition: color .16s var(--ease); }
+.lav-blog .ptitle a:hover { color: var(--accent); }
+.lav-blog .pexc { color: var(--text-3); font-size: 14px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.lav-blog .pfoot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 13px; border-top: 1px solid var(--stroke-soft); color: var(--muted); font-size: 13px; }
+.lav-blog .pfoot .who { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-weight: 500; min-width: 0; }
+.lav-blog .pfoot .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lav-blog .pfoot .av { width: 28px; height: 28px; font-size: 12px; flex: 0 0 28px; }
+.lav-blog .pfoot .read { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lav-blog .pfoot .read svg { width: 13px; height: 13px; }
+.lav-blog .empty { grid-column: 1/-1; text-align: center; padding: 64px 20px; color: var(--muted); border: 1px dashed var(--stroke-soft); border-radius: var(--r-lg); }
+
+/* ---------- sidebar ---------- */
+.lav-blog .side { position: sticky; top: var(--lavb-sticky); display: flex; flex-direction: column; gap: var(--s5); }
+.lav-blog .swidget { padding: var(--s5); display: flex; flex-direction: column; gap: var(--s4); }
+.lav-blog .swidget .wtitle { font-family: var(--display); font-weight: 600; font-size: 16px; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 9px; }
+.lav-blog .swidget .wtitle svg { width: 17px; height: 17px; color: var(--accent); flex: 0 0 17px; }
+.lav-blog .about-w p { color: var(--text-3); font-size: 13.5px; line-height: 1.65; }
+.lav-blog .pop { display: flex; flex-direction: column; gap: 14px; }
+.lav-blog .pop-item { display: flex; gap: 13px; align-items: center; }
+.lav-blog .pop-item .pi-img { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 12px; overflow: hidden; background: var(--glass-1); }
+.lav-blog .pop-item .pi-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s var(--ease); }
+.lav-blog .pop-item:hover .pi-img img { transform: scale(1.07); }
+.lav-blog .pop-item .pi-t { font-size: 13.5px; font-weight: 600; color: var(--text-2); line-height: 1.4; transition: color .16s var(--ease); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.lav-blog .pop-item:hover .pi-t { color: var(--accent); }
+.lav-blog .pop-item .pi-m { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lav-blog .tagcloud { display: flex; flex-wrap: wrap; gap: 8px; }
+.lav-blog .tagcloud a { font-size: 12.5px; padding: 6px 13px; border-radius: var(--r-pill); background: var(--glass-1); border: 1px solid var(--stroke-soft); color: var(--text-3); cursor: pointer; transition: color .16s var(--ease), background .16s var(--ease), border-color .16s var(--ease); }
+.lav-blog .tagcloud a:hover { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--ink); border-color: transparent; }
+.lav-blog .nl { background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(214,214,214,.12)), var(--glass-2); }
+.lav-blog .nl .wtitle svg { color: #fff; }
+.lav-blog .nl p { color: var(--text-3); font-size: 13.5px; line-height: 1.6; }
+.lav-blog .nl-form { display: flex; flex-direction: column; gap: 10px; }
+.lav-blog .nl input { min-height: 46px; padding: 0 15px; border-radius: var(--r-sm); background: rgba(11,9,7,.5); border: 1px solid var(--stroke); color: #fff; font-size: 14px; transition: border-color .16s var(--ease); }
+.lav-blog .nl input::placeholder { color: var(--muted); }
+.lav-blog .nl button { min-height: 46px; border: none; border-radius: var(--r-sm); background: var(--cta); color: var(--cta-ink); font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .16s var(--ease), box-shadow .16s var(--ease); }
+.lav-blog .nl button:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(245,245,245,.26); }
+
+/* ---------- pagination ---------- */
+.lav-blog .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 0 4px; flex-wrap: wrap; }
+.lav-blog .pagination .page-numbers { min-width: var(--tap); min-height: var(--tap); padding: 0 12px; display: grid; place-items: center; border-radius: var(--r-sm); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--glass-1); border: 1px solid var(--stroke-soft); color: var(--text-3); text-decoration: none; transition: color .16s var(--ease), background .16s var(--ease), transform .16s var(--ease); }
+.lav-blog .pagination a.page-numbers:hover { background: var(--glass-2); color: #fff; transform: translateY(-2px); }
+.lav-blog .pagination .page-numbers.current { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: var(--ink); }
+.lav-blog .pagination .page-numbers.dots { background: none; border: none; }
+
+/* ---------- entrance motion (transform/opacity only; reduced-motion safe) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+	.lav-blog .featured { animation: lavb-fade .55s var(--ease) both; }
+	.lav-blog .bpost { animation: lavb-rise .5s var(--ease) both; }
+	.lav-blog .posts .bpost:nth-child(1) { animation-delay: .04s; }
+	.lav-blog .posts .bpost:nth-child(2) { animation-delay: .09s; }
+	.lav-blog .posts .bpost:nth-child(3) { animation-delay: .14s; }
+	.lav-blog .posts .bpost:nth-child(4) { animation-delay: .19s; }
+	.lav-blog .posts .bpost:nth-child(5) { animation-delay: .24s; }
+	.lav-blog .posts .bpost:nth-child(6) { animation-delay: .29s; }
+}
+@keyframes lavb-rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes lavb-fade { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---------- responsive ---------- */
+@media (min-width: 1400px) {
+	.lav-blog .posts { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 980px) {
+	.lav-blog .featured { grid-template-columns: 1fr; }
+	.lav-blog .featured .fimg { aspect-ratio: 16/9; }
+	.lav-blog .featured .fimg::after { background: linear-gradient(180deg, transparent 45%, rgba(11,9,7,.75)); }
+	.lav-blog .blog-layout { grid-template-columns: 1fr; }
+	.lav-blog .filter-bar { position: static; }
+	.lav-blog .side { position: static; flex-direction: row; flex-wrap: wrap; }
+	.lav-blog .side .swidget { flex: 1 1 280px; }
+}
+@media (max-width: 680px) {
+	.lav-blog .blog-head { padding-top: 22px; }
+	.lav-blog .head-stats { gap: 8px; }
+	.lav-blog .hs { padding: 10px 14px; flex: 1; }
+	.lav-blog .featured .fbody { padding: 24px; }
+	.lav-blog .posts { grid-template-columns: 1fr; }
+	.lav-blog .fb-controls { flex-direction: column; align-items: stretch; }
+	.lav-blog .fb-left { justify-content: space-between; }
+	.lav-blog .fb-left .ctrl { flex: 1 1 140px; }
+	.lav-blog .ctrl select { width: 100%; }
+	.lav-blog .fb-right { justify-content: space-between; }
+	.lav-blog .search-mini, .lav-blog .search-mini input { width: 100%; }
+}
+@media (max-width: 420px) {
+	.lav-blog .head-stats { width: 100%; }
+}

@@ -39,8 +39,8 @@ return array(
 	),
 	'download' => array(
 		'when'       => 'lavzen_is_download',
-		'css'        => array( 'single-product' ),
-		'js'         => array( 'single-product' ),
+		'css'        => array( 'download' ),
+		'js'         => array( 'download' ),
 		'body_class' => 'ctx-download',
 		'deps'       => array( 'Easy_Digital_Downloads' ),
 	),
