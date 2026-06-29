@@ -17,5 +17,7 @@ return array(
 	\Lavzen\Modules\Security\Security_Module::class,
 	\Lavzen\Modules\Blog\Blog_Module::class,
 	\Lavzen\Modules\Edd\Edd_Module::class,
+	\Lavzen\Modules\Account\Account_Module::class,
+	\Lavzen\Modules\Contact\Contact_Module::class,
 	\Lavzen\Modules\Code_Studio\Code_Studio_Module::class,
 );

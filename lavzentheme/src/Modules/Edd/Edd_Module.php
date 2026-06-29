@@ -40,6 +40,7 @@ final class Edd_Module extends Abstract_Module {
 		require_once LAVZEN_DIR . 'inc/marketplace.php';
 		require_once LAVZEN_DIR . 'inc/product-meta.php';
 		require_once LAVZEN_DIR . 'inc/shop.php';
+		require_once LAVZEN_DIR . 'inc/edd-checkout.php';
 
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'home_assets' ), 100 );
