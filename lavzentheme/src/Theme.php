@@ -13,6 +13,7 @@ use Lavzen\Support\Singleton;
 use Lavzen\Core\Setup;
 use Lavzen\Core\Assets;
 use Lavzen\Core\Template;
+use Lavzen\Core\Navigation;
 use Lavzen\Context\Context_Registry;
 
 defined( 'ABSPATH' ) || exit;
@@ -30,10 +31,14 @@ final class Theme {
 	 * Wire everything up.
 	 */
 	public function boot(): void {
+		// Procedural template-tag shims used inside template files.
+		require_once LAVZEN_DIR . 'inc/template-tags.php';
+
 		// Cross-cutting core concerns.
 		Setup::instance();
 		Assets::instance();
 		Template::instance();
+		Navigation::instance();
 
 		// Per-context asset injection (replaces the old per-context clone files).
 		Context_Registry::instance()->boot();
