@@ -1,0 +1,330 @@
+/* ============================================================================
+   WP Dash — iOS-style Liquid-Glass skin for the WHOLE WordPress admin.
+   One shared token set frosts every surface — admin bar, side menu, content
+   cards, list tables, forms, tabs, notices, buttons — so the look never
+   "jumps" when you move between menu items.
+
+   Scoped to `body.wp-admin` (admin only; injected via admin_head). The block
+   editor is intentionally left untouched (own full-screen UI). Cosmetic only —
+   nothing is hidden. Optimised: one fixed gradient + one transform-drift orb
+   (compositor-only), a single blur strength reused everywhere. Reduced-motion
+   safe. Edit this in Code Studio → WP Dash.
+   ========================================================================== */
+
+body.wp-admin {
+	--g-ink:    #eef1fb;
+	--g-mut:    #b2b9d0;
+	--g-faint:  #8089a3;
+	--g-accent: #7c83ff;
+	--g-accent2:#22d3ee;
+	--g-line:   rgba(255,255,255,.12);
+	--g-line-2: rgba(255,255,255,.18);
+	--g-fill:   rgba(255,255,255,.06);
+	--g-fill-2: rgba(255,255,255,.10);
+	--glass:    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03) 38%, rgba(8,11,22,.20)), rgba(18,24,44,.58);
+	--glass-hi: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05) 40%, rgba(8,11,22,.18)), rgba(28,34,58,.62);
+	--blur:     22px;
+	--r:        18px;
+	--shadow:   0 16px 44px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.16);
+	--ease:     cubic-bezier(.4,.8,.2,1);
+}
+
+/* ---- 1. liquid background (fixed, behind everything, all admin pages) --- */
+body.wp-admin { background: #070a16 !important; }
+body.wp-admin::before {
+	content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+	background:
+		radial-gradient(60% 50% at 18% 8%, rgba(124,131,255,.38), transparent 60%),
+		radial-gradient(55% 45% at 92% 6%, rgba(34,211,238,.26), transparent 58%),
+		radial-gradient(60% 60% at 80% 100%, rgba(167,92,255,.32), transparent 62%),
+		radial-gradient(50% 50% at 4% 92%, rgba(56,189,248,.24), transparent 60%),
+		#070a16;
+}
+body.wp-admin::after {
+	content: ""; position: fixed; z-index: -1; inset: -20% -10% auto auto;
+	width: 60vw; height: 60vw; max-width: 720px; max-height: 720px; border-radius: 50%;
+	background: radial-gradient(circle, rgba(124,131,255,.28), transparent 68%);
+	filter: blur(38px); pointer-events: none;
+	animation: lavwp-drift 26s var(--ease) infinite alternate;
+}
+@keyframes lavwp-drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-12vw,16vh,0) scale(1.18); } }
+
+body.wp-admin #wpwrap,
+body.wp-admin #wpcontent,
+body.wp-admin #wpbody,
+body.wp-admin #adminmenuback,
+body.wp-admin #adminmenuwrap { background: transparent !important; }
+body.wp-admin #wpbody-content { position: relative; z-index: 1; }
+
+/* ---- 2. text + links ---------------------------------------------------- */
+body.wp-admin #wpbody-content,
+body.wp-admin #wpbody-content p,
+body.wp-admin #wpbody-content li,
+body.wp-admin #wpbody-content label,
+body.wp-admin #wpbody-content .description,
+body.wp-admin #wpbody-content .inside { color: var(--g-mut); }
+body.wp-admin #wpbody-content h1,
+body.wp-admin #wpbody-content h2,
+body.wp-admin #wpbody-content h3,
+body.wp-admin #wpbody-content h4,
+body.wp-admin #wpbody-content strong,
+body.wp-admin #wpbody-content .wp-heading-inline { color: var(--g-ink); }
+body.wp-admin #wpbody-content a:not(.button):not(.lavwp-btn):not(.ab-item):not(.page-title-action):not(.nav-tab) { color: var(--g-accent); transition: color .15s var(--ease); }
+body.wp-admin #wpbody-content a:not(.button):not(.lavwp-btn):not(.ab-item):not(.page-title-action):not(.nav-tab):hover { color: #fff; }
+
+/* ---- 3. admin bar (glass) ---------------------------------------------- */
+body.wp-admin #wpadminbar {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(160%); backdrop-filter: blur(var(--blur)) saturate(160%);
+	border-bottom: 1px solid var(--g-line);
+}
+body.wp-admin #wpadminbar .ab-item,
+body.wp-admin #wpadminbar a.ab-item,
+body.wp-admin #wpadminbar > #wp-toolbar span.ab-label,
+body.wp-admin #wpadminbar .ab-icon::before,
+body.wp-admin #wpadminbar .ab-item::before { color: var(--g-ink) !important; }
+body.wp-admin #wpadminbar .ab-top-menu > li:hover > .ab-item,
+body.wp-admin #wpadminbar .ab-top-menu > li.hover > .ab-item { background: var(--g-fill-2) !important; color: #fff !important; }
+body.wp-admin #wpadminbar .ab-submenu,
+body.wp-admin #wpadminbar .ab-sub-wrapper,
+body.wp-admin #wpadminbar .quicklinks .menupop ul li .ab-item {
+	background: rgba(16,21,40,.94) !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+}
+
+/* ---- 4. side admin menu (glass) — no width/overflow changes ------------- */
+body.wp-admin #adminmenu {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(160%); backdrop-filter: blur(var(--blur)) saturate(160%);
+	border-right: 1px solid var(--g-line);
+	box-shadow: 8px 0 30px rgba(0,0,0,.28);
+}
+body.wp-admin #adminmenu a { color: var(--g-mut); }
+body.wp-admin #adminmenu .wp-menu-image::before { color: var(--g-mut) !important; opacity: .9; }
+body.wp-admin #adminmenu li.menu-top:hover,
+body.wp-admin #adminmenu li.opensub > a.menu-top,
+body.wp-admin #adminmenu li > a.menu-top:focus { background: var(--g-fill-2) !important; color: #fff !important; }
+body.wp-admin #adminmenu li.menu-top:hover .wp-menu-image::before,
+body.wp-admin #adminmenu li.menu-top:focus-within .wp-menu-image::before { color: #fff !important; }
+body.wp-admin #adminmenu li.current a.menu-top,
+body.wp-admin #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+body.wp-admin #adminmenu .wp-menu-arrow,
+body.wp-admin #adminmenu .wp-has-current-submenu .wp-submenu .wp-submenu-head {
+	background: linear-gradient(135deg, rgba(124,131,255,.55), rgba(34,211,238,.4)) !important;
+	color: #fff !important;
+}
+body.wp-admin #adminmenu li.current .wp-menu-image::before,
+body.wp-admin #adminmenu li.wp-has-current-submenu .wp-menu-image::before { color: #fff !important; }
+body.wp-admin #adminmenu .wp-submenu,
+body.wp-admin #adminmenu .wp-has-current-submenu .wp-submenu,
+body.wp-admin #adminmenu .wp-not-current-submenu .wp-submenu {
+	background: rgba(16,21,40,.96) !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+	box-shadow: 0 18px 40px rgba(0,0,0,.45);
+}
+body.wp-admin #adminmenu .wp-submenu a { color: var(--g-mut) !important; }
+body.wp-admin #adminmenu .wp-submenu a:hover,
+body.wp-admin #adminmenu .wp-submenu li.current a { color: #fff !important; }
+body.wp-admin #adminmenu .awaiting-mod,
+body.wp-admin #adminmenu .update-plugins { background: var(--g-accent) !important; color: #fff !important; }
+body.wp-admin #collapse-button { color: var(--g-faint) !important; }
+
+/* ---- 5. page header: title, "Add New", search -------------------------- */
+body.wp-admin .wrap .page-title-action,
+body.wp-admin .wrap .page-title-action:active {
+	background: var(--g-fill) !important; border: 1px solid var(--g-line-2) !important;
+	color: var(--g-ink) !important; border-radius: 10px !important; box-shadow: none !important;
+}
+body.wp-admin .wrap .page-title-action:hover { background: var(--g-fill-2) !important; color: #fff !important; }
+body.wp-admin .subsubsub { color: var(--g-faint); }
+body.wp-admin .subsubsub a { color: var(--g-mut); }
+body.wp-admin .subsubsub a.current,
+body.wp-admin .subsubsub a:hover { color: #fff; }
+
+/* ---- 6. unified glass cards: postboxes, metaboxes, welcome, list tables - */
+body.wp-admin .postbox,
+body.wp-admin .stuffbox,
+body.wp-admin #welcome-panel.welcome-panel,
+body.wp-admin .wp-list-table,
+body.wp-admin .card,
+body.wp-admin .meta-box-sortables .postbox {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)) saturate(150%); backdrop-filter: blur(var(--blur)) saturate(150%);
+	border: 1px solid var(--g-line) !important;
+	border-radius: var(--r) !important;
+	box-shadow: var(--shadow) !important;
+	color: var(--g-mut) !important;
+	overflow: hidden;
+}
+body.wp-admin .postbox:hover,
+body.wp-admin .wp-list-table:hover { border-color: var(--g-line-2) !important; }
+body.wp-admin .postbox-header,
+body.wp-admin .postbox .hndle,
+body.wp-admin .postbox > h2,
+body.wp-admin .stuffbox > h2,
+body.wp-admin .welcome-panel-header {
+	background: transparent !important;
+	border-bottom: 1px solid var(--g-line) !important;
+	color: var(--g-ink) !important;
+}
+body.wp-admin .postbox .inside h3,
+body.wp-admin .postbox .inside h4,
+body.wp-admin .postbox .inside b,
+body.wp-admin .main strong { color: var(--g-ink) !important; }
+body.wp-admin .handlediv,
+body.wp-admin .postbox-header button,
+body.wp-admin .handle-order-higher,
+body.wp-admin .handle-order-lower { color: var(--g-mut) !important; }
+body.wp-admin .postbox .inside hr { border-color: var(--g-line) !important; }
+
+/* ---- 7. list tables (Posts / Products / Plugins / Users …) -------------- */
+body.wp-admin .wp-list-table thead th,
+body.wp-admin .wp-list-table thead td,
+body.wp-admin .wp-list-table tfoot th,
+body.wp-admin .wp-list-table tfoot td {
+	background: rgba(255,255,255,.04) !important;
+	border-bottom: 1px solid var(--g-line) !important;
+	color: var(--g-ink) !important;
+}
+body.wp-admin .wp-list-table th,
+body.wp-admin .wp-list-table td { border-color: var(--g-line) !important; color: var(--g-mut) !important; }
+body.wp-admin .wp-list-table thead th a,
+body.wp-admin .wp-list-table th.sortable a,
+body.wp-admin .wp-list-table th.sorted a { color: var(--g-ink) !important; }
+body.wp-admin .wp-list-table tbody tr { background: transparent !important; }
+body.wp-admin .wp-list-table tbody tr:hover,
+body.wp-admin .wp-list-table.striped > tbody > :nth-child(odd) { background: rgba(255,255,255,.035) !important; }
+body.wp-admin .wp-list-table .row-title,
+body.wp-admin .wp-list-table strong { color: var(--g-ink) !important; }
+body.wp-admin .wp-list-table .row-actions { color: var(--g-faint) !important; }
+body.wp-admin .wp-list-table .row-actions a { color: var(--g-accent) !important; }
+body.wp-admin .wp-list-table .column-title a.row-title:hover { color: #fff !important; }
+body.wp-admin .wp-list-table .dashicons,
+body.wp-admin .wp-list-table .column-icon img { color: var(--g-mut) !important; }
+/* tablenav (pagination bar) */
+body.wp-admin .tablenav,
+body.wp-admin .tablenav.top,
+body.wp-admin .tablenav.bottom { background: transparent !important; color: var(--g-mut); }
+body.wp-admin .tablenav .displaying-num,
+body.wp-admin .tablenav-pages .tablenav-pages-navspan,
+body.wp-admin .tablenav .tablenav-pages a { color: var(--g-mut) !important; }
+body.wp-admin .tablenav-pages a.page-numbers,
+body.wp-admin .tablenav .button {
+	background: var(--g-fill) !important; border: 1px solid var(--g-line-2) !important; color: var(--g-ink) !important; border-radius: 8px !important;
+}
+
+/* ---- 8. settings (form-table) + nav tabs -------------------------------- */
+body.wp-admin .form-table th { color: var(--g-ink) !important; }
+body.wp-admin .form-table td,
+body.wp-admin .form-table td p,
+body.wp-admin .form-wrap label { color: var(--g-mut) !important; }
+body.wp-admin .nav-tab-wrapper,
+body.wp-admin .wp-filter { border-bottom: 1px solid var(--g-line) !important; }
+body.wp-admin .nav-tab {
+	background: var(--g-fill) !important; border: 1px solid var(--g-line) !important; border-bottom: none !important;
+	color: var(--g-mut) !important; border-radius: 10px 10px 0 0 !important;
+}
+body.wp-admin .nav-tab-active,
+body.wp-admin .nav-tab:hover {
+	background: linear-gradient(135deg, rgba(124,131,255,.5), rgba(34,211,238,.35)) !important; color: #fff !important;
+}
+
+/* ---- 9. notices (glass with a typed accent stripe) --------------------- */
+body.wp-admin .wrap .notice,
+body.wp-admin .wrap div.updated,
+body.wp-admin .wrap div.error,
+body.wp-admin .notice {
+	background: var(--glass) !important;
+	-webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+	border: 1px solid var(--g-line) !important;
+	border-left: 3px solid var(--g-accent) !important;
+	border-radius: 12px !important; color: var(--g-mut) !important; box-shadow: var(--shadow) !important;
+}
+body.wp-admin .notice-success { border-left-color: #34d399 !important; }
+body.wp-admin .notice-error, body.wp-admin div.error { border-left-color: #ff6b8b !important; }
+body.wp-admin .notice-warning { border-left-color: #fbbf24 !important; }
+body.wp-admin .notice p, body.wp-admin .notice a { color: var(--g-mut) !important; }
+body.wp-admin .notice-dismiss::before { color: var(--g-mut) !important; }
+
+/* ---- 10. buttons + form controls --------------------------------------- */
+body.wp-admin #wpbody-content .button,
+body.wp-admin #wpbody-content .button-secondary {
+	background: var(--g-fill) !important; border: 1px solid var(--g-line-2) !important;
+	color: var(--g-ink) !important; border-radius: 10px !important; box-shadow: none !important;
+	transition: background .15s var(--ease), transform .15s var(--ease);
+}
+body.wp-admin #wpbody-content .button:hover { background: var(--g-fill-2) !important; color: #fff !important; transform: translateY(-1px); }
+body.wp-admin #wpbody-content .button-primary {
+	background: linear-gradient(135deg, var(--g-accent), var(--g-accent2)) !important;
+	border: 1px solid transparent !important; color: #fff !important; border-radius: 10px !important;
+	box-shadow: 0 8px 20px rgba(124,131,255,.4) !important; text-shadow: none !important;
+}
+body.wp-admin #wpbody-content .button-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+body.wp-admin #wpbody-content .button:focus,
+body.wp-admin #wpbody-content .button-primary:focus { box-shadow: 0 0 0 3px rgba(124,131,255,.55) !important; outline: none; }
+body.wp-admin #wpbody-content input[type="text"],
+body.wp-admin #wpbody-content input[type="search"],
+body.wp-admin #wpbody-content input[type="email"],
+body.wp-admin #wpbody-content input[type="url"],
+body.wp-admin #wpbody-content input[type="number"],
+body.wp-admin #wpbody-content input[type="password"],
+body.wp-admin #wpbody-content textarea,
+body.wp-admin #wpbody-content select {
+	background: rgba(8,11,22,.45) !important; border: 1px solid var(--g-line-2) !important;
+	color: var(--g-ink) !important; border-radius: 10px !important; box-shadow: none !important;
+}
+body.wp-admin #wpbody-content input::placeholder,
+body.wp-admin #wpbody-content textarea::placeholder { color: var(--g-faint) !important; }
+body.wp-admin #wpbody-content input:focus,
+body.wp-admin #wpbody-content textarea:focus,
+body.wp-admin #wpbody-content select:focus { border-color: rgba(124,131,255,.6) !important; box-shadow: 0 0 0 3px rgba(124,131,255,.4) !important; outline: none; }
+
+/* ---- 11. screen-meta tabs + footer ------------------------------------- */
+body.wp-admin #screen-meta { background: var(--glass) !important; border-color: var(--g-line) !important; -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+body.wp-admin #screen-meta-links .show-settings {
+	background: var(--glass) !important; border: 1px solid var(--g-line) !important; color: var(--g-ink) !important;
+	border-radius: 0 0 10px 10px !important; -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: none !important;
+}
+body.wp-admin #screen-meta label { color: var(--g-mut) !important; }
+body.wp-admin #wpfooter { color: var(--g-faint) !important; background: transparent !important; }
+body.wp-admin #wpfooter a { color: var(--g-mut) !important; }
+
+/* ---- 12. dashboard hero (template.php) — the showpiece glass card ------- */
+body.wp-admin .lavwp-hero {
+	position: relative; overflow: hidden; margin: 12px 0 24px;
+	padding: clamp(24px, 3.2vw, 40px); border-radius: 26px;
+	background: var(--glass-hi); border: 1px solid var(--g-line-2);
+	box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.28);
+	-webkit-backdrop-filter: blur(26px) saturate(165%); backdrop-filter: blur(26px) saturate(165%);
+}
+body.wp-admin .lavwp-hero-in { position: relative; z-index: 2; }
+body.wp-admin .lavwp-orb { position: absolute; z-index: 1; border-radius: 50%; filter: blur(48px); opacity: .6; pointer-events: none; animation: lavwp-orb 14s var(--ease) infinite alternate; }
+body.wp-admin .lavwp-orb.a { width: 340px; height: 340px; top: -130px; right: -60px; background: radial-gradient(circle, rgba(124,131,255,.85), transparent 70%); }
+body.wp-admin .lavwp-orb.b { width: 320px; height: 320px; bottom: -150px; left: -50px; background: radial-gradient(circle, rgba(34,211,238,.75), transparent 70%); animation-delay: -7s; }
+@keyframes lavwp-orb { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(28px,20px,0) scale(1.12); } }
+body.wp-admin .lavwp-eyebrow { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--g-accent2); margin-bottom: 8px; }
+body.wp-admin .lavwp-title { font-size: clamp(24px, 3vw, 36px); font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.08; letter-spacing: -.01em; }
+body.wp-admin .lavwp-title b { background: linear-gradient(135deg, #fff, var(--g-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+body.wp-admin .lavwp-wave { display: inline-block; animation: lavwp-wave 2.6s var(--ease) infinite; transform-origin: 70% 70%; -webkit-text-fill-color: initial; }
+@keyframes lavwp-wave { 0%,60%,100% { transform: rotate(0); } 15% { transform: rotate(16deg); } 30% { transform: rotate(-8deg); } 45% { transform: rotate(14deg); } }
+body.wp-admin .lavwp-sub { color: var(--g-mut); font-size: 14.5px; margin: 0 0 22px; max-width: 60ch; }
+body.wp-admin .lavwp-quick { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+body.wp-admin .lavwp-stat { min-width: 116px; padding: 15px 18px; border-radius: 16px; background: var(--g-fill); border: 1px solid var(--g-line); }
+body.wp-admin .lavwp-stat-n { display: block; font-size: 27px; font-weight: 800; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+body.wp-admin .lavwp-stat-l { font-size: 12px; color: var(--g-mut); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+body.wp-admin .lavwp-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+body.wp-admin .lavwp-btn { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 13px; font-size: 13.5px; font-weight: 700; text-decoration: none; background: var(--g-fill-2); border: 1px solid var(--g-line); color: var(--g-ink); transition: transform .15s var(--ease), background .15s var(--ease); }
+body.wp-admin .lavwp-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.16); color: #fff; }
+body.wp-admin .lavwp-btn.primary { background: linear-gradient(135deg, var(--g-accent), var(--g-accent2)); border-color: transparent; color: #fff; box-shadow: 0 12px 28px rgba(124,131,255,.45); }
+body.wp-admin .lavwp-btn.ghost { background: transparent; }
+
+/* ---- 13. responsive + reduced motion ----------------------------------- */
+@media (max-width: 960px) {
+	body.wp-admin .lavwp-quick { gap: 8px; }
+	body.wp-admin .lavwp-stat { flex: 1 1 42%; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+	body.wp-admin::after,
+	body.wp-admin .lavwp-orb,
+	body.wp-admin .lavwp-wave { animation: none; }
+}

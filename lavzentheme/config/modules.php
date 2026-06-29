@@ -19,5 +19,7 @@ return array(
 	\Lavzen\Modules\Edd\Edd_Module::class,
 	\Lavzen\Modules\Account\Account_Module::class,
 	\Lavzen\Modules\Contact\Contact_Module::class,
+	\Lavzen\Modules\Wp_Dash\Wp_Dash_Module::class,
+	\Lavzen\Modules\Backlink_Checker\Backlink_Checker_Module::class,
 	\Lavzen\Modules\Code_Studio\Code_Studio_Module::class,
 );
