@@ -1,0 +1,69 @@
+/* ============================================================================
+   LAVZEN — design tokens  (single source of truth for the whole theme).
+
+   Loaded on EVERY page: on inner pages as part of the Code Studio "Global → Root"
+   base layer, and enqueued directly on the home page (inc/home.php). Change a
+   value here and it cascades across the entire theme — chrome, marketplace home,
+   shop, single, blog, checkout, account.
+
+   The palette is PURE MONOCHROME (greys + white, no hue). Both naming schemes are
+   defined from the same values: the legacy `--*` names used by the inner-page
+   components, and the `--lav-*` Liquid-Glass names used by the home marketplace.
+   ============================================================================ */
+:root{
+  /* — surfaces — */
+  --bg:#141414; --bg-deep:#0B0B0B; --ink:#0B0B0B; --ink-deep:#060606; --menu-bg:#1B1B1B;
+
+  /* — text — */
+  --text:#F5F5F5; --text-2:#ECECEC; --text-3:#CFCFCF; --muted:#A7A7A7;
+
+  /* — accents: monochrome, no hue (change these to re-tint the whole theme) — */
+  --accent:#F5F5F5; --accent-2:#D6D6D6; --accent-3:#ABABAB; --gold:#F5F5F5;
+  --cta:#F5F5F5; --cta-ink:#141414; --green:#D6D6D6; --blue:#ABABAB; --pink:#ABABAB;
+  --danger:#E6AEB6; --success:#CFE9D8;
+
+  /* — type families (inner pages) — */
+  --display:'Oswald','Vazirmatn',sans-serif;
+  --sans:'Inter','Vazirmatn',sans-serif;
+  --serif:'Newsreader',Georgia,'Vazirmatn',serif;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+
+  /* — glass material — */
+  --glass-1:rgba(255,255,255,0.06); --glass-2:rgba(255,255,255,0.11); --glass-3:rgba(255,255,255,0.17);
+  --stroke:rgba(255,255,255,0.18); --stroke-soft:rgba(255,255,255,0.10);
+  --sheen:linear-gradient(180deg,rgba(255,255,255,0.30),rgba(255,255,255,0.04) 42%,rgba(255,255,255,0) 72%);
+  --edge:inset 0 1px 0 rgba(255,255,255,0.4),inset 0 -1px 1px rgba(255,255,255,0.08);
+  --blur:20px; --sat:150%;
+  --e1:0 2px 8px rgba(0,0,0,.28); --e2:0 12px 30px rgba(0,0,0,.36); --e3:0 40px 120px rgba(0,0,0,.5);
+
+  /* — radius / space / motion — */
+  --r-sm:14px; --r-md:18px; --r-lg:24px; --r-xl:30px; --r-pill:999px;
+  --s2:8px; --s3:12px; --s4:16px; --s5:22px; --s6:32px;
+  --ease:cubic-bezier(.2,.7,.2,1); --focus:0 0 0 3px rgba(245,245,245,.5); --tap:44px;
+
+  /* ===== Liquid-Glass tokens (home marketplace body; available everywhere) ===== */
+  --lav-ink-0:#0B0B0B; --lav-ink-1:#141414; --lav-ink-3:#292929; --lav-ink-6:#616161;
+  --lav-ink-8:#ABABAB; --lav-ink-9:#D6D6D6; --lav-ink-white:#F5F5F5;
+  --lav-text-primary:#F5F5F5; --lav-text-secondary:rgba(245,245,245,0.66); --lav-text-tertiary:rgba(245,245,245,0.58);
+  --lav-line:rgba(255,255,255,0.12); --lav-line-strong:rgba(255,255,255,0.20); --lav-focus:#F5F5F5;
+  --lav-cta:#F5F5F5; --lav-cta-press:#D6D6D6; --lav-cta-ink:#141414;
+  --lav-glass-intensity:1; --lav-glass-tint-alpha:0.10; --lav-glass-tint-strong-alpha:0.16;
+  --lav-glass-edge:rgba(255,255,255,0.20); --lav-glass-edge-bright:rgba(255,255,255,0.55);
+  --lav-glass-highlight:rgba(255,255,255,0.55); --lav-glass-shade:rgba(0,0,0,0.24);
+  --lav-glass-scrim:rgba(10,10,10,0.44); --lav-glass-text-plate:rgba(10,10,10,0.58);
+  --lav-glass-refract-1:rgba(255,255,255,0.10); --lav-glass-saturate:140%; --lav-glass-brightness:1.06;
+  --lav-blur-control:12px; --lav-blur-surface:14px; --lav-blur-float:18px;
+  --lav-glass-shadow:0 18px 48px -12px rgba(0,0,0,0.55),0 4px 14px -6px rgba(0,0,0,0.4);
+  --lav-radius-md:14px; --lav-radius-lg:20px; --lav-radius-xl:28px; --lav-radius-2xl:32px; --lav-radius-pill:999px;
+  --lav-space-2:0.5rem; --lav-space-3:0.75rem; --lav-space-4:1rem; --lav-space-5:1.25rem; --lav-space-6:1.5rem; --lav-space-8:2rem; --lav-space-10:2.5rem;
+  --lav-fluid-s:clamp(1rem,0.9167rem + 0.3704vw,1.25rem); --lav-fluid-m:clamp(1.5rem,1.333rem + 0.7407vw,2rem);
+  --lav-fluid-l:clamp(2rem,1.667rem + 1.481vw,3rem); --lav-fluid-xl:clamp(3rem,2.5rem + 2.222vw,4.5rem);
+  --lav-font-display:"Clash Display","Satoshi",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  --lav-font-text:"Satoshi",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+  --lav-type-display:clamp(2.75rem,1.917rem + 3.704vw,5.25rem); --lav-type-lg:clamp(1.312rem,1.25rem + 0.2778vw,1.5rem);
+  --lav-type-label:clamp(0.8125rem,0.7917rem + 0.09259vw,0.875rem); --lav-type-caption:clamp(0.75rem,0.7292rem + 0.09259vw,0.8125rem);
+  --lav-leading-tight:1.08; --lav-leading-normal:1.5; --lav-track-tight:-0.022em; --lav-track-wide:0.06em;
+  --lav-ease-standard:cubic-bezier(0.22,1,0.36,1); --lav-ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --lav-dur-fast:150ms; --lav-dur-base:260ms; --lav-dur-slow:420ms; --lav-noise-opacity:0.05;
+  --_i:clamp(0.7,var(--lav-glass-intensity,1),1.3);
+}
