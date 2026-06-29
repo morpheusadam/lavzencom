@@ -31,8 +31,9 @@ final class Theme {
 	 * Wire everything up.
 	 */
 	public function boot(): void {
-		// Procedural template-tag shims used inside template files.
-		require_once LAVZEN_DIR . 'inc/template-tags.php';
+		// Procedural helpers loaded outside the autoloaded namespace.
+		require_once LAVZEN_DIR . 'inc/conditionals.php';   // context predicates + page-id helpers.
+		require_once LAVZEN_DIR . 'inc/template-tags.php';  // template tags used in template files.
 
 		// Cross-cutting core concerns.
 		Setup::instance();
