@@ -15,7 +15,7 @@ if ( ! is_user_logged_in() ) {
 	?>
 	<section class="lav-account is-guest" aria-label="<?php esc_attr_e( 'My Account', 'lavzentheme' ); ?>">
 		<div class="glass la-guest">
-			<span class="la-guest-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+			<span class="la-guest-ic" aria-hidden="true"><?php lavzen_icon( 'user' ); ?></span>
 			<h1><?php esc_html_e( 'Sign in to your account', 'lavzentheme' ); ?></h1>
 			<p><?php esc_html_e( 'Your orders, downloads and profile — all in one place.', 'lavzentheme' ); ?></p>
 			<div class="la-guest-cta">
@@ -33,10 +33,10 @@ if ( ! is_user_logged_in() ) {
 $lav_u   = wp_get_current_user();
 $lav_acc = function_exists( 'lavzen_account_url' );
 $lav_nav = array(
-	'dashboard' => array( 'label' => __( 'Dashboard', 'lavzentheme' ), 'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>' ),
-	'orders'    => array( 'label' => __( 'My Orders', 'lavzentheme' ), 'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>' ),
-	'downloads' => array( 'label' => __( 'My Downloads', 'lavzentheme' ), 'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>' ),
-	'profile'   => array( 'label' => __( 'My Profile', 'lavzentheme' ), 'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>' ),
+	'dashboard' => array( 'label' => __( 'Dashboard', 'lavzentheme' ), 'icon' => lavzen_get_icon( 'grid' ) ),
+	'orders'    => array( 'label' => __( 'My Orders', 'lavzentheme' ), 'icon' => lavzen_get_icon( 'bag' ) ),
+	'downloads' => array( 'label' => __( 'My Downloads', 'lavzentheme' ), 'icon' => lavzen_get_icon( 'download' ) ),
+	'profile'   => array( 'label' => __( 'My Profile', 'lavzentheme' ), 'icon' => lavzen_get_icon( 'user' ) ),
 );
 ?>
 <section class="lav-account" aria-label="<?php esc_attr_e( 'My Account', 'lavzentheme' ); ?>">
@@ -57,7 +57,7 @@ $lav_nav = array(
 				</a>
 			<?php endforeach; ?>
 			<a class="la-navitem la-logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>">
-				<span class="la-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg></span>
+				<span class="la-ic" aria-hidden="true"><?php lavzen_icon( 'logout' ); ?></span>
 				<?php esc_html_e( 'Log out', 'lavzentheme' ); ?>
 			</a>
 		</nav>
