@@ -5,11 +5,11 @@
 ### A premium, OOP, module-based WordPress theme powering the [lavzen.com](https://lavzen.com) digital-products marketplace — Liquid-Glass design system, Easy Digital Downloads integration, and a built-in Code Studio.
 
 <p>
-  <img src="https://img.shields.io/github/license/morpheusadam/lavzencom?style=for-the-badge&color=4c1" alt="License" />
-  <img src="https://img.shields.io/github/stars/morpheusadam/lavzencom?style=for-the-badge&color=ffca28" alt="Stars" />
-  <img src="https://img.shields.io/github/forks/morpheusadam/lavzencom?style=for-the-badge&color=42a5f5" alt="Forks" />
-  <img src="https://img.shields.io/github/last-commit/morpheusadam/lavzencom?style=for-the-badge&color=8e44ad" alt="Last commit" />
-  <img src="https://img.shields.io/github/repo-size/morpheusadam/lavzencom?style=for-the-badge&color=e67e22" alt="Repo size" />
+  <img src="https://img.shields.io/github/license/morpheusadam/LavzenTheme?style=for-the-badge&color=4c1" alt="License" />
+  <img src="https://img.shields.io/github/stars/morpheusadam/LavzenTheme?style=for-the-badge&color=ffca28" alt="Stars" />
+  <img src="https://img.shields.io/github/forks/morpheusadam/LavzenTheme?style=for-the-badge&color=42a5f5" alt="Forks" />
+  <img src="https://img.shields.io/github/last-commit/morpheusadam/LavzenTheme?style=for-the-badge&color=8e44ad" alt="Last commit" />
+  <img src="https://img.shields.io/github/repo-size/morpheusadam/LavzenTheme?style=for-the-badge&color=e67e22" alt="Repo size" />
 </p>
 
 <p>
@@ -78,7 +78,7 @@ This theme is ideal for **WordPress developers, digital-product sellers, and age
 ### Installation
 
 ```bash
-git clone https://github.com/morpheusadam/lavzencom.git
+git clone https://github.com/morpheusadam/LavzenTheme.git
 ```
 
 **Legacy theme (`lavtheme/`)** — copy the folder into your WordPress themes directory and activate it:
@@ -123,7 +123,7 @@ lavzencom/
 
 ## 🤝 Contributing
 
-Contributions are welcome! Open an [issue](https://github.com/morpheusadam/lavzencom/issues) or submit a pull request with improvements to templates, modules, design tokens, or the Code Studio.
+Contributions are welcome! Open an [issue](https://github.com/morpheusadam/LavzenTheme/issues) or submit a pull request with improvements to templates, modules, design tokens, or the Code Studio.
 
 ## 📜 License
 
@@ -152,8 +152,8 @@ Web developer & cheerful hacker · PHP · Laravel · Go
 
 ## ⭐ Star History
 
-<a href="https://star-history.com/#morpheusadam/lavzencom&Date">
-  <img src="https://api.star-history.com/svg?repos=morpheusadam/lavzencom&type=Date" alt="lavzencom — Star History Chart" width="70%" />
+<a href="https://star-history.com/#morpheusadam/LavzenTheme&Date">
+  <img src="https://api.star-history.com/svg?repos=morpheusadam/LavzenTheme&type=Date" alt="lavzencom — Star History Chart" width="70%" />
 </a>
 
 <div align="center">
