@@ -1,7 +1,5 @@
 <div align="center">
-
-# 🪟 Lavzen — Digital Marketplace WordPress Theme
-
+# 🪟 Lavzen Theme — Digital Marketplace WordPress Theme
 ### A premium, OOP, module-based WordPress theme powering the [lavzen.com](https://lavzen.com) digital-products marketplace — Liquid-Glass design system, Easy Digital Downloads integration, and a built-in Code Studio.
 
 <p>
